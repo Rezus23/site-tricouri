@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 // ⚠️ NU mai importa getAnalytics aici pentru că dă eroare pe server
 
 const firebaseConfig = {
@@ -14,6 +15,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app); // folosești doar Firestore aici
+export const auth = getAuth(app);
 
 // Dacă vei avea nevoie de Analytics pe client:
 // export const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;

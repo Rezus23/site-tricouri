@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         </tr>
       </thead>
       <tbody>
-        ${produse.map((p: any) => `
+        ${produse.map((p:{ titlu: string; pret: number }) => `
           <tr>
             <td style="padding: 8px 0;">${p.titlu}</td>
             <td align="right" style="padding: 8px 0;">${p.pret} RON</td>

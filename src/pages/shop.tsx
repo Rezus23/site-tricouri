@@ -1,5 +1,6 @@
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
+import Image from 'next/image';
 
 const produse = [
   {
@@ -35,7 +36,7 @@ const produse = [
 ];
 
 export default function Shop() {
-  const { adaugaInCos } = useCart();
+  const {  } = useCart();
 
   return (
     <div className="px-4 py-8 max-w-6xl mx-auto">
@@ -50,10 +51,12 @@ export default function Shop() {
             className="bg-white shadow-md rounded-lg p-4 flex flex-col justify-between"
           >
             <Link href={`/magazin/${produs.id}`}>
-              <img
+              <Image
                 src={produs.img}
                 alt={produs.titlu}
-                className="w-full h-48 object-cover mb-4 rounded cursor-pointer"
+                width={500}
+                height={300}
+                className="w-full h-80 object-cover mb-4 rounded cursor-pointer"
               />
             </Link>
 

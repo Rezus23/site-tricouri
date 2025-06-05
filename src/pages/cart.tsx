@@ -1,10 +1,33 @@
 import { useCart } from "@/context/CartContext";
-import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+
 
 export default function Cart() {
   const { cart, stergeDinCos, golesteCos } = useCart();
+  const { user } = useAuth();
 
   const total = cart.reduce((acc, p) => acc + Number(p.pret), 0);
+
+  const handleStripeRedirect = async () => {
+ 
+
+  const email = user?.email || prompt("Introdu adresa ta de email:");
+
+  if (!email) {
+    alert("Trebuie să introduci o adresă de email.");
+    return;
+  }
+
+  const res = await fetch("/api/checkout_sessions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ produse: cart, email }),
+  });
+
+  const data = await res.json();
+  if (data.url) window.location.href = data.url;
+  else alert("A apărut o eroare. Încearcă din nou.");
+ };
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
@@ -47,9 +70,12 @@ export default function Cart() {
               Golește coșul
             </button>
 
-            <Link href="/checkout" className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition text-center">
-                Plasează comanda
-            </Link>
+            <button
+            onClick={handleStripeRedirect}
+             className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition text-center"
+            >
+              Catre Plata
+            </button>
           </div>
         </div>
       )}
