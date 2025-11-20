@@ -23,7 +23,7 @@ export function encrypt(xml: string, opts?: { publicKeyPem?: string }) {
     throw new Error("MOBILPAY_PUBLIC_KEY_PEM lipsă în env");
   }
 
-  const publicKey = readPublicKey(pem);
+  
 
   // restul logicii tale de criptare (AES random key + RSA etc.)
   // și la final returnezi:
