@@ -1,32 +1,26 @@
 // src/lib/mobilpay/encrypt.ts
 import forge from "node-forge";
 
-function readPublicKey(maybeCertPem: string) {
-  if (
-    maybeCertPem.includes("BEGIN PUBLIC KEY") ||
-    maybeCertPem.includes("BEGIN RSA PUBLIC KEY")
-  ) {
-    return forge.pki.publicKeyFromPem(maybeCertPem);
-  }
-  if (maybeCertPem.includes("BEGIN CERTIFICATE")) {
-    const cert = forge.pki.certificateFromPem(maybeCertPem);
-    return cert.publicKey;
-  }
-  throw new Error(
-    'PEM header type is not "PUBLIC KEY", "RSA PUBLIC KEY" or "CERTIFICATE".'
-  );
-}
+// Dacă în viitor vei avea nevoie de readPublicKey, îl adăugăm înapoi.
+// Deocamdată îl eliminăm complet pentru a evita eroarea ESLint.
 
-export function encrypt(xml: string, opts?: { publicKeyPem?: string }) {
+export function encrypt(
+  xml: string,
+  opts?: { publicKeyPem?: string }
+): {
+  env_key: string;
+  data: string;
+  iv: string;
+  cipher: string;
+} {
   const pem = opts?.publicKeyPem || process.env.MOBILPAY_PUBLIC_KEY_PEM;
+
   if (!pem) {
     throw new Error("MOBILPAY_PUBLIC_KEY_PEM lipsă în env");
   }
 
-  
-
-  // restul logicii tale de criptare (AES random key + RSA etc.)
-  // și la final returnezi:
+  // Aici va fi implementarea reală (RSA + AES)
+  // Pentru build-ul de acum returnăm mock (evităm ESLint).
   return {
     env_key: "...",
     data: "...",
