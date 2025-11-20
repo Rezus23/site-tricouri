@@ -11,7 +11,10 @@
   "dependencies": {
     "@stripe/stripe-js": "^7.3.1",
     "firebase": "^11.8.1",
+    "firebase-admin": "^13.6.0",
+    "netopia-node-js": "github:mobilpay/Node.js",
     "next": "15.3.3",
+    "node-forge": "^1.3.1",
     "nodemailer": "^7.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -21,6 +24,7 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/node-forge": "^1.3.14",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
