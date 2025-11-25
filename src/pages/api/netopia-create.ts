@@ -66,7 +66,7 @@ export default async function handler(
     const body: CreateOrderBody = req.body;
 
     let amount = Number(body.amount);
-    const details: string = body.details || "Comandă tricouri";
+    const details: string = body.details || "Comanda tricouri";
 
     // Dacă amount e invalid și avem produse → calculează totalul
     if ((!amount || amount <= 0) && Array.isArray(body.produse)) {
