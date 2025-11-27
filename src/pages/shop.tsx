@@ -73,7 +73,7 @@ export default function Shop() {
                 className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col"
               >
                 {/* Imaginea (Link către detalii) */}
-                <Link href={`/produs/${produs.id}`} className="block relative h-64 bg-gray-50 group">
+                <Link href={`/magazin/${produs.id}`} className="block relative h-64 bg-gray-50 group">
                   <img
                     src={imaginePrincipala}
                     alt={produs.titlu}
@@ -83,7 +83,7 @@ export default function Shop() {
 
                 {/* Detalii */}
                 <div className="p-5 flex flex-col flex-grow">
-                  <Link href={`/produs/${produs.id}`}>
+                  <Link href={`/magazin/${produs.id}`}>
                     <h3 className="font-bold text-lg text-gray-900 hover:text-blue-600 transition-colors mb-1 truncate">
                       {produs.titlu}
                     </h3>
