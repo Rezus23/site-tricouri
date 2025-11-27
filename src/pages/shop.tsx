@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import Link from "next/link";
-import BlurredBackground from "@/components/BlurredComponents"; // 👈 IMPORT NOU
+import BlurredBackground from "@/components/BlurredBackground"; // 👈 IMPORT NOU
 
 type Produs = {
   id: string;
