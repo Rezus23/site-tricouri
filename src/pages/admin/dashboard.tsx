@@ -4,32 +4,43 @@ import { useRouter } from "next/router";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, orderBy } from "firebase/firestore";
 
-// --- CONFIGURARE (Aici pui datele tale Cloudinary și Emailul Tău) ---
-const CLOUDINARY_CLOUD_NAME = "numele_tau_cloud"; 
-const CLOUDINARY_UPLOAD_PRESET = "nume_preset_unsigned"; 
+// --- CONFIGURARE ---
+const CLOUDINARY_CLOUD_NAME = "debck79qe"; // Pune cloud name-ul tău
+const CLOUDINARY_UPLOAD_PRESET = "pozetricouri"; // Pune preset-ul tău
 const ADMIN_EMAIL = "rezuscatalin@gmail.com"; 
 
-type Produs = { id: string; titlu: string; pret: number; imagine: string; };
+type Produs = { 
+  id: string; 
+  titlu: string; 
+  pret: number; 
+  imagine: string; 
+  marimi?: string[]; // 👈 NOU: Lista de mărimi
+};
 
 export default function AdminDashboard() {
-  const { user, loading: authLoading } = useAuth(); // Presupunem că auth are loading state
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   
   const [produse, setProduse] = useState<Produs[]>([]);
   const [loading, setLoading] = useState(false);
   
-  // Formular
+  // Stare Formular
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [formData, setFormData] = useState({ titlu: "", pret: "", descriere: "" });
+  // 👈 NOU: Am adăugat 'marimi' în starea formularului
+  const [formData, setFormData] = useState({ 
+    titlu: "", 
+    pret: "", 
+    marimi: "", // Va fi un string gen "S, M, L"
+    descriere: "" 
+  });
 
-  // 1. SECURITATE: Te dăm afară dacă nu ești admin
+  // 1. SECURITATE
   useEffect(() => {
-    // Așteptăm să se încarce userul, apoi verificăm
     if (!authLoading) {
         if (!user || user.email !== ADMIN_EMAIL) {
-            router.push("/"); // Redirect acasă
+            router.push("/");
         } else {
-            fetchProduse(); // Ești admin, încarcă produsele
+            fetchProduse();
         }
     }
   }, [user, authLoading, router]);
@@ -41,7 +52,7 @@ export default function AdminDashboard() {
     setProduse(snap.docs.map(d => ({ id: d.id, ...d.data() } as Produs)));
   };
 
-  // 3. Upload Imagine pe Cloudinary
+  // 3. Upload Imagine
   const uploadImage = async (file: File) => {
     const data = new FormData();
     data.append("file", file);
@@ -62,14 +73,25 @@ export default function AdminDashboard() {
 
     try {
       const imageUrl = await uploadImage(imageFile);
+
+      // 👈 PROCESARE MĂRIMI: Transformăm "S, M, L" în ["S", "M", "L"]
+      const marimiArray = formData.marimi
+        .split(",")
+        .map((s) => s.trim().toUpperCase()) // Le facem mari și scoatem spațiile
+        .filter((s) => s !== ""); // Eliminăm golurile
+
       await addDoc(collection(db, "products"), {
-        ...formData,
+        titlu: formData.titlu,
         pret: Number(formData.pret),
+        marimi: marimiArray, // Salvăm ca listă (Array)
+        descriere: formData.descriere,
         imagine: imageUrl,
         createdAt: serverTimestamp()
       });
-      alert("Produs adăugat!");
-      setFormData({ titlu: "", pret: "", descriere: "" });
+
+      alert("Produs adăugat! ✅");
+      // Reset
+      setFormData({ titlu: "", pret: "", marimi: "", descriere: "" });
       setImageFile(null);
       fetchProduse();
     } catch (err) {
@@ -89,7 +111,7 @@ export default function AdminDashboard() {
     } catch (e) { alert("Eroare la ștergere"); }
   };
 
-  if (!user || user.email !== ADMIN_EMAIL) return null; // Nu randam nimic daca nu e admin
+  if (!user || user.email !== ADMIN_EMAIL) return null;
 
   return (
     <div className="max-w-5xl mx-auto p-6 min-h-screen">
@@ -99,23 +121,76 @@ export default function AdminDashboard() {
       <div className="bg-white p-6 rounded shadow mb-10 border">
         <h2 className="text-xl font-bold mb-4">Adaugă Produs Nou</h2>
         <form onSubmit={handleAdd} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-                <input placeholder="Titlu" className="border p-2 rounded" 
-                    value={formData.titlu} onChange={e => setFormData({...formData, titlu: e.target.value})} required />
-                <input placeholder="Preț" type="number" className="border p-2 rounded" 
-                    value={formData.pret} onChange={e => setFormData({...formData, pret: e.target.value})} required />
-            </div>
-            <textarea placeholder="Descriere" className="border p-2 rounded w-full" 
-                value={formData.descriere} onChange={e => setFormData({...formData, descriere: e.target.value})} />
-            <input type="file" onChange={e => e.target.files && setImageFile(e.target.files[0])} />
             
-            <button disabled={loading} className="bg-green-600 text-white px-6 py-2 rounded w-full hover:bg-green-700">
-                {loading ? "Se salvează..." : "Adaugă Produs"}
+            {/* Rândul 1: Nume și Preț */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">Nume Produs</label>
+                    <input 
+                        placeholder="Ex: Tricou Real Madrid" 
+                        className="border p-2 rounded w-full" 
+                        value={formData.titlu} 
+                        onChange={e => setFormData({...formData, titlu: e.target.value})} 
+                        required 
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">Preț (RON)</label>
+                    <input 
+                        placeholder="Ex: 250" 
+                        type="number" 
+                        className="border p-2 rounded w-full" 
+                        value={formData.pret} 
+                        onChange={e => setFormData({...formData, pret: e.target.value})} 
+                        required 
+                    />
+                </div>
+            </div>
+
+            {/* Rândul 2: Mărimi */}
+            <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Mărimi disponibile</label>
+                <input 
+                    placeholder="Ex: S, M, L, XL (separate prin virgulă)" 
+                    className="border p-2 rounded w-full" 
+                    value={formData.marimi} 
+                    onChange={e => setFormData({...formData, marimi: e.target.value})} 
+                    required 
+                />
+                <p className="text-xs text-gray-500 mt-1">Scrie mărimile separate prin virgulă.</p>
+            </div>
+
+            {/* Rândul 3: Poză */}
+            <div className="border-2 border-dashed p-4 rounded text-center cursor-pointer hover:bg-gray-50 transition">
+                <label className="cursor-pointer block">
+                    <span className="font-bold text-gray-600">
+                        {imageFile ? `📸 Fișier selectat: ${imageFile.name}` : "Click aici pentru a alege poza 🖼️"}
+                    </span>
+                    <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={e => e.target.files && setImageFile(e.target.files[0])} 
+                    />
+                </label>
+            </div>
+
+            {/* Descriere */}
+            <textarea 
+                placeholder="Descriere produs..." 
+                className="border p-2 rounded w-full" 
+                rows={3}
+                value={formData.descriere} 
+                onChange={e => setFormData({...formData, descriere: e.target.value})} 
+            />
+            
+            <button disabled={loading} className="bg-green-600 text-white px-6 py-3 rounded w-full hover:bg-green-700 font-bold text-lg">
+                {loading ? "Se salvează..." : "Adaugă Produsul"}
             </button>
         </form>
       </div>
 
-      {/* LISTA DE PRODUSE */}
+      {/* LISTA DE PRODUSE EXISTENTE */}
       <h2 className="text-2xl font-bold mb-4">Lista Produse ({produse.length})</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {produse.map(p => (
@@ -123,9 +198,13 @@ export default function AdminDashboard() {
                 <div>
                     <img src={p.imagine} alt={p.titlu} className="h-32 w-full object-contain mb-2" />
                     <p className="font-bold">{p.titlu}</p>
-                    <p className="text-green-600">{p.pret} RON</p>
+                    <p className="text-green-600 font-bold">{p.pret} RON</p>
+                    {/* Afișăm mărimile disponibile */}
+                    <div className="text-sm text-gray-500 mt-1">
+                        Mărimi: {p.marimi ? p.marimi.join(", ") : "Standard"}
+                    </div>
                 </div>
-                <button onClick={() => handleDelete(p.id)} className="bg-red-100 text-red-600 py-1 mt-2 rounded hover:bg-red-200">
+                <button onClick={() => handleDelete(p.id)} className="bg-red-100 text-red-600 py-1 mt-3 rounded hover:bg-red-200 font-bold">
                     🗑️ Șterge
                 </button>
             </div>
