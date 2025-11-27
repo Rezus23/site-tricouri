@@ -92,7 +92,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     // Formularul de redirect
-    const paymentUrl = "http://sandboxsecure.mobilpay.ro";
+    const paymentUrl = "https://sandboxsecure.mobilpay.ro";
     
     const html = `
       <form id="payForm" action="${paymentUrl}" method="post">
