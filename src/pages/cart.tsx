@@ -4,49 +4,54 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Cart() {
   const { cart, stergeDinCos, golesteCos } = useCart();
-  const { user } = useAuth();
+  const { user } = useAuth(); // Preluăm utilizatorul logat
 
   const total = cart.reduce((acc, p) => acc + Number(p.pret), 0);
 
   const handlePayWithNetopia = async () => {
-  try {
-    const email = user?.email || prompt("Introdu adresa ta de email:");
+    try {
+      // Preluăm ID-ul utilizatorului autentificat (dacă există)
+      const currentUserId = user?.uid; 
+      
+      const email = user?.email || prompt("Introdu adresa ta de email:");
 
-    if (!email) {
-      alert("Trebuie să introduci o adresă de email.");
-      return;
+      if (!email) {
+        alert("Trebuie să introduci o adresă de email.");
+        return;
+      }
+
+      const amount = Number(total.toFixed(2));
+
+      // ⚠️ FIX: Trimitem userId către backend (netopia-create.ts)
+      const res = await fetch("/api/netopia-create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount,
+          email,
+          userId: currentUserId, // 👈 TRIMITEM UID-ul aici!
+          details: `Comandă tricouri (${email})`,
+          produse: cart,
+        }),
+      });
+
+      const text = await res.text();
+
+      if (!res.ok) {
+        console.error("Eroare API /api/netopia-create:", res.status, text);
+        alert("Eroare la server (netopia-create). Vezi consola (F12 → Console).");
+        return;
+      }
+
+      // dacă suntem aici, text = HTML-ul de redirect
+      document.open();
+      document.write(text);
+      document.close();
+    } catch (err) {
+      console.error("Eroare la fetch /api/netopia-create:", err);
+      alert("Eroare de rețea sau JS în browser. Încearcă din nou.");
     }
-
-    const amount = Number(total.toFixed(2));
-
-    const res = await fetch("/api/netopia-create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount,
-        email,
-        details: `Comandă tricouri (${email})`,
-        produse: cart,
-      }),
-    });
-
-    const text = await res.text();
-
-    if (!res.ok) {
-      console.error("Eroare API /api/netopia-create:", res.status, text);
-      alert("Eroare la server (netopia-create). Vezi consola (F12 → Console).");
-      return;
-    }
-
-    // dacă suntem aici, text = HTML-ul de redirect
-    document.open();
-    document.write(text);
-    document.close();
-  } catch (err) {
-    console.error("Eroare la fetch /api/netopia-create:", err);
-    alert("Eroare de rețea sau JS în browser. Încearcă din nou.");
-  }
-};
+  };
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
@@ -91,7 +96,7 @@ export default function Cart() {
 
             <button
             onClick={handlePayWithNetopia}
-             className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition text-center"
+              className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition text-center"
             >
               Catre Plata
             </button>
