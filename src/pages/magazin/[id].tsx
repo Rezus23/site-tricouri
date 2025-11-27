@@ -5,7 +5,7 @@ import { db } from "@/lib/firebase";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 
-// Definim tipul exact al produsului
+// Definim tipul produsului
 type Produs = {
   id: string;
   titlu: string;
@@ -18,7 +18,7 @@ type Produs = {
 
 export default function PaginaProdus() {
   const router = useRouter();
-  const { id } = router.query; // Preluăm ID-ul din URL (ex: .../produs/AbCd123)
+  const { id } = router.query; // Preluăm ID-ul din URL
   
   const [produs, setProdus] = useState<Produs | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ export default function PaginaProdus() {
   const { adaugaInCos } = useCart();
 
   useEffect(() => {
-    if (!id) return; // Așteptăm să fie gata router-ul
+    if (!id) return; 
 
     const getProdus = async () => {
       try {
@@ -63,19 +63,19 @@ export default function PaginaProdus() {
   const handleAddToCart = () => {
     if (!produs) return;
 
-    // Validare Mărime (Doar dacă produsul are mărimi definite)
+    // Validare Mărime
     if (produs.marimi && produs.marimi.length > 0 && !selectedSize) {
         alert("⚠️ Te rog selectează o mărime înainte de a adăuga în coș!");
         return;
     }
 
-    // Construim titlul final (ex: "Tricou Real Madrid (M)")
+    // Construim titlul final
     const titluFinal = selectedSize 
         ? `${produs.titlu} (${selectedSize})` 
         : produs.titlu;
 
     adaugaInCos({
-        id: 0, // ID fictiv numeric (CartContext generează cartId unic)
+        id: 0, 
         titlu: titluFinal,
         pret: produs.pret
     });
@@ -88,8 +88,12 @@ export default function PaginaProdus() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 min-h-screen">
-      {/* Buton Înapoi */}
-      <Link href="/" className="inline-block mb-8 text-gray-500 hover:text-black hover:underline transition">
+      
+      {/* 👇 MODIFICARE: Link fix către /shop */}
+      <Link 
+        href="/shop" 
+        className="inline-block mb-8 text-gray-500 hover:text-black hover:underline transition font-medium"
+      >
         ← Înapoi la Magazin
       </Link>
 
@@ -106,7 +110,7 @@ export default function PaginaProdus() {
                 />
             </div>
             
-            {/* Thumbnails (doar dacă sunt mai multe poze) */}
+            {/* Thumbnails */}
             {produs.imagini && produs.imagini.length > 1 && (
                 <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                     {produs.imagini.map((img, idx) => (
@@ -136,7 +140,6 @@ export default function PaginaProdus() {
               <div className="mb-8">
                   <div className="flex justify-between items-center mb-3">
                     <span className="font-bold text-gray-700">Alege Mărimea:</span>
-                    <span className="text-sm text-gray-400">Ghid mărimi</span>
                   </div>
                   <div className="flex flex-wrap gap-3">
                       {produs.marimi.map(m => (
@@ -175,7 +178,7 @@ export default function PaginaProdus() {
 
           {/* Info Livrare */}
           <div className="mt-6 flex items-center gap-2 text-sm text-gray-500 justify-center">
-             <span>🚚 Livrare rapidă (24-48h)</span>
+             <span>🚚 Livrare rapidă</span>
              <span>•</span>
              <span>💳 Plată Securizată Netopia</span>
           </div>
