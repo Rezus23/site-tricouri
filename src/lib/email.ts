@@ -61,7 +61,7 @@ export async function sendOrderConfirmation(data: EmailData) {
       <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background-color: #ffffff;">
         
         <div style="background-color: #ffffff; padding: 20px; text-align: center; border-bottom: 1px solid #e5e7eb;">
-           <img src="https://i.imgur.com/Pq1P8IU.jpeg" alt="Passion4Jerseys Logo" style="max-height: 80px; width: auto;" />
+           <img src="https://i.imgur.com/Pq1P8IU.jpeg" alt="TricouriFotbal Logo" style="max-height: 80px; width: auto;" />
         </div>
 
         <div style="padding: 30px;">
