@@ -4,12 +4,12 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 
-// Definim tipul produsului (Firebase returneaza ID string)
 type Produs = {
   id: string;
   titlu: string;
   pret: number;
-  imagine: string;
+  imagine: string;    // Câmp vechi (pentru compatibilitate)
+  imagini?: string[]; // Câmp nou (listă de poze)
   marimi?: string[];
 };
 
@@ -57,65 +57,74 @@ export default function Shop() {
       {produse.length === 0 ? (
         <div className="text-center text-gray-500 mt-10">
           <p>Nu există produse momentan.</p>
-          <p className="text-sm">Mergi în Admin Panel să adaugi primele tricouri!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {produse.map((produs) => (
-            <div
-              key={produs.id}
-              className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col"
-            >
-              {/* Imaginea */}
-              <Link href={`/produs/${produs.id}`} className="block relative h-64 bg-gray-50">
-                <img
-                  src={produs.imagine}
-                  alt={produs.titlu}
-                  className="w-full h-full object-contain p-4 hover:scale-105 transition-transform duration-300"
-                />
-              </Link>
+          {produse.map((produs) => {
+            
+            // 💡 LOGICA IMAGINII: Luăm prima din listă, sau fallback la cea veche
+            const imaginePrincipala = (produs.imagini && produs.imagini.length > 0) 
+                ? produs.imagini[0] 
+                : produs.imagine;
 
-              {/* Detalii */}
-              <div className="p-5 flex flex-col flex-grow">
-                <Link href={`/produs/${produs.id}`}>
-                  <h3 className="font-bold text-lg text-gray-900 hover:text-blue-600 transition-colors mb-1">
-                    {produs.titlu}
-                  </h3>
+            return (
+              <div
+                key={produs.id}
+                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col"
+              >
+                {/* Imaginea (Link către detalii) */}
+                <Link href={`/produs/${produs.id}`} className="block relative h-64 bg-gray-50 group">
+                  <img
+                    src={imaginePrincipala}
+                    alt={produs.titlu}
+                    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                  />
                 </Link>
-                
-                <p className="text-xl font-bold text-blue-600 mb-4">
-                  {produs.pret} RON
-                </p>
 
-                {/* Mărimi */}
-                {produs.marimi && produs.marimi.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {produs.marimi.map((marime) => (
-                      <span key={marime} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                        {marime}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                {/* Detalii */}
+                <div className="p-5 flex flex-col flex-grow">
+                  <Link href={`/produs/${produs.id}`}>
+                    <h3 className="font-bold text-lg text-gray-900 hover:text-blue-600 transition-colors mb-1 truncate">
+                      {produs.titlu}
+                    </h3>
+                  </Link>
+                  
+                  <p className="text-xl font-bold text-blue-600 mb-3">
+                    {produs.pret} RON
+                  </p>
 
-                {/* Buton Adaugă în Coș - FIX AICI */}
-                <button
-                  onClick={() => {
-                    // ⚠️ FIX: Construim obiectul manual ca să evităm conflictul string vs number
-                    adaugaInCos({ 
-                        id: 0, // Trimitem un număr fictiv (contextul generează oricum cartId unic)
-                        titlu: produs.titlu,
-                        pret: produs.pret
-                    });
-                    alert(`✅ ${produs.titlu} adăugat în coș!`);
-                  }}
-                  className="mt-auto w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors active:scale-95"
-                >
-                  Adaugă în Coș
-                </button>
+                  {/* Afișare Mărimi (ca etichete mici) */}
+                  {produs.marimi && produs.marimi.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {produs.marimi.slice(0, 4).map((marime) => (
+                        <span key={marime} className="text-[10px] bg-gray-100 text-gray-600 px-2 py-1 rounded border">
+                          {marime}
+                        </span>
+                      ))}
+                      {produs.marimi.length > 4 && <span className="text-[10px] text-gray-400 px-1">...</span>}
+                    </div>
+                  )}
+
+                  {/* Buton Adaugă în Coș */}
+                  <button
+                    onClick={() => {
+                      // Adăugare simplă (fără mărime selectată, clientul poate alege mărimea în pagina de detalii pentru precizie)
+                      // Dar dacă vrei adăugare rapidă, poți pune mărimea default sau generică
+                      adaugaInCos({ 
+                          id: 0, // ID fictiv numeric
+                          titlu: produs.titlu,
+                          pret: produs.pret
+                      });
+                      alert(`✅ ${produs.titlu} adăugat în coș!`);
+                    }}
+                    className="mt-auto w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors active:scale-95"
+                  >
+                    Adaugă în Coș
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
