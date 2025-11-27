@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import forge from "node-forge";
 import { parseStringPromise } from "xml2js";
-import { sendOrderConfirmation } from "@/lib/email";
+import { sendOrderConfirmation } from "@/lib/email"; // Importăm funcția modificată mai sus
 import admin from "firebase-admin";
 import { getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-// --- 1. Init Firebase ---
+// Init Firebase
 if (!getApps().length) {
   try {
     admin.initializeApp({
@@ -16,86 +16,68 @@ if (!getApps().length) {
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
       }),
     });
-  } catch (e) { console.error("🔥 Eroare init Firebase:", e); }
+  } catch (e) { console.error("Firebase Init Error:", e); }
 }
 const db = getFirestore();
+db.settings({ ignoreUndefinedProperties: true });
 
-// --- 2. Decriptare RC4 (FIXAT) ---
+// Funcție Decriptare RC4
 function rc4Decrypt(key: Buffer, input: Buffer): Buffer {
   const s: number[] = [];
-  let j = 0; 
-  let x: number;
-
-  // Inițializare S-box
-  for (let i = 0; i < 256; i++) {
-    s[i] = i;
-  }
-
-  // Amestecare S-box cu cheia
+  let j = 0; let x: number;
+  for (let i = 0; i < 256; i++) s[i] = i;
   for (let i = 0; i < 256; i++) {
     j = (j + s[i] + key[i % key.length]) % 256;
     x = s[i]; s[i] = s[j]; s[j] = x;
   }
-
-  // Generare stream și XOR (Partea reparată)
-  let i = 0; 
-  j = 0;
+  let i = 0; j = 0;
   const output = Buffer.alloc(input.length);
-
   for (let y = 0; y < input.length; y++) {
     i = (i + 1) % 256;
     j = (j + s[i]) % 256;
     x = s[i]; s[i] = s[j]; s[j] = x;
     output[y] = input[y] ^ s[(s[i] + s[j]) % 256];
   }
-  
   return output;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
-  console.log("🚀 [IPN] Start procesare.");
-
+  console.log("🚀 [IPN] Start.");
   const { env_key, data } = req.body;
   if (!env_key || !data) return res.status(400).send("Missing data");
 
   try {
-    // 1. Pregătire Cheie
+    // 1. Decriptare
     let pkPem = process.env.MOBILPAY_PRIVATE_KEY_PEM;
     if (!pkPem) throw new Error("Private Key Missing");
     pkPem = pkPem.replace(/\\n/g, '\n').replace(/"/g, '').trim();
 
-    // 2. Decriptare RSA
     const privateKey = forge.pki.privateKeyFromPem(pkPem);
     const envKeyBuffer = Buffer.from(env_key, "base64");
     const decryptedEnvKey = privateKey.decrypt(envKeyBuffer.toString("binary"), "RSAES-PKCS1-V1_5" as any);
     
-    // 3. Decriptare RC4
     const dataBuffer = Buffer.from(data, "base64");
     const rc4KeyBuffer = Buffer.from(decryptedEnvKey, "binary");
     const decryptedXmlBuffer = rc4Decrypt(rc4KeyBuffer, dataBuffer);
     const xmlStr = decryptedXmlBuffer.toString("utf8");
 
-    // 4. Parsare XML (FIXAT PENTRU TAG-UL MOBILPAY)
+    // 2. Parsare
     const xmlObj = await parseStringPromise(xmlStr);
-    
     const order = xmlObj?.order;
     const orderId = order?.$?.id;
-    const mobilepay = order?.mobilpay?.[0]; // Structura ta specifică
-    
+    const mobilepay = order?.mobilpay?.[0]; 
     const action = mobilepay?.action?.[0]; 
     const error = mobilepay?.error?.[0]?.$?.code; 
 
-    console.log(`📊 STATUS FINAL: ID=${orderId}, Action=${action}, Error=${error}`);
-
-    // 5. Procesare Comandă
+    // 3. Procesare
     if (orderId && error == "0" && (action === "confirmed" || action === "paid")) {
       const orderRef = db.collection("orders").doc(orderId);
       const orderSnap = await orderRef.get();
 
       if (orderSnap.exists) {
-        const orderData = orderSnap.data();
+        const orderData = orderSnap.data() as any;
         
         if (orderData?.status !== "completed") {
           await orderRef.update({ 
@@ -103,22 +85,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             paymentDate: admin.firestore.FieldValue.serverTimestamp()
           });
           
-          console.log("✅ Firebase actualizat. Trimit email...");
+          console.log("📧 Trimit email...");
           
+          // 4. APELARE FUNCȚIE EMAIL CU DATE COMPLETE
           await sendOrderConfirmation({
-            nume: orderData?.details || "Client",
+            nume: orderData?.details || "Client", // Fallback nume
             email: orderData?.email,
-            adresa: "Vezi cont", 
+            adresa: "Vezi secțiunea Detalii Livrare", // Fallback text simplu
             produse: orderData?.produse || [],
             total: orderData?.amount,
-            orderId: orderId
+            orderId: orderId,
+            adresaLivrare: orderData?.adresaLivrare // 👈 AICI TRIMITEM OBIECTUL!
           });
-          console.log("🎉 Email trimis cu succes!");
-        } else {
-            console.log("ℹ️ Comanda era deja completată.");
+          
+          console.log("🎉 Email trimis!");
         }
-      } else {
-          console.error("❌ Comanda nu există în Firebase:", orderId);
       }
     }
 
@@ -126,7 +107,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).send(`<?xml version="1.0" encoding="utf-8"?><crc error_type="0" error_code="0">0</crc>`);
 
   } catch (err: any) {
-    console.error("❌ EROARE:", err.message);
+    console.error("❌ IPN ERROR:", err.message);
     return res.status(200).send(`<?xml version="1.0" encoding="utf-8"?><crc error_type="0" error_code="0">0</crc>`);
   }
 }
