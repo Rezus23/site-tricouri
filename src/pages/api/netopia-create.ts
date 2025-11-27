@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { encrypt } from "@/lib/mobilpay/encrypt"; // Asigură-te că importul e corect
+import { encrypt } from "@/lib/mobilpay/encrypt"; 
 import admin from "firebase-admin";
 import { getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-// --- Configurare Firebase ---
+// --- Inițializare Firebase Admin ---
 if (!getApps().length) {
   try {
     admin.initializeApp({
@@ -13,10 +13,18 @@ if (!getApps().length) {
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
       }),
+      // ❌ Am eliminat 'firestore' de aici, rezolvând prima eroare.
     });
   } catch (e) { console.error("Firebase Init Error:", e); }
 }
+
 const db = getFirestore();
+
+// 💡 FIX: Setăm opțiunea ignoreUndefinedProperties direct pe instanța Firestore
+db.settings({
+    ignoreUndefinedProperties: true 
+});
+
 
 function formatTimestamp(date: Date): string {
   const pad = (n: number) => n.toString().padStart(2, "0");
@@ -34,12 +42,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== "POST") return res.status(405).send("Method not allowed");
 
   try {
-    const { amount, details, produse, email } = req.body; // <--- Preluăm EMAIL
+    // 💡 FIX: Am adăugat 'userId' la destructuring, rezolvând a doua eroare.
+    const { amount, details, produse, email, userId } = req.body; 
 
-    // Validări simple
     if (!amount || amount <= 0) return res.status(400).json({ error: "Suma incorectă" });
     
-    // Dacă nu avem email, punem unul dummy ca să nu crape baza de date, dar ideal e să fie obligatoriu
     const userEmail = email || "client-fara-email@test.com";
 
     const signature = process.env.MOBILPAY_SIGNATURE;
@@ -52,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const orderId = `ORD-${Date.now()}`;
     const timestamp = formatTimestamp(new Date());
 
-    // Construire XML
+    // Construim XML-ul pentru Netopia
     const xml = `<?xml version="1.0" encoding="utf-8"?>
     <order type="card" id="${orderId}" timestamp="${timestamp}">
       <signature>${signature}</signature>
@@ -68,26 +75,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       </invoice>
     </order>`.trim();
 
-    // Criptare
     const encrypted = encrypt(xml);
 
-    // 💾 SALVARE ÎN FIREBASE (AICI ERA PROBLEMA)
-    // Trebuie să salvăm explicit câmpul "email" ca să îl putem citi mai târziu în IPN
+    // 💾 SALVARE ÎN FIREBASE
     await db.collection("orders").doc(orderId).set({
       orderId,
       amount: Number(amount),
-      email: userEmail, // <--- CRITIC: Salvăm emailul în bază!
+      email: userEmail,
       details: details || "",
       currency: "RON",
       status: "pending",
       provider: "netopia",
       produse: produse || [],
-      userId: req.body.userId,
+      userId: userId || null, // 'null' este acceptat chiar dacă clientul nu e logat
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    // Răspuns HTML Redirect
-    const paymentUrl = "http://sandboxsecure.mobilpay.ro"; // sau https pentru prod
+    // Formularul de redirect
+    const paymentUrl = "http://sandboxsecure.mobilpay.ro";
     
     const html = `
       <form id="payForm" action="${paymentUrl}" method="post">
