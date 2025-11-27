@@ -6,36 +6,35 @@ import { useRouter } from "next/router";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
-// Definește structura datelor preluate din Firestore
+// Definește structura datelor (Am redenumit data -> createdAt)
 type Comanda = {
   id: string;
-  data: Timestamp;
+  createdAt: Timestamp; // Folosim numele câmpului salvat de backend
   total: number;
   status: string;
-  // userId: string;
 };
 
 export default function ContulMeu() {
-  const { user } = useAuth(); // 👈 Hook-ul este apelat corect AICI
+  const { user } = useAuth();
   const router = useRouter();
   const [comenzi, setComenzi] = useState<Comanda[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Redirecționare dacă utilizatorul nu este logat
     if (!user) {
       router.push("/login");
+      setLoading(false);
       return;
     }
 
-    // 2. Funcție de preluare comenzi
     const fetchComenzi = async () => {
       try {
-        // Asigură-te că pe backend salvezi comanda cu câmpul 'userId'
         const q = query(
-          collection(db, "orders"), // 👈 Calea corectă (folosesc 'orders' ca sugestie)
-          where("userId", "==", user.uid), // 👈 Filtrarea se face după UID-ul utilizatorului
-          orderBy("data", "desc")
+          // 👈 FIX 1: Numele colecției trebuie să fie "orders" (așa cum salvează backend-ul)
+          collection(db, "orders"), 
+          where("userId", "==", user.uid), 
+          // 👈 FIX 2: Câmpul de sortare trebuie să fie "createdAt"
+          orderBy("createdAt", "desc") 
         );
         
         const snapshot = await getDocs(q);
@@ -57,14 +56,13 @@ export default function ContulMeu() {
     };
 
     fetchComenzi();
-  }, [user, router]); // Dependențele asigură că se reîncarcă la autentificare
+  }, [user, router]); 
 
   const handleLogout = async () => {
     await signOut(auth);
     router.push("/");
   };
 
-  // Afișăm un placeholder în timpul încărcării
   if (loading) {
       return (
           <div className="p-8 text-center text-gray-500 min-h-screen">
@@ -73,11 +71,10 @@ export default function ContulMeu() {
       );
   }
 
-  // Nu ar trebui să se întâmple, dar e o verificare de siguranță
   if (!user) return null; 
 
   return (
-    <div className="p-4 max-w-4xl mx-auto dark:bg-gray-900 dark:text-white min-h-screen">
+    <div className="p-4 max-w-4xl mx-auto min-h-screen">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-center sm:text-left">Contul Meu</h1>
         <button
@@ -90,28 +87,27 @@ export default function ContulMeu() {
 
       <h2 className="text-xl font-semibold mb-3">Istoric comenzi</h2>
       <div className="overflow-x-auto">
-        <table className="min-w-full table-auto border border-gray-700 dark:border-gray-600">
-          <thead className="bg-gray-200 dark:bg-gray-800">
+        <table className="min-w-full table-auto border border-gray-700">
+          <thead className="bg-gray-200">
             <tr>
-              <th className="p-3 border dark:border-gray-700 text-left">ID Comandă</th>
-              <th className="p-3 border dark:border-gray-700">Data</th>
-              <th className="p-3 border dark:border-gray-700">Total</th>
-              <th className="p-3 border dark:border-gray-700">Status</th>
+              <th className="p-3 border text-left">ID Comandă</th>
+              <th className="p-3 border">Data</th>
+              <th className="p-3 border">Total</th>
+              <th className="p-3 border">Status</th>
             </tr>
           </thead>
           <tbody>
             {comenzi.length > 0 ? (
               comenzi.map((comanda) => (
-                <tr key={comanda.id} className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                <tr key={comanda.id} className="hover:bg-gray-100">
                   <td className="p-3 border text-sm break-all">{comanda.id}</td>
                   <td className="p-3 border text-center">
-                    {/* Formatare Data: 'ro-RO' */}
-                    {(comanda.data instanceof Timestamp)
-                      ? comanda.data.toDate().toLocaleDateString('ro-RO')
+                    {/* 👈 FIX 3: Afișăm createdAt în loc de data */}
+                    {(comanda.createdAt instanceof Timestamp)
+                      ? comanda.createdAt.toDate().toLocaleDateString('ro-RO')
                       : "N/A"}
                   </td>
                   <td className="p-3 border text-center">
-                    {/* Formatare Total */}
                     {comanda.total?.toFixed(2) ?? '0.00'} RON
                   </td>
                   <td className="p-3 border text-center font-medium">
