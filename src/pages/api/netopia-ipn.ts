@@ -1,12 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import forge from "node-forge";
-import { parseStringPromise } from "xml2js";
-import { sendOrderConfirmation } from "@/lib/email";
+import { encrypt } from "@/lib/mobilpay/encrypt"; // Asigură-te că importul e corect
 import admin from "firebase-admin";
 import { getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-// --- 1. Init Firebase ---
+// --- Configurare Firebase ---
 if (!getApps().length) {
   try {
     admin.initializeApp({
@@ -16,117 +14,94 @@ if (!getApps().length) {
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
       }),
     });
-  } catch (e) { console.error("🔥 Eroare init Firebase:", e); }
+  } catch (e) { console.error("Firebase Init Error:", e); }
 }
 const db = getFirestore();
 
-// --- 2. Decriptare RC4 (FIXAT) ---
-function rc4Decrypt(key: Buffer, input: Buffer): Buffer {
-  const s: number[] = [];
-  let j = 0; 
-  let x: number;
-
-  // Inițializare S-box
-  for (let i = 0; i < 256; i++) {
-    s[i] = i;
-  }
-
-  // Amestecare S-box cu cheia
-  for (let i = 0; i < 256; i++) {
-    j = (j + s[i] + key[i % key.length]) % 256;
-    x = s[i]; s[i] = s[j]; s[j] = x;
-  }
-
-  // Generare stream și XOR (Partea reparată)
-  let i = 0; 
-  j = 0;
-  const output = Buffer.alloc(input.length);
-
-  for (let y = 0; y < input.length; y++) {
-    i = (i + 1) % 256;
-    j = (j + s[i]) % 256;
-    x = s[i]; s[i] = s[j]; s[j] = x;
-    output[y] = input[y] ^ s[(s[i] + s[j]) % 256];
-  }
-  
-  return output;
+function formatTimestamp(date: Date): string {
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return (
+    date.getFullYear().toString() +
+    pad(date.getMonth() + 1) +
+    pad(date.getDate()) +
+    pad(date.getHours()) +
+    pad(date.getMinutes()) +
+    pad(date.getSeconds())
+  );
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-
-  console.log("🚀 [IPN] Start procesare.");
-
-  const { env_key, data } = req.body;
-  if (!env_key || !data) return res.status(400).send("Missing data");
+  if (req.method !== "POST") return res.status(405).send("Method not allowed");
 
   try {
-    // 1. Pregătire Cheie
-    let pkPem = process.env.MOBILPAY_PRIVATE_KEY_PEM;
-    if (!pkPem) throw new Error("Private Key Missing");
-    pkPem = pkPem.replace(/\\n/g, '\n').replace(/"/g, '').trim();
+    const { amount, details, produse, email } = req.body; // <--- Preluăm EMAIL
 
-    // 2. Decriptare RSA
-    const privateKey = forge.pki.privateKeyFromPem(pkPem);
-    const envKeyBuffer = Buffer.from(env_key, "base64");
-    const decryptedEnvKey = privateKey.decrypt(envKeyBuffer.toString("binary"), "RSAES-PKCS1-V1_5" as any);
+    // Validări simple
+    if (!amount || amount <= 0) return res.status(400).json({ error: "Suma incorectă" });
     
-    // 3. Decriptare RC4
-    const dataBuffer = Buffer.from(data, "base64");
-    const rc4KeyBuffer = Buffer.from(decryptedEnvKey, "binary");
-    const decryptedXmlBuffer = rc4Decrypt(rc4KeyBuffer, dataBuffer);
-    const xmlStr = decryptedXmlBuffer.toString("utf8");
+    // Dacă nu avem email, punem unul dummy ca să nu crape baza de date, dar ideal e să fie obligatoriu
+    const userEmail = email || "client-fara-email@test.com";
 
-    // 4. Parsare XML (FIXAT PENTRU TAG-UL MOBILPAY)
-    const xmlObj = await parseStringPromise(xmlStr);
+    const signature = process.env.MOBILPAY_SIGNATURE;
+    if (!signature) return res.status(500).json({ error: "Missing Signature" });
+
+    const siteUrl = process.env.SITE_URL || "https://site-tricouri.vercel.app";
+    const confirmUrl = `${siteUrl}/api/netopia-ipn`;
+    const returnUrl = `${siteUrl}/succes`;
+
+    const orderId = `ORD-${Date.now()}`;
+    const timestamp = formatTimestamp(new Date());
+
+    // Construire XML
+    const xml = `<?xml version="1.0" encoding="utf-8"?>
+    <order type="card" id="${orderId}" timestamp="${timestamp}">
+      <signature>${signature}</signature>
+      <url>
+        <confirm>${confirmUrl}</confirm>
+        <return>${returnUrl}</return>
+      </url>
+      <invoice currency="RON" amount="${Number(amount).toFixed(2)}">
+        <details>${details || "Comanda Tricouri"}</details>
+        <contact>
+            <email>${userEmail}</email> 
+        </contact>
+      </invoice>
+    </order>`.trim();
+
+    // Criptare
+    const encrypted = encrypt(xml);
+
+    // 💾 SALVARE ÎN FIREBASE (AICI ERA PROBLEMA)
+    // Trebuie să salvăm explicit câmpul "email" ca să îl putem citi mai târziu în IPN
+    await db.collection("orders").doc(orderId).set({
+      orderId,
+      amount: Number(amount),
+      email: userEmail, // <--- CRITIC: Salvăm emailul în bază!
+      details: details || "",
+      currency: "RON",
+      status: "pending",
+      provider: "netopia",
+      produse: produse || [],
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // Răspuns HTML Redirect
+    const paymentUrl = "http://sandboxsecure.mobilpay.ro"; // sau https pentru prod
     
-    const order = xmlObj?.order;
-    const orderId = order?.$?.id;
-    const mobilepay = order?.mobilpay?.[0]; // Structura ta specifică
-    
-    const action = mobilepay?.action?.[0]; 
-    const error = mobilepay?.error?.[0]?.$?.code; 
+    const html = `
+      <form id="payForm" action="${paymentUrl}" method="post">
+        <input type="hidden" name="env_key" value="${encrypted.env_key}" />
+        <input type="hidden" name="data" value="${encrypted.data}" />
+        <input type="hidden" name="cipher" value="${encrypted.cipher}" />
+        <input type="hidden" name="iv" value="${encrypted.iv}" />
+      </form>
+      <script>document.getElementById('payForm').submit();</script>
+    `;
 
-    console.log(`📊 STATUS FINAL: ID=${orderId}, Action=${action}, Error=${error}`);
-
-    // 5. Procesare Comandă
-    if (orderId && error == "0" && (action === "confirmed" || action === "paid")) {
-      const orderRef = db.collection("orders").doc(orderId);
-      const orderSnap = await orderRef.get();
-
-      if (orderSnap.exists) {
-        const orderData = orderSnap.data();
-        
-        if (orderData?.status !== "completed") {
-          await orderRef.update({ 
-            status: "completed",
-            paymentDate: admin.firestore.FieldValue.serverTimestamp()
-          });
-          
-          console.log("✅ Firebase actualizat. Trimit email...");
-          
-          await sendOrderConfirmation({
-            nume: orderData?.details || "Client",
-            email: orderData?.email,
-            adresa: "Vezi cont", 
-            produse: orderData?.produse || [],
-            total: orderData?.amount,
-            orderId: orderId
-          });
-          console.log("🎉 Email trimis cu succes!");
-        } else {
-            console.log("ℹ️ Comanda era deja completată.");
-        }
-      } else {
-          console.error("❌ Comanda nu există în Firebase:", orderId);
-      }
-    }
-
-    res.setHeader("Content-Type", "application/xml");
-    return res.status(200).send(`<?xml version="1.0" encoding="utf-8"?><crc error_type="0" error_code="0">0</crc>`);
+    res.status(200).send(html);
 
   } catch (err: any) {
-    console.error("❌ EROARE:", err.message);
-    return res.status(200).send(`<?xml version="1.0" encoding="utf-8"?><crc error_type="0" error_code="0">0</crc>`);
+    console.error("Create Error:", err);
+    res.status(500).json({ error: err.message });
   }
 }

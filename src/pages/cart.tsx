@@ -24,6 +24,7 @@ export default function Cart() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         amount,
+        email,
         details: `Comandă tricouri (${email})`,
         produse: cart,
       }),
