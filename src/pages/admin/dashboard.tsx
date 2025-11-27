@@ -5,7 +5,7 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, orderBy } from "firebase/firestore";
 
 // --- CONFIGURARE ---
-const CLOUDINARY_CLOUD_NAME = "da4q56x"; // Pune numele tău
+const CLOUDINARY_CLOUD_NAME = "debck79qe"; // Pune numele tău
 const CLOUDINARY_UPLOAD_PRESET = "pozetricouri"; // Pune presetul tău (Unsigned)
 const ADMIN_EMAIL = "rezuscatalin@gmail.com"; 
 
