@@ -30,7 +30,7 @@ const produse = [
   {
     id: 5,
     titlu: "Tricou Juventus",
-    pret: "109.99",
+    pret: "0.99",
     img: "/images/juventus.jpg",
   },
 ];
