@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import forge from "node-forge";
 import { parseStringPromise } from "xml2js";
-import { sendOrderConfirmation } from "@/lib/email"; // Asigură-te că importul e corect
+import { sendOrderConfirmation } from "@/lib/email";
 import admin from "firebase-admin";
 import { getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-// --- Configurare Firebase ---
+// --- 1. Init Firebase ---
 if (!getApps().length) {
   try {
     admin.initializeApp({
@@ -17,12 +17,12 @@ if (!getApps().length) {
       }),
     });
   } catch (e) {
-    console.error("🔥 Eroare inițializare Firebase:", e);
+    console.error("🔥 Eroare init Firebase:", e);
   }
 }
 const db = getFirestore();
 
-// --- RC4 Decrypt ---
+// --- 2. Decriptare RC4 ---
 function rc4Decrypt(key: Buffer, input: Buffer): Buffer {
   const s: number[] = [];
   let j = 0; let x: number;
@@ -45,91 +45,78 @@ function rc4Decrypt(key: Buffer, input: Buffer): Buffer {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
-  console.log("🚀 [IPN] Start procesare notificare Netopia.");
-  
-  const { env_key, data } = req.body;
+  console.log("🚀 [IPN] Start. ID:", Date.now());
 
-  if (!env_key || !data) {
-    console.error("❌ [IPN] Lipsesc datele (env_key/data).");
-    return res.status(400).send("Missing data");
-  }
+  const { env_key, data } = req.body;
+  if (!env_key || !data) return res.status(400).send("Missing data");
 
   try {
-    // 1. Verificare Cheie Privată
+    // 1. Cheia Privată
     let pkPem = process.env.MOBILPAY_PRIVATE_KEY_PEM;
-    if (!pkPem) throw new Error("Variabila MOBILPAY_PRIVATE_KEY_PEM lipsește!");
-    
-    // Curățare cheie (foarte important pt Vercel)
-    pkPem = pkPem.replace(/\\n/g, '\n').replace(/"/g, '').trim(); 
+    if (!pkPem) throw new Error("MOBILPAY_PRIVATE_KEY_PEM missing");
+    pkPem = pkPem.replace(/\\n/g, '\n').replace(/"/g, '').trim();
 
     // 2. Decriptare RSA
-    console.log("🔑 [IPN] Decriptare RSA...");
     const privateKey = forge.pki.privateKeyFromPem(pkPem);
     const envKeyBuffer = Buffer.from(env_key, "base64");
     const decryptedEnvKey = privateKey.decrypt(envKeyBuffer.toString("binary"), "RSAES-PKCS1-V1_5" as any);
-
+    
     // 3. Decriptare RC4
-    console.log("Dd [IPN] Decriptare RC4...");
     const dataBuffer = Buffer.from(data, "base64");
     const rc4KeyBuffer = Buffer.from(decryptedEnvKey, "binary");
     const decryptedXmlBuffer = rc4Decrypt(rc4KeyBuffer, dataBuffer);
     const xmlStr = decryptedXmlBuffer.toString("utf8");
 
-    // 4. Parsare XML
+    // 🔥 LOG CRITIC: Vedem ce am decriptat!
+    console.log("📜 XML DECRIPTAT:", xmlStr); 
+
+    // 4. Parsare XML (Safe Mode)
     const xmlObj = await parseStringPromise(xmlStr);
-    const order = xmlObj.order;
-    const orderId = order.$.id;
-    const action = order.obj[0].action[0]; 
-    const error = order.obj[0].$.error_code; 
+    
+    // Verificăm structura cu '?' ca să nu mai primim eroare de "undefined"
+    const order = xmlObj?.order;
+    const orderId = order?.$?.id;
+    
+    // Aici crăpa înainte (la obj[0] sau action[0]). Folosim ?. peste tot.
+    const action = order?.obj?.[0]?.action?.[0] || order?.action?.[0]; // Poate fi in locuri diferite
+    const error = order?.obj?.[0]?.$?.error_code || order?.$?.error_code;
 
-    console.log(`📊 [IPN] Status Netopia: ID=${orderId}, Action=${action}, Error=${error}`);
+    console.log(`📊 STATUS DETECTAT: ID=${orderId}, Action=${action}, Error=${error}`);
 
-    if (error == "0" && (action === "confirmed" || action === "paid")) {
+    // 5. Procesare
+    if (orderId && (action === "confirmed" || action === "paid")) {
       const orderRef = db.collection("orders").doc(orderId);
       const orderSnap = await orderRef.get();
 
-      if (!orderSnap.exists) {
-        console.error("❌ [IPN] Comanda NU a fost găsită în Firebase:", orderId);
-      } else {
+      if (orderSnap.exists) {
         const orderData = orderSnap.data();
-        
-        // Verificăm să nu trimitem mailul de două ori
         if (orderData?.status !== "completed") {
-            console.log("✅ [IPN] Confirmare plată. Actualizez Firebase...");
-            
-            await orderRef.update({ 
-                status: "completed",
-                paymentDate: admin.firestore.FieldValue.serverTimestamp()
-            });
-
-            console.log("📧 [IPN] Trimit email către:", orderData?.email);
-            
-            // APELARE FUNCȚIE EMAIL
-            const emailSent = await sendOrderConfirmation({
-                nume: orderData?.details || "Client",
-                email: orderData?.email, // Adresa din Firebase
-                adresa: "Adresă (vezi detalii cont)", 
-                produse: orderData?.produse || [],
-                total: orderData?.amount,
-                orderId: orderId
-            });
-
-            if (emailSent) console.log("🎉 [IPN] Email trimis cu succes!");
-            else console.error("⚠️ [IPN] Eroare la trimitere email (vezi logs sendOrderConfirmation).");
-            
-        } else {
-            console.log("ℹ️ [IPN] Comanda era deja completată.");
+          await orderRef.update({ 
+            status: "completed",
+            paymentDate: admin.firestore.FieldValue.serverTimestamp()
+          });
+          
+          console.log("📧 Trimit email către:", orderData?.email);
+          await sendOrderConfirmation({
+            nume: orderData?.details || "Client",
+            email: orderData?.email,
+            adresa: "N/A", 
+            produse: orderData?.produse || [],
+            total: orderData?.amount,
+            orderId: orderId
+          });
+          console.log("🎉 Email trimis!");
         }
       }
     }
 
-    // Răspuns XML Obligatoriu
     res.setHeader("Content-Type", "application/xml");
     return res.status(200).send(`<?xml version="1.0" encoding="utf-8"?><crc error_type="0" error_code="0">0</crc>`);
 
   } catch (err: any) {
-    console.error("❌ [IPN CRASH]:", err.message);
-    // Nu trimitem 500 la Netopia ca să nu reîncerce la infinit dacă e eroare de cod
+    console.error("❌ EROARE:", err.message);
+    // Logăm tot stack-ul dacă e nevoie
+    console.error(err);
     return res.status(200).send(`<?xml version="1.0" encoding="utf-8"?><crc error_type="0" error_code="0">0</crc>`);
   }
 }
