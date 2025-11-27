@@ -82,6 +82,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       status: "pending",
       provider: "netopia",
       produse: produse || [],
+      userId: req.body.userId,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 

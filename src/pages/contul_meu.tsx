@@ -7,6 +7,9 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Timestamp } from "firebase/firestore";
 
+
+const { user } = useAuth(); 
+const userId = user?.uid;
 type Comanda = {
   id: string;
   data: Timestamp;
