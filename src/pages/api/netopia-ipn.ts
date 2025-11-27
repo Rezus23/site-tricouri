@@ -16,44 +16,54 @@ if (!getApps().length) {
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
       }),
     });
-  } catch (e) {
-    console.error("🔥 Eroare init Firebase:", e);
-  }
+  } catch (e) { console.error("🔥 Eroare init Firebase:", e); }
 }
 const db = getFirestore();
 
-// --- 2. Decriptare RC4 ---
+// --- 2. Decriptare RC4 (FIXAT) ---
 function rc4Decrypt(key: Buffer, input: Buffer): Buffer {
   const s: number[] = [];
-  let j = 0; let x: number;
-  for (let i = 0; i < 256; i++) s[i] = i;
+  let j = 0; 
+  let x: number;
+
+  // Inițializare S-box
+  for (let i = 0; i < 256; i++) {
+    s[i] = i;
+  }
+
+  // Amestecare S-box cu cheia
   for (let i = 0; i < 256; i++) {
     j = (j + s[i] + key[i % key.length]) % 256;
     x = s[i]; s[i] = s[j]; s[j] = x;
   }
-  let i = 0; j = 0;
+
+  // Generare stream și XOR (Partea reparată)
+  let i = 0; 
+  j = 0;
   const output = Buffer.alloc(input.length);
+
   for (let y = 0; y < input.length; y++) {
     i = (i + 1) % 256;
     j = (j + s[i]) % 256;
     x = s[i]; s[i] = s[j]; s[j] = x;
     output[y] = input[y] ^ s[(s[i] + s[j]) % 256];
   }
+  
   return output;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
-  console.log("🚀 [IPN] Start. ID:", Date.now());
+  console.log("🚀 [IPN] Start procesare.");
 
   const { env_key, data } = req.body;
   if (!env_key || !data) return res.status(400).send("Missing data");
 
   try {
-    // 1. Cheia Privată
+    // 1. Pregătire Cheie
     let pkPem = process.env.MOBILPAY_PRIVATE_KEY_PEM;
-    if (!pkPem) throw new Error("MOBILPAY_PRIVATE_KEY_PEM missing");
+    if (!pkPem) throw new Error("Private Key Missing");
     pkPem = pkPem.replace(/\\n/g, '\n').replace(/"/g, '').trim();
 
     // 2. Decriptare RSA
@@ -67,46 +77,48 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const decryptedXmlBuffer = rc4Decrypt(rc4KeyBuffer, dataBuffer);
     const xmlStr = decryptedXmlBuffer.toString("utf8");
 
-    // 🔥 LOG CRITIC: Vedem ce am decriptat!
-    console.log("📜 XML DECRIPTAT:", xmlStr); 
-
-    // 4. Parsare XML (Safe Mode)
+    // 4. Parsare XML (FIXAT PENTRU TAG-UL MOBILPAY)
     const xmlObj = await parseStringPromise(xmlStr);
     
-    // Verificăm structura cu '?' ca să nu mai primim eroare de "undefined"
     const order = xmlObj?.order;
     const orderId = order?.$?.id;
+    const mobilepay = order?.mobilpay?.[0]; // Structura ta specifică
     
-    // Aici crăpa înainte (la obj[0] sau action[0]). Folosim ?. peste tot.
-    const action = order?.obj?.[0]?.action?.[0] || order?.action?.[0]; // Poate fi in locuri diferite
-    const error = order?.obj?.[0]?.$?.error_code || order?.$?.error_code;
+    const action = mobilepay?.action?.[0]; 
+    const error = mobilepay?.error?.[0]?.$?.code; 
 
-    console.log(`📊 STATUS DETECTAT: ID=${orderId}, Action=${action}, Error=${error}`);
+    console.log(`📊 STATUS FINAL: ID=${orderId}, Action=${action}, Error=${error}`);
 
-    // 5. Procesare
-    if (orderId && (action === "confirmed" || action === "paid")) {
+    // 5. Procesare Comandă
+    if (orderId && error == "0" && (action === "confirmed" || action === "paid")) {
       const orderRef = db.collection("orders").doc(orderId);
       const orderSnap = await orderRef.get();
 
       if (orderSnap.exists) {
         const orderData = orderSnap.data();
+        
         if (orderData?.status !== "completed") {
           await orderRef.update({ 
             status: "completed",
             paymentDate: admin.firestore.FieldValue.serverTimestamp()
           });
           
-          console.log("📧 Trimit email către:", orderData?.email);
+          console.log("✅ Firebase actualizat. Trimit email...");
+          
           await sendOrderConfirmation({
             nume: orderData?.details || "Client",
             email: orderData?.email,
-            adresa: "N/A", 
+            adresa: "Vezi cont", 
             produse: orderData?.produse || [],
             total: orderData?.amount,
             orderId: orderId
           });
-          console.log("🎉 Email trimis!");
+          console.log("🎉 Email trimis cu succes!");
+        } else {
+            console.log("ℹ️ Comanda era deja completată.");
         }
+      } else {
+          console.error("❌ Comanda nu există în Firebase:", orderId);
       }
     }
 
@@ -115,8 +127,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   } catch (err: any) {
     console.error("❌ EROARE:", err.message);
-    // Logăm tot stack-ul dacă e nevoie
-    console.error(err);
     return res.status(200).send(`<?xml version="1.0" encoding="utf-8"?><crc error_type="0" error_code="0">0</crc>`);
   }
 }
