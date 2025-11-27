@@ -56,7 +56,7 @@ export default function Cart() {
 
             <button
               // 👈 MODIFICARE: Redirecționare către pagina de formular
-              onClick={() => router.push('/checkout/adresa')}
+              onClick={() => router.push('/adresa')}
               disabled={cart.length === 0}
               className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition text-center disabled:bg-gray-400"
             >
