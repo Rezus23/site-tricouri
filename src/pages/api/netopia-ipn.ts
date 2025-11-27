@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import forge from "node-forge";
 import { parseStringPromise } from "xml2js";
-import { sendOrderConfirmation } from "@/lib/email"; // Importăm funcția modificată mai sus
+import { sendOrderConfirmation } from "@/lib/email";
 import admin from "firebase-admin";
 import { getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-// Init Firebase
+// --- 1. Init Firebase ---
 if (!getApps().length) {
   try {
     admin.initializeApp({
@@ -16,12 +16,20 @@ if (!getApps().length) {
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
       }),
     });
-  } catch (e) { console.error("Firebase Init Error:", e); }
+  } catch (e) { console.error("🔥 Eroare init Firebase:", e); }
 }
-const db = getFirestore();
-db.settings({ ignoreUndefinedProperties: true });
 
-// Funcție Decriptare RC4
+const db = getFirestore();
+
+// 🛠️ FIX: Aplicăm setările într-un bloc try-catch
+// Asta previne eroarea "Firestore has already been initialized" pe Vercel
+try {
+  db.settings({ ignoreUndefinedProperties: true });
+} catch (error) {
+  // Ignorăm eroarea dacă setările sunt deja aplicate
+}
+
+// --- 2. Funcție Decriptare RC4 ---
 function rc4Decrypt(key: Buffer, input: Buffer): Buffer {
   const s: number[] = [];
   let j = 0; let x: number;
@@ -29,6 +37,7 @@ function rc4Decrypt(key: Buffer, input: Buffer): Buffer {
   for (let i = 0; i < 256; i++) {
     j = (j + s[i] + key[i % key.length]) % 256;
     x = s[i]; s[i] = s[j]; s[j] = x;
+    output[y] = input[y] ^ s[(s[i] + s[j]) % 256];
   }
   let i = 0; j = 0;
   const output = Buffer.alloc(input.length);
@@ -44,7 +53,8 @@ function rc4Decrypt(key: Buffer, input: Buffer): Buffer {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
-  console.log("🚀 [IPN] Start.");
+  console.log("🚀 [IPN] Start procesare.");
+
   const { env_key, data } = req.body;
   if (!env_key || !data) return res.status(400).send("Missing data");
 
@@ -71,6 +81,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const action = mobilepay?.action?.[0]; 
     const error = mobilepay?.error?.[0]?.$?.code; 
 
+    console.log(`📊 STATUS: ID=${orderId}, Action=${action}`);
+
     // 3. Procesare
     if (orderId && error == "0" && (action === "confirmed" || action === "paid")) {
       const orderRef = db.collection("orders").doc(orderId);
@@ -87,15 +99,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           
           console.log("📧 Trimit email...");
           
-          // 4. APELARE FUNCȚIE EMAIL CU DATE COMPLETE
           await sendOrderConfirmation({
-            nume: orderData?.details || "Client", // Fallback nume
+            nume: orderData?.details || "Client",
             email: orderData?.email,
-            adresa: "Vezi secțiunea Detalii Livrare", // Fallback text simplu
+            adresa: "Vezi detalii", 
             produse: orderData?.produse || [],
             total: orderData?.amount,
             orderId: orderId,
-            adresaLivrare: orderData?.adresaLivrare // 👈 AICI TRIMITEM OBIECTUL!
+            adresaLivrare: orderData?.adresaLivrare
           });
           
           console.log("🎉 Email trimis!");
