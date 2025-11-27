@@ -13,14 +13,13 @@ if (!getApps().length) {
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
       }),
-      // ❌ Am eliminat 'firestore' de aici, rezolvând prima eroare.
     });
   } catch (e) { console.error("Firebase Init Error:", e); }
 }
 
 const db = getFirestore();
 
-// 💡 FIX: Setăm opțiunea ignoreUndefinedProperties direct pe instanța Firestore
+// Setăm opțiunea ignoreUndefinedProperties direct pe instanța Firestore
 db.settings({
     ignoreUndefinedProperties: true 
 });
@@ -42,8 +41,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== "POST") return res.status(405).send("Method not allowed");
 
   try {
-    // 💡 FIX: Am adăugat 'userId' la destructuring, rezolvând a doua eroare.
-    const { amount, details, produse, email, userId } = req.body; 
+    // 👈 MODIFICARE 1: Am adăugat 'adresaLivrare' la destructuring
+    const { amount, details, produse, email, userId, adresaLivrare } = req.body; 
 
     if (!amount || amount <= 0) return res.status(400).json({ error: "Suma incorectă" });
     
@@ -58,8 +57,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const orderId = `ORD-${Date.now()}`;
     const timestamp = formatTimestamp(new Date());
+    
+    // Definește URL-ul de bază Netopia (folosind HTTPS pentru securitate)
+    const envBase = 
+      process.env.NETOPIA_ENV === "live"
+        ? "https://secure.mobilpay.ro" // Mod de producție
+        : "https://sandboxsecure.mobilpay.ro"; // Mod Sandbox
 
-    // Construim XML-ul pentru Netopia
+    const paymentUrl = `${envBase}`;
+
+    // Construim XML-ul pentru Netopia (nu includem toate detaliile adresei aici, 
+    // doar strictul necesar pentru plată, dar le salvăm în DB)
     const xml = `<?xml version="1.0" encoding="utf-8"?>
     <order type="card" id="${orderId}" timestamp="${timestamp}">
       <signature>${signature}</signature>
@@ -71,6 +79,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         <details>${details || "Comanda Tricouri"}</details>
         <contact>
             <email>${userEmail}</email> 
+            <firstName>${adresaLivrare?.prenume || ''}</firstName>
+            <lastName>${adresaLivrare?.nume || ''}</lastName>
+            <address>${adresaLivrare?.adresa || ''}, ${adresaLivrare?.oras || ''}</address>
+            <mobile>${adresaLivrare?.telefon || ''}</mobile>
         </contact>
       </invoice>
     </order>`.trim();
@@ -87,13 +99,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       status: "pending",
       provider: "netopia",
       produse: produse || [],
-      userId: userId || null, // 'null' este acceptat chiar dacă clientul nu e logat
+      userId: userId || null, 
+      adresaLivrare: adresaLivrare || null, // 👈 MODIFICARE 2: Salvăm adresa
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
     // Formularul de redirect
-    const paymentUrl = "https://sandboxsecure.mobilpay.ro";
-    
     const html = `
       <form id="payForm" action="${paymentUrl}" method="post">
         <input type="hidden" name="env_key" value="${encrypted.env_key}" />
