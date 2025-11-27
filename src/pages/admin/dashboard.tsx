@@ -5,16 +5,16 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, orderBy } from "firebase/firestore";
 
 // --- CONFIGURARE ---
-const CLOUDINARY_CLOUD_NAME = "debck79qe"; // Pune cloud name-ul tău
-const CLOUDINARY_UPLOAD_PRESET = "pozetricouri"; // Pune preset-ul tău
+const CLOUDINARY_CLOUD_NAME = "da4q56x"; // Pune numele tău
+const CLOUDINARY_UPLOAD_PRESET = "pozetricouri"; // Pune presetul tău (Unsigned)
 const ADMIN_EMAIL = "rezuscatalin@gmail.com"; 
 
 type Produs = { 
   id: string; 
   titlu: string; 
   pret: number; 
-  imagine: string; 
-  marimi?: string[]; // 👈 NOU: Lista de mărimi
+  imagini: string[]; 
+  marimi?: string[]; 
 };
 
 export default function AdminDashboard() {
@@ -25,12 +25,11 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   
   // Stare Formular
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  // 👈 NOU: Am adăugat 'marimi' în starea formularului
+  const [imageFiles, setImageFiles] = useState<File[]>([]); // Array de fișiere
   const [formData, setFormData] = useState({ 
     titlu: "", 
     pret: "", 
-    marimi: "", // Va fi un string gen "S, M, L"
+    marimi: "", 
     descriere: "" 
   });
 
@@ -49,11 +48,16 @@ export default function AdminDashboard() {
   const fetchProduse = async () => {
     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
-    setProduse(snap.docs.map(d => ({ id: d.id, ...d.data() } as Produs)));
+    const data = snap.docs.map(d => {
+        const docData = d.data();
+        const imagini = docData.imagini || (docData.imagine ? [docData.imagine] : []);
+        return { id: d.id, ...docData, imagini } as Produs;
+    });
+    setProduse(data);
   };
 
-  // 3. Upload Imagine
-  const uploadImage = async (file: File) => {
+  // 3. Upload O SINGURĂ imagine
+  const uploadSingleImage = async (file: File) => {
     const data = new FormData();
     data.append("file", file);
     data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
@@ -62,41 +66,44 @@ export default function AdminDashboard() {
       method: "POST", body: data
     });
     const json = await res.json();
+    if (!json.secure_url) throw new Error("Eroare upload la Cloudinary");
     return json.secure_url;
   };
 
   // 4. Adaugă Produs
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!imageFile) return alert("Alege o poză!");
+    if (imageFiles.length === 0) return alert("Alege măcar o poză!");
     setLoading(true);
 
     try {
-      const imageUrl = await uploadImage(imageFile);
+      // Urcăm toate pozele simultan
+      const uploadPromises = imageFiles.map(file => uploadSingleImage(file));
+      const imageUrls = await Promise.all(uploadPromises);
 
-      // 👈 PROCESARE MĂRIMI: Transformăm "S, M, L" în ["S", "M", "L"]
+      // Procesare Mărimi
       const marimiArray = formData.marimi
         .split(",")
-        .map((s) => s.trim().toUpperCase()) // Le facem mari și scoatem spațiile
-        .filter((s) => s !== ""); // Eliminăm golurile
+        .map((s) => s.trim().toUpperCase())
+        .filter((s) => s !== "");
 
       await addDoc(collection(db, "products"), {
         titlu: formData.titlu,
         pret: Number(formData.pret),
-        marimi: marimiArray, // Salvăm ca listă (Array)
+        marimi: marimiArray,
         descriere: formData.descriere,
-        imagine: imageUrl,
+        imagini: imageUrls, // Salvăm lista de link-uri
         createdAt: serverTimestamp()
       });
 
-      alert("Produs adăugat! ✅");
-      // Reset
+      alert("Produs adăugat cu succes! ✅");
+      // Reset Formular
       setFormData({ titlu: "", pret: "", marimi: "", descriere: "" });
-      setImageFile(null);
+      setImageFiles([]); // Golim selecția de poze
       fetchProduse();
     } catch (err) {
       console.error(err);
-      alert("Eroare la adăugare");
+      alert("Eroare la adăugare (verifică consola).");
     } finally {
       setLoading(false);
     }
@@ -114,97 +121,108 @@ export default function AdminDashboard() {
   if (!user || user.email !== ADMIN_EMAIL) return null;
 
   return (
-    <div className="max-w-5xl mx-auto p-6 min-h-screen">
+    <div className="max-w-6xl mx-auto p-6 min-h-screen">
       <h1 className="text-3xl font-bold mb-8 text-blue-700">Admin Dashboard</h1>
 
-      {/* FORMULAR DE ADĂUGARE */}
+      {/* FORMULAR */}
       <div className="bg-white p-6 rounded shadow mb-10 border">
         <h2 className="text-xl font-bold mb-4">Adaugă Produs Nou</h2>
         <form onSubmit={handleAdd} className="space-y-4">
             
-            {/* Rândul 1: Nume și Preț */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-1">Nume Produs</label>
-                    <input 
-                        placeholder="Ex: Tricou Real Madrid" 
-                        className="border p-2 rounded w-full" 
-                        value={formData.titlu} 
-                        onChange={e => setFormData({...formData, titlu: e.target.value})} 
-                        required 
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-1">Preț (RON)</label>
-                    <input 
-                        placeholder="Ex: 250" 
-                        type="number" 
-                        className="border p-2 rounded w-full" 
-                        value={formData.pret} 
-                        onChange={e => setFormData({...formData, pret: e.target.value})} 
-                        required 
-                    />
-                </div>
-            </div>
-
-            {/* Rândul 2: Mărimi */}
-            <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Mărimi disponibile</label>
                 <input 
-                    placeholder="Ex: S, M, L, XL (separate prin virgulă)" 
-                    className="border p-2 rounded w-full" 
-                    value={formData.marimi} 
-                    onChange={e => setFormData({...formData, marimi: e.target.value})} 
+                    placeholder="Titlu Produs" 
+                    className="border p-2 rounded" 
+                    value={formData.titlu} onChange={e => setFormData({...formData, titlu: e.target.value})} 
                     required 
                 />
-                <p className="text-xs text-gray-500 mt-1">Scrie mărimile separate prin virgulă.</p>
+                <input 
+                    placeholder="Preț (RON)" 
+                    type="number" 
+                    className="border p-2 rounded" 
+                    value={formData.pret} onChange={e => setFormData({...formData, pret: e.target.value})} 
+                    required 
+                />
             </div>
+            
+            <input 
+                placeholder="Mărimi (ex: S, M, L, XL)" 
+                className="border p-2 rounded w-full" 
+                value={formData.marimi} onChange={e => setFormData({...formData, marimi: e.target.value})} 
+                required 
+            />
 
-            {/* Rândul 3: Poză */}
-            <div className="border-2 border-dashed p-4 rounded text-center cursor-pointer hover:bg-gray-50 transition">
-                <label className="cursor-pointer block">
-                    <span className="font-bold text-gray-600">
-                        {imageFile ? `📸 Fișier selectat: ${imageFile.name}` : "Click aici pentru a alege poza 🖼️"}
+            {/* INPUT MULTIPLE FILES - AICI ESTE MODIFICAREA */}
+            <div className="border-2 border-dashed p-4 rounded text-center cursor-pointer hover:bg-gray-50 transition relative">
+                <label className="cursor-pointer block w-full h-full">
+                    <span className="font-bold text-gray-600 block mb-2">
+                        {imageFiles.length > 0 
+                            ? `📸 ${imageFiles.length} poze selectate` 
+                            : "Click aici pentru a alege pozele (ține apăsat CTRL pentru mai multe) 🖼️"}
                     </span>
                     <input 
                         type="file" 
                         accept="image/*" 
+                        multiple // 👈 ACESTA ESTE ATRIBUTUL ESENȚIAL
                         className="hidden" 
-                        onChange={e => e.target.files && setImageFile(e.target.files[0])} 
+                        onChange={e => {
+                            if (e.target.files) {
+                                // Transformăm FileList în Array real
+                                const filesArray = Array.from(e.target.files);
+                                setImageFiles(filesArray);
+                            }
+                        }} 
                     />
                 </label>
+                
+                {/* Buton de Resetare Selecție */}
+                {imageFiles.length > 0 && (
+                    <button 
+                        type="button"
+                        onClick={() => setImageFiles([])}
+                        className="text-red-500 text-sm underline mt-2"
+                    >
+                        Șterge selecția
+                    </button>
+                )}
             </div>
+            
+            {/* PREVIEW POZE SELECTATE */}
+            {imageFiles.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                    {imageFiles.map((file, idx) => (
+                        <div key={idx} className="h-24 w-24 border rounded overflow-hidden flex-shrink-0 relative">
+                            <img src={URL.createObjectURL(file)} className="h-full w-full object-cover" alt="preview"/>
+                        </div>
+                    ))}
+                </div>
+            )}
 
-            {/* Descriere */}
             <textarea 
                 placeholder="Descriere produs..." 
                 className="border p-2 rounded w-full" 
                 rows={3}
-                value={formData.descriere} 
-                onChange={e => setFormData({...formData, descriere: e.target.value})} 
+                value={formData.descriere} onChange={e => setFormData({...formData, descriere: e.target.value})} 
             />
             
-            <button disabled={loading} className="bg-green-600 text-white px-6 py-3 rounded w-full hover:bg-green-700 font-bold text-lg">
-                {loading ? "Se salvează..." : "Adaugă Produsul"}
+            <button disabled={loading} className="bg-green-600 text-white px-6 py-3 rounded w-full hover:bg-green-700 font-bold">
+                {loading ? "Se încarcă pozele..." : "Adaugă Produs"}
             </button>
         </form>
       </div>
 
-      {/* LISTA DE PRODUSE EXISTENTE */}
-      <h2 className="text-2xl font-bold mb-4">Lista Produse ({produse.length})</h2>
+      {/* LISTA PRODUSE */}
+      <h2 className="text-2xl font-bold mb-4">Produse Existente ({produse.length})</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {produse.map(p => (
             <div key={p.id} className="border p-4 rounded bg-white shadow flex flex-col justify-between">
                 <div>
-                    <img src={p.imagine} alt={p.titlu} className="h-32 w-full object-contain mb-2" />
+                    <img src={p.imagini[0]} alt={p.titlu} className="h-48 w-full object-contain mb-2" />
                     <p className="font-bold">{p.titlu}</p>
                     <p className="text-green-600 font-bold">{p.pret} RON</p>
-                    {/* Afișăm mărimile disponibile */}
-                    <div className="text-sm text-gray-500 mt-1">
-                        Mărimi: {p.marimi ? p.marimi.join(", ") : "Standard"}
-                    </div>
+                    <p className="text-xs text-gray-500">{p.imagini.length} poze</p>
                 </div>
-                <button onClick={() => handleDelete(p.id)} className="bg-red-100 text-red-600 py-1 mt-3 rounded hover:bg-red-200 font-bold">
+                <button onClick={() => handleDelete(p.id)} className="bg-red-100 text-red-600 py-1 mt-3 rounded hover:bg-red-200">
                     🗑️ Șterge
                 </button>
             </div>
