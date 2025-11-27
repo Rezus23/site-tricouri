@@ -1,22 +1,21 @@
 import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { useCart } from "@/context/CartContext";
 import Link from "next/link";
+import BlurredBackground from "@/components/BlurredComponents"; // 👈 IMPORT NOU
 
 type Produs = {
   id: string;
   titlu: string;
   pret: number;
-  imagine: string;    // Câmp vechi (pentru compatibilitate)
-  imagini?: string[]; // Câmp nou (listă de poze)
+  imagine: string;    
+  imagini?: string[]; 
   marimi?: string[];
 };
 
 export default function Shop() {
   const [produse, setProduse] = useState<Produs[]>([]);
   const [loading, setLoading] = useState(true);
-  const { adaugaInCos } = useCart();
 
   useEffect(() => {
     const fetchProduse = async () => {
@@ -40,93 +39,89 @@ export default function Shop() {
     fetchProduse();
   }, []);
 
+  // Loading State cu fundal
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-xl text-gray-500">Se încarcă produsele...</p>
+      <div className="min-h-screen flex items-center justify-center relative">
+        <BlurredBackground />
+        <p className="text-xl text-white font-bold drop-shadow-md animate-pulse">
+          Se încarcă produsele...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 min-h-screen">
-      <h1 className="text-4xl font-bold text-center mb-10 text-gray-800">
-        Magazin Tricouri
-      </h1>
+    <div className="min-h-screen relative">
+      {/* 1. FUNDAL BLURAT */}
+      <BlurredBackground />
 
-      {produse.length === 0 ? (
-        <div className="text-center text-gray-500 mt-10">
-          <p>Nu există produse momentan.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {produse.map((produs) => {
-            
-            // 💡 LOGICA IMAGINII: Luăm prima din listă, sau fallback la cea veche
-            const imaginePrincipala = (produs.imagini && produs.imagini.length > 0) 
-                ? produs.imagini[0] 
-                : produs.imagine;
+      <div className="max-w-7xl mx-auto p-6 relative z-10 pt-10">
+        <h1 className="text-5xl font-extrabold text-center mb-12 text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
+          Magazin Tricouri
+        </h1>
 
-            return (
-              <div
-                key={produs.id}
-                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col"
-              >
-                {/* Imaginea (Link către detalii) */}
-                <Link href={`/magazin/${produs.id}`} className="block relative h-64 bg-gray-50 group">
-                  <img
-                    src={imaginePrincipala}
-                    alt={produs.titlu}
-                    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-                  />
-                </Link>
+        {produse.length === 0 ? (
+          <div className="text-center mt-20 p-8 bg-white/80 backdrop-blur-md rounded-xl shadow-xl max-w-md mx-auto">
+            <p className="text-xl text-gray-600 font-semibold">Nu există produse momentan.</p>
+            <p className="text-sm text-gray-500 mt-2">Revin-o curând pentru noutăți!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {produse.map((produs) => {
+              
+              // Logică imagine (prima din listă sau fallback)
+              const imaginePrincipala = (produs.imagini && produs.imagini.length > 0) 
+                  ? produs.imagini[0] 
+                  : produs.imagine;
 
-                {/* Detalii */}
-                <div className="p-5 flex flex-col flex-grow">
-                  <Link href={`/magazin/${produs.id}`}>
-                    <h3 className="font-bold text-lg text-gray-900 hover:text-blue-600 transition-colors mb-1 truncate">
-                      {produs.titlu}
-                    </h3>
-                  </Link>
-                  
-                  <p className="text-xl font-bold text-blue-600 mb-3">
-                    {produs.pret} RON
-                  </p>
-
-                  {/* Afișare Mărimi (ca etichete mici) */}
-                  {produs.marimi && produs.marimi.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {produs.marimi.slice(0, 4).map((marime) => (
-                        <span key={marime} className="text-[10px] bg-gray-100 text-gray-600 px-2 py-1 rounded border">
-                          {marime}
+              return (
+                <div
+                  key={produs.id}
+                  className="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden flex flex-col"
+                >
+                  {/* 🎯 LINK PRINCIPAL (Click pe imagine) */}
+                  <Link href={`/magazin/${produs.id}`} className="block relative h-72 bg-gray-50 group overflow-hidden">
+                    <img
+                      src={imaginePrincipala}
+                      alt={produs.titlu}
+                      className="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-500"
+                    />
+                    {/* Badge "Vezi Detalii" la hover */}
+                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <span className="bg-white text-black px-4 py-2 rounded-full font-bold shadow-lg text-sm">
+                            Vezi Detalii
                         </span>
-                      ))}
-                      {produs.marimi.length > 4 && <span className="text-[10px] text-gray-400 px-1">...</span>}
                     </div>
-                  )}
+                  </Link>
 
-                  {/* Buton Adaugă în Coș */}
-                  <button
-                    onClick={() => {
-                      // Adăugare simplă (fără mărime selectată, clientul poate alege mărimea în pagina de detalii pentru precizie)
-                      // Dar dacă vrei adăugare rapidă, poți pune mărimea default sau generică
-                      adaugaInCos({ 
-                          id: 0, // ID fictiv numeric
-                          titlu: produs.titlu,
-                          pret: produs.pret
-                      });
-                      alert(`✅ ${produs.titlu} adăugat în coș!`);
-                    }}
-                    className="mt-auto w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors active:scale-95"
-                  >
-                    Adaugă în Coș
-                  </button>
+                  {/* Detalii */}
+                  <div className="p-6 flex flex-col flex-grow">
+                    <Link href={`/magazin/${produs.id}`}>
+                      <h3 className="font-bold text-xl text-gray-900 hover:text-blue-700 transition-colors mb-2 leading-tight">
+                        {produs.titlu}
+                      </h3>
+                    </Link>
+                    
+                    <p className="text-2xl font-extrabold text-blue-600 mb-6">
+                      {produs.pret} RON
+                    </p>
+
+                    {/* Buton către detalii */}
+                    <Link
+                      href={`/magazin/${produs.id}`}
+                      className="mt-auto w-full bg-black text-white py-3 rounded-xl text-center font-bold hover:bg-gray-800 transition-colors active:scale-95 shadow-md flex items-center justify-center gap-2"
+                    >
+                      Vezi Detalii & Mărime 
+                      <span className="text-lg">→</span>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
