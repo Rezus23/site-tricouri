@@ -4,6 +4,7 @@ import {
   useState,
   useEffect,
   ReactNode,
+  useCallback, // 👈 NOU: Am importat useCallback
 } from "react";
 
 type LinieCos = {
@@ -49,30 +50,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("cos", JSON.stringify(cart));
   }, [cart]);
 
-  const adaugaInCos = (produs: Produs) => {
+  // 💡 FIX: Folosim useCallback pentru a stabiliza funcțiile:
+
+  const adaugaInCos = useCallback((produs: Produs) => {
     setCart((prev) => [
       ...prev,
-      { ...produs,
+      { 
+        ...produs,
         pret: Number(produs.pret), 
         cartId: Date.now() + Math.random() 
       },
     ]);
-  };
+  }, []); // Fără dependențe, pentru că nu folosește variabile din exterior
 
-  const stergeDinCos = (cartId: number) => {
+  const stergeDinCos = useCallback((cartId: number) => {
     setCart((prev) => prev.filter((p) => p.cartId !== cartId));
-  };
+  }, []); // Fără dependențe
 
-  const golesteCos = () => {
+  const golesteCos = useCallback(() => {
     setCart([]);
-  };
+  }, []); // Fără dependențe
 
   return (
     <CartContext.Provider
-  value={{ cart, adaugaInCos, stergeDinCos, golesteCos }} // ✅ INCLUS aici
-  >
-  {children}
-   </CartContext.Provider>
+      value={{ cart, adaugaInCos, stergeDinCos, golesteCos }} 
+    >
+      {children}
+    </CartContext.Provider>
   );
 }
 
@@ -81,4 +85,3 @@ export function useCart() {
   if (!context) throw new Error("useCart trebuie folosit în CartProvider");
   return context;
 }
-
