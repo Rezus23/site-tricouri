@@ -24,9 +24,9 @@ export default function Navbar() {
   // Stări pentru Căutare
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [allProducts, setAllProducts] = useState<SearchResult[]>([]); // Cache local pentru viteză
+  const [allProducts, setAllProducts] = useState<SearchResult[]>([]); 
 
-  // 1. Efect la Scroll (pentru fundal blurat)
+  // 1. Efect la Scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -35,7 +35,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 2. Încărcăm produsele o singură dată (pentru căutare rapidă)
+  // 2. Încărcăm produsele pentru căutare
   useEffect(() => {
     const fetchProductsForSearch = async () => {
       const q = query(collection(db, "products"));
@@ -43,7 +43,7 @@ export default function Navbar() {
       const products = snap.docs.map(doc => ({
         id: doc.id,
         titlu: doc.data().titlu,
-        imagine: doc.data().imagini?.[0] || doc.data().imagine // Fallback imagine
+        imagine: doc.data().imagini?.[0] || doc.data().imagine 
       }));
       setAllProducts(products as SearchResult[]);
     };
@@ -59,10 +59,10 @@ export default function Navbar() {
     const results = allProducts.filter(p => 
       p.titlu.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setSearchResults(results.slice(0, 5)); // Arătăm max 5 rezultate
+    setSearchResults(results.slice(0, 5)); 
   }, [searchTerm, allProducts]);
 
-  // Resetare căutare la schimbarea paginii
+  // Resetare la schimbarea paginii
   useEffect(() => {
     setSearchTerm("");
     setSearchResults([]);
@@ -73,14 +73,18 @@ export default function Navbar() {
     <>
       <nav 
         className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-          isScrolled ? "bg-black/80 backdrop-blur-md shadow-lg py-3" : "bg-black py-5"
+          isScrolled ? "bg-black/90 backdrop-blur-md shadow-lg py-2" : "bg-black py-4"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center gap-4">
           
-          {/* --- LOGO --- */}
-          <Link href="/" className="text-2xl font-black italic tracking-tighter flex flex-col items-center leading-none text-white z-50">
-            <span>SPORTS<span className="text-lime-400">X</span></span>
+          {/* --- LOGO (Imagine) --- */}
+          <Link href="/" className="flex items-center z-50 relative shrink-0">
+            <img 
+              src="/images/logo.jpg" // 👈 Calea corectă către logo-ul tău
+              alt="Passion4Jerseys Logo" 
+              className="h-14 md:h-16 w-auto object-contain rounded-full transition-transform hover:scale-105" 
+            />
           </Link>
 
           {/* --- SEARCH BAR (Desktop) --- */}
@@ -96,7 +100,7 @@ export default function Navbar() {
               <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
 
-            {/* Rezultate Căutare Dropdown */}
+            {/* Rezultate Căutare */}
             {searchResults.length > 0 && (
               <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
                 {searchResults.map(prod => (
@@ -112,7 +116,7 @@ export default function Navbar() {
           </div>
 
           {/* --- MENIU DREAPTA (Desktop) --- */}
-          <div className="hidden md:flex items-center gap-6 text-white">
+          <div className="hidden md:flex items-center gap-8 text-white">
             <NavLink href="/" icon={<FiHome />} text="Home" />
             <NavLink href="/shop" icon={<FiGrid />} text="Magazin" />
             
@@ -146,7 +150,6 @@ export default function Navbar() {
         {/* --- MENIU MOBIL (Overlay) --- */}
         <div className={`fixed inset-0 bg-black/95 backdrop-blur-xl z-40 transition-transform duration-300 flex flex-col justify-center px-8 ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
             
-            {/* Search Mobil */}
             <div className="mb-8 relative">
                 <input
                     type="text"
@@ -155,12 +158,11 @@ export default function Navbar() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                {/* Rezultate Mobil */}
                 {searchResults.length > 0 && (
-                  <div className="mt-2 bg-white rounded-lg overflow-hidden">
+                  <div className="mt-2 bg-white rounded-lg overflow-hidden max-h-60 overflow-y-auto">
                     {searchResults.map(prod => (
                       <Link key={prod.id} href={`/magazin/${prod.id}`}>
-                        <div className="p-3 text-black border-b font-bold flex items-center gap-2">
+                        <div className="p-3 text-black border-b font-bold flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
                            <img src={prod.imagine} className="h-8 w-8 object-contain" />
                            {prod.titlu}
                         </div>
@@ -185,7 +187,7 @@ export default function Navbar() {
   );
 }
 
-// Componente ajutătoare mici pentru curățenie
+// Componente helper
 function NavLink({ href, icon, text }: { href: string; icon: any; text: string }) {
   return (
     <Link href={href} className="hover:text-lime-400 transition flex flex-col items-center gap-1 group">
