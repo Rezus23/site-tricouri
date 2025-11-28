@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const signature = process.env.MOBILPAY_SIGNATURE;
     if (!signature) return res.status(500).json({ error: "Missing Signature" });
 
-    const siteUrl = process.env.SITE_URL || "https://site-tricouri.vercel.app";
+    const siteUrl = "https://www.passion4jerseys.ro";
     const confirmUrl = `${siteUrl}/api/netopia-ipn`;
     const returnUrl = `${siteUrl}/succes`;
 
