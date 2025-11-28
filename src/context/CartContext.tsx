@@ -4,24 +4,33 @@ import {
   useState,
   useEffect,
   ReactNode,
-  useCallback, // 👈 NOU: Am importat useCallback
+  useCallback,
 } from "react";
 
 type LinieCos = {
-  cartId: number; // ID intern în coș (unic)
-  id: number;     // ID-ul produsului
+  cartId: number;
+  id: number;
   titlu: string;
   pret: number;
+  imagine?: string; // Am adăugat imagine pentru pop-up
+  marime?: string;  // Am adăugat mărime pentru pop-up
 };
 
 type Produs = {
   id: number;
   titlu: string;
   pret: number;
+  imagine?: string;
+  marimi?: string[];
+  // Proprietăți opționale pentru adăugare directă
+  marimeSelectata?: string;
 };
 
 type CartContextType = {
   cart: LinieCos[];
+  lastAddedItem: LinieCos | null; // 👈 NOU: Ultimul produs pentru Pop-up
+  isPopupOpen: boolean;           // 👈 NOU: Starea Pop-up-ului
+  closePopup: () => void;         // 👈 NOU: Funcție de închidere
   adaugaInCos: (produs: Produs) => void;
   stergeDinCos: (cartId: number) => void;
   golesteCos: () => void;
@@ -31,49 +40,61 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<LinieCos[]>([]);
+  const [lastAddedItem, setLastAddedItem] = useState<LinieCos | null>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  // La încărcare, citește din localStorage
+  // Load from localStorage
   useEffect(() => {
     const stored = localStorage.getItem("cos");
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) setCart(parsed);
-      } catch (error) {
-        console.error("Eroare la parsarea coșului:", error);
-      }
+      } catch (error) { console.error(error); }
     }
   }, []);
 
-  // La orice modificare, salvează în localStorage
+  // Save to localStorage
   useEffect(() => {
     localStorage.setItem("cos", JSON.stringify(cart));
   }, [cart]);
 
-  // 💡 FIX: Folosim useCallback pentru a stabiliza funcțiile:
-
+  // Funcții stabilizate cu useCallback
   const adaugaInCos = useCallback((produs: Produs) => {
-    setCart((prev) => [
-      ...prev,
-      { 
-        ...produs,
-        pret: Number(produs.pret), 
-        cartId: Date.now() + Math.random() 
-      },
-    ]);
-  }, []); // Fără dependențe, pentru că nu folosește variabile din exterior
+    const newItem: LinieCos = {
+      id: produs.id,
+      titlu: produs.titlu,
+      pret: Number(produs.pret),
+      imagine: produs.imagine,
+      marime: produs.marimeSelectata, // Salvăm mărimea dacă există
+      cartId: Date.now() + Math.random(),
+    };
+
+    setCart((prev) => [...prev, newItem]);
+    
+    // 🔔 DECLANȘĂM POP-UP-UL
+    setLastAddedItem(newItem);
+    setIsPopupOpen(true);
+    
+    // Auto-închidere după 5 secunde (opțional)
+    // setTimeout(() => setIsPopupOpen(false), 5000); 
+  }, []);
 
   const stergeDinCos = useCallback((cartId: number) => {
     setCart((prev) => prev.filter((p) => p.cartId !== cartId));
-  }, []); // Fără dependențe
+  }, []);
 
   const golesteCos = useCallback(() => {
     setCart([]);
-  }, []); // Fără dependențe
+  }, []);
+
+  const closePopup = useCallback(() => {
+    setIsPopupOpen(false);
+  }, []);
 
   return (
     <CartContext.Provider
-      value={{ cart, adaugaInCos, stergeDinCos, golesteCos }} 
+      value={{ cart, adaugaInCos, stergeDinCos, golesteCos, lastAddedItem, isPopupOpen, closePopup }}
     >
       {children}
     </CartContext.Provider>

@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext"; 
 import Navbar from "@/components/Navbar";
+import CartPopup from "@/components/CartPopup";
 
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -12,6 +13,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <CartProvider>
         <Layout>
           <Navbar />
+          <CartPopup />
           <Component {...pageProps} />
         </Layout>
       </CartProvider>
