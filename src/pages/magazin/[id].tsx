@@ -178,9 +178,9 @@ export default function PaginaProdus() {
 
           {/* Info Livrare */}
           <div className="mt-6 flex items-center gap-2 text-sm text-gray-500 justify-center">
-             <span>🚚 Livrare rapidă</span>
+             <span> Livrare rapidă</span>
              <span>•</span>
-             <span>💳 Plată Securizată Netopia</span>
+             <span> Plată Securizată Netopia</span>
           </div>
         </div>
       </div>
