@@ -1,26 +1,100 @@
-import Head from "next/head";
 import Link from "next/link";
+import Head from "next/head";
 
 export default function Home() {
   return (
     <>
       <Head>
-        <title>Tricouri Fotbal</title>
-        <meta name="description" content="Magazin online pentru fanii fotbalului" />
+        <title>Passion4Jerseys - Tricouri Fotbal Premium</title>
+        <meta name="description" content="Cumpără tricouri de fotbal autentice, retro și noi. Livrare rapidă în România." />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12 text-center bg-gray-100">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-blue-700 mb-4">
-          Bine ai venit la Passion4Jerseys!
-        </h1>
-        <p className="text-lg sm:text-xl text-gray-700 max-w-xl mb-6">
-          Alege tricoul echipei tale preferate și arată-ți susținerea oriunde te-ai afla!
-        </p>
-        <Link
-          href="/shop"
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-700 transition"
-        >
-          Vezi Magazinul
-        </Link>
+
+      <div className="min-h-screen bg-black text-white font-sans flex flex-col">
+        
+        {/* --- HERO SECTION (Bannerul Mare) --- */}
+        <div className="relative h-[90vh] w-full overflow-hidden">
+          
+          {/* Imaginea de Fundal */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ 
+              backgroundImage: "url('/images/hero-banner.jpg')", // Asigură-te că ai poza asta în public/images/
+            }}
+          >
+            {/* Overlay întunecat pentru contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30"></div>
+          </div>
+
+          {/* Conținutul Hero */}
+          <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4 pt-20">
+            
+            <h2 className="text-5xl md:text-7xl font-extrabold uppercase mb-6 tracking-tight drop-shadow-2xl animate-in fade-in zoom-in duration-700">
+              <span className="text-white">Descoperă noua </span>
+              <span className="text-lime-400 block md:inline">colecție</span>
+            </h2>
+            
+            <p className="text-gray-200 text-xl mb-12 max-w-2xl mx-auto font-medium drop-shadow-md animate-in slide-in-from-bottom-4 duration-1000 delay-200">
+              Cele mai noi echipamente ale echipelor tale favorite sunt acum disponibile în stoc limitat.
+            </p>
+
+            <Link 
+              href="/shop"
+              className="group relative px-12 py-4 border-2 border-lime-400 text-white uppercase tracking-[4px] text-sm font-bold overflow-hidden transition-all hover:text-black animate-in fade-in duration-1000 delay-500"
+            >
+              {/* Efect de umplere la hover */}
+              <span className="absolute inset-0 w-0 bg-lime-400 transition-all duration-[300ms] ease-out group-hover:w-full"></span>
+              <span className="relative z-10">Cumpără Acum</span>
+            </Link>
+
+          </div>
+        </div>
+
+        {/* --- FOOTER (Obligatoriu pentru Netopia & ANPC) --- */}
+        <footer className="bg-[#0a0a0a] py-12 text-center text-gray-500 text-sm border-t border-gray-900">
+          
+          {/* Copyright */}
+          <p className="mb-6 text-gray-400">© 2025 Passion4Jerseys. Toate drepturile rezervate.</p>
+          
+          {/* Link-uri Legale */}
+          <div className="flex flex-wrap justify-center gap-6 mb-8">
+            <Link href="/termeni" className="hover:text-lime-400 transition">
+              Termeni și Condiții
+            </Link>
+            <Link href="/confidentialitate" className="hover:text-lime-400 transition">
+              Politica de Confidențialitate
+            </Link>
+            <Link href="/retur" className="hover:text-lime-400 transition">
+              Politica de Retur
+            </Link>
+            <Link href="/contact" className="hover:text-lime-400 transition">
+              Contact
+            </Link>
+          </div>
+
+          {/* Logo-uri ANPC (SAL / SOL) - Obligatorii pe Homepage */}
+          <div className="flex justify-center gap-4 opacity-80 hover:opacity-100 transition-opacity">
+            <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noreferrer">
+                {/* Folosim direct link-urile oficiale pentru imagini sau le descarci tu local */}
+                <img 
+                    src="https://wp.anpc.ro/wp-content/uploads/2023/02/sal.png" 
+                    alt="ANPC SAL" 
+                    className="h-8 md:h-10 w-auto" 
+                />
+            </a>
+            <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">
+                <img 
+                    src="https://wp.anpc.ro/wp-content/uploads/2023/02/sol.png" 
+                    alt="ANPC SOL" 
+                    className="h-8 md:h-10 w-auto" 
+                />
+            </a>
+          </div>
+
+          <div className="mt-6 text-xs text-gray-600">
+            <p>Imaginile produselor sunt cu titlu de prezentare.</p>
+          </div>
+        </footer>
       </div>
     </>
   );
