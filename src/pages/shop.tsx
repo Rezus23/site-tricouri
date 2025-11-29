@@ -76,7 +76,7 @@ export default function Shop() {
 
       <div className="max-w-7xl mx-auto p-6 relative z-10 pt-10">
         <h1 className="text-5xl font-extrabold text-center mb-12 text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
-          Magazin Tricouri
+          Catalog tricouri
         </h1>
 
         {produse.length === 0 ? (
@@ -143,7 +143,7 @@ export default function Shop() {
                     {/* 2. LOGICA PREȚ vs SOLD OUT */}
                     {isSoldOut ? (
                         <p className="text-xl font-black text-red-600 uppercase tracking-wider mt-auto">
-                            Sold Out
+
                         </p>
                     ) : (
                         <p className="text-2xl font-extrabold text-blue-600 mt-auto">
