@@ -9,28 +9,27 @@ import {
 
 type LinieCos = {
   cartId: number;
-  id: number;
+  id: string; // 👈 AICI AM SCHIMBAT: din number în string
   titlu: string;
   pret: number;
-  imagine?: string; // Am adăugat imagine pentru pop-up
-  marime?: string;  // Am adăugat mărime pentru pop-up
+  imagine?: string;
+  marime?: string;
 };
 
 type Produs = {
-  id: number;
+  id: string; // 👈 AICI AM SCHIMBAT: din number în string
   titlu: string;
   pret: number;
   imagine?: string;
   marimi?: string[];
-  // Proprietăți opționale pentru adăugare directă
   marimeSelectata?: string;
 };
 
 type CartContextType = {
   cart: LinieCos[];
-  lastAddedItem: LinieCos | null; // 👈 NOU: Ultimul produs pentru Pop-up
-  isPopupOpen: boolean;           // 👈 NOU: Starea Pop-up-ului
-  closePopup: () => void;         // 👈 NOU: Funcție de închidere
+  lastAddedItem: LinieCos | null;
+  isPopupOpen: boolean;
+  closePopup: () => void;
   adaugaInCos: (produs: Produs) => void;
   stergeDinCos: (cartId: number) => void;
   golesteCos: () => void;
@@ -43,7 +42,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [lastAddedItem, setLastAddedItem] = useState<LinieCos | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  // Load from localStorage
   useEffect(() => {
     const stored = localStorage.getItem("cos");
     if (stored) {
@@ -54,30 +52,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Save to localStorage
   useEffect(() => {
     localStorage.setItem("cos", JSON.stringify(cart));
   }, [cart]);
 
-  // Funcții stabilizate cu useCallback
   const adaugaInCos = useCallback((produs: Produs) => {
     const newItem: LinieCos = {
-      id: produs.id,
+      id: produs.id, // Acum preia ID-ul real (string)
       titlu: produs.titlu,
       pret: Number(produs.pret),
       imagine: produs.imagine,
-      marime: produs.marimeSelectata, // Salvăm mărimea dacă există
+      marime: produs.marimeSelectata,
       cartId: Date.now() + Math.random(),
     };
 
     setCart((prev) => [...prev, newItem]);
     
-    // 🔔 DECLANȘĂM POP-UP-UL
     setLastAddedItem(newItem);
     setIsPopupOpen(true);
-    
-    // Auto-închidere după 5 secunde (opțional)
-    // setTimeout(() => setIsPopupOpen(false), 5000); 
   }, []);
 
   const stergeDinCos = useCallback((cartId: number) => {
