@@ -7,7 +7,6 @@ import Link from "next/link";
 import { FiX, FiZoomIn } from "react-icons/fi";
 import BlurredBackground from "@/components/BlurredBackground";
 
-// 1. Definim structura nouă pentru mărimi
 type MarimeStoc = {
   nume: string;
   stoc: number;
@@ -20,7 +19,7 @@ type Produs = {
   imagine: string;      
   imagini?: string[];   
   descriere?: string;
-  marimi?: MarimeStoc[]; // 👈 Acum este listă de obiecte (Nume + Stoc)
+  marimi?: MarimeStoc[]; 
 };
 
 export default function PaginaProdus() {
@@ -35,7 +34,8 @@ export default function PaginaProdus() {
   const [selectedSize, setSelectedSize] = useState("");
   const [isZoomed, setIsZoomed] = useState(false);
   
-  const { adaugaInCos } = useCart();
+  // 👇 AICI IMPORTĂM ȘI 'CART' PENTRU A VERIFICA CE AVEM DEJA
+  const { adaugaInCos, cart } = useCart();
 
   useEffect(() => {
     if (!id) return; 
@@ -49,7 +49,6 @@ export default function PaginaProdus() {
           const data = docSnap.data();
           const imaginiList = data.imagini || (data.imagine ? [data.imagine] : []);
           
-          // Compatibilitate: Dacă produsul e vechi și are mărimi string[], le convertim
           let marimiFinale: MarimeStoc[] = [];
           if (Array.isArray(data.marimi)) {
              if (typeof data.marimi[0] === 'string') {
@@ -63,7 +62,7 @@ export default function PaginaProdus() {
               id: docSnap.id, 
               ...data, 
               imagini: imaginiList,
-              marimi: marimiFinale // Folosim mărimile procesate
+              marimi: marimiFinale 
           } as Produs);
           
           if (imaginiList.length > 0) setSelectedImage(imaginiList[0]);
@@ -83,11 +82,35 @@ export default function PaginaProdus() {
   const handleAddToCart = () => {
     if (!produs) return;
 
+    // 1. Validare selectare mărime
     if (produs.marimi && produs.marimi.length > 0 && !selectedSize) {
         alert("⚠️ Te rog selectează o mărime înainte de a adăuga în coș!");
         return;
     }
 
+    // 2. LOGICA DE VERIFICARE STOC VS COȘ
+    let stocDisponibil = 99; // Default pt produse fără mărimi
+    
+    // Găsim stocul real pentru mărimea selectată
+    if (produs.marimi && selectedSize) {
+        const marimeGasita = produs.marimi.find(m => m.nume === selectedSize);
+        if (marimeGasita) {
+            stocDisponibil = marimeGasita.stoc;
+        }
+    }
+
+    // Numărăm câte bucăți din acest produs (și mărime) avem DEJA în coș
+    const produseInCos = cart.filter(item => 
+        item.id === produs.id && item.marime === selectedSize
+    ).length;
+
+    // ⛔ BLOCAJ: Dacă încercăm să adăugăm peste limită
+    if (produseInCos + 1 > stocDisponibil) {
+        alert(`❌ Stoc insuficient! Ai deja ${produseInCos} bucăți în coș, iar stocul total este ${stocDisponibil}.`);
+        return; // Oprim funcția aici
+    }
+
+    // 3. Adăugarea efectivă (dacă am trecut de verificări)
     const titluFinal = selectedSize 
         ? `${produs.titlu} (${selectedSize})` 
         : produs.titlu;
@@ -124,7 +147,7 @@ export default function PaginaProdus() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 bg-white/90 backdrop-blur-md p-8 rounded-3xl shadow-2xl">
             
-            {/* --- COL 1: GALERIE FOTO --- */}
+            {/* COL 1: GALERIE FOTO */}
             <div className="flex flex-col gap-4">
                 <div 
                     className="bg-white border rounded-2xl overflow-hidden h-[500px] flex items-center justify-center shadow-sm relative group cursor-zoom-in"
@@ -162,12 +185,12 @@ export default function PaginaProdus() {
                 )}
             </div>
 
-            {/* --- COL 2: DETALII PRODUS --- */}
+            {/* COL 2: DETALII PRODUS */}
             <div className="flex flex-col">
             <h1 className="text-4xl font-extrabold mb-2 text-gray-900 tracking-tight">{produs.titlu}</h1>
             <p className="text-3xl font-bold text-blue-600 mb-8">{produs.pret} RON</p>
             
-            {/* SELECTOR MĂRIMI CU LOGICĂ DE STOC */}
+            {/* SELECTOR MĂRIMI */}
             {produs.marimi && produs.marimi.length > 0 && (
                 <div className="mb-8">
                     <div className="flex justify-between items-center mb-3">
@@ -175,9 +198,7 @@ export default function PaginaProdus() {
                     </div>
                     <div className="flex flex-wrap gap-3">
                         {produs.marimi.map((m) => {
-                            // 🛑 Verificăm dacă stocul e 0
                             const isOutOfStock = m.stoc <= 0;
-
                             return (
                                 <button
                                     key={m.nume}
@@ -199,11 +220,19 @@ export default function PaginaProdus() {
                     </div>
                     {!selectedSize && <p className="text-red-500 text-sm mt-2 font-medium">* Selectarea mărimii este obligatorie</p>}
                     
-                    {/* Mesaj Stoc Limitat */}
-                    {selectedSize && produs.marimi.find(m => m.nume === selectedSize)?.stoc! < 3 && produs.marimi.find(m => m.nume === selectedSize)?.stoc! > 0 && (
-                        <p className="text-orange-600 text-sm mt-3 font-bold animate-pulse flex items-center gap-2">
-                            🔥 Grăbește-te! Doar {produs.marimi.find(m => m.nume === selectedSize)?.stoc} bucăți rămase!
-                        </p>
+                    {/* INFO STOC (Feedback Vizual) */}
+                    {selectedSize && (
+                        <div className="mt-3 text-sm">
+                            {(() => {
+                                const stoc = produs.marimi.find(m => m.nume === selectedSize)?.stoc || 0;
+                                const inCos = cart.filter(i => i.id === produs.id && i.marime === selectedSize).length;
+                                const ramas = stoc - inCos;
+
+                                if (ramas <= 0) return <span className="text-red-600 font-bold">Ai atins limita de stoc pentru această mărime!</span>;
+                                if (stoc < 3) return <span className="text-orange-600 font-bold animate-pulse">🔥 Grăbește-te! Doar {stoc} bucăți în stoc!</span>;
+                                return <span className="text-green-600">În stoc ({stoc} buc)</span>;
+                            })()}
+                        </div>
                     )}
                 </div>
             )}
@@ -217,7 +246,6 @@ export default function PaginaProdus() {
 
             <button
                 onClick={handleAddToCart}
-                // Dacă stocul total e 0 (pentru produsele fără mărimi) sau nu e selectată mărimea
                 disabled={produs.marimi && produs.marimi.length > 0 && !selectedSize}
                 className="w-full bg-blue-600 text-white py-4 rounded-xl text-lg font-bold hover:bg-blue-700 transition-all shadow-lg active:scale-95 flex justify-center items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
