@@ -80,7 +80,7 @@ export default function PaginaProdus() {
         pret: produs.pret
     });
 
-    alert(`✅ ${titluFinal} a fost adăugat în coș!`);
+    
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-xl">Se încarcă detaliile...</div>;
