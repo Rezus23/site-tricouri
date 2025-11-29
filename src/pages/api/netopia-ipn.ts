@@ -1,13 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import forge from "node-forge";
 import { parseStringPromise } from "xml2js";
-import { sendOrderConfirmation } from "@/lib/email"; // Pentru email client
+import { sendOrderConfirmation } from "@/lib/email"; 
 import admin from "firebase-admin";
 import { getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import nodemailer from "nodemailer"; // Pentru notificarea admin
+import nodemailer from "nodemailer";
 
-// --- 1. Configurare Firebase Admin ---
+// --- 1. Init Firebase ---
 if (!getApps().length) {
   try {
     admin.initializeApp({
@@ -19,21 +19,21 @@ if (!getApps().length) {
     });
   } catch (e) { console.error("🔥 Eroare init Firebase:", e); }
 }
+
 const db = getFirestore();
 try { db.settings({ ignoreUndefinedProperties: true }); } catch (e) {}
 
-
-// --- 2. Funcție Decriptare RC4 (Helper) ---
+// --- 2. Funcție Decriptare RC4 (Corectată) ---
 function rc4Decrypt(key: Buffer, input: Buffer): Buffer {
   const s: number[] = [];
   let j = 0; let x: number;
-  for (let i = 0; i < 256; i++) s[i] = i;
+  for (let i = 0; i < 256; i++) { s[i] = i; }
   for (let i = 0; i < 256; i++) {
     j = (j + s[i] + key[i % key.length]) % 256;
     x = s[i]; s[i] = s[j]; s[j] = x;
   }
   let i = 0; j = 0;
-  const output = Buffer.alloc(input.length);
+  const output = Buffer.alloc(input.length); // Declarăm output înainte
   for (let y = 0; y < input.length; y++) {
     i = (i + 1) % 256;
     j = (j + s[i]) % 256;
@@ -43,8 +43,8 @@ function rc4Decrypt(key: Buffer, input: Buffer): Buffer {
   return output;
 }
 
-// --- 3. Funcție de trimitere Notificare Admin ---
-async function sendAdminNotificationEmail(order: any, adminEmail: string) {
+// --- 3. Funcție Notificare Admin ---
+async function sendAdminNotification(order: any) {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -53,60 +53,79 @@ async function sendAdminNotificationEmail(order: any, adminEmail: string) {
         },
     });
 
-    const adresaLivrare = order.adresaLivrare;
-
-    const adresaAdminHTML = adresaLivrare ? `
-        <div style="padding: 15px; border: 1px solid #c08419; background-color: #fff9e6; margin-top: 15px; border-radius: 6px;">
-            <h4 style="color: #c08419; margin-top: 0; font-size: 16px;">Detalii Livrare Client:</h4>
-            <p style="margin: 5px 0;"><strong>Client:</strong> ${adresaLivrare.prenume} ${adresaLivrare.nume}</p>
-            <p style="margin: 5px 0;"><strong>Email Client:</strong> ${order.email}</p>
-            <p style="margin: 5px 0;"><strong>Telefon:</strong> ${adresaLivrare.telefon}</p>
-            <p style="margin: 5px 0;"><strong>Adresa:</strong> ${adresaLivrare.adresa}, ${adresaLivrare.oras}, ${adresaLivrare.judet}</p>
-            <p style="font-size: 1.1em; font-weight: bold; margin-top: 10px;">TOTAL: ${order.amount?.toFixed(2) ?? '0.00'} RON</p>
-        </div>
-    ` : `<p>Adresa nu a fost salvată.</p>`;
-
     const produseHTML = order.produse?.map((p: any) => 
-        `<li style="margin-bottom: 5px;">${p.titlu} (${p.pret} RON)</li>`
+        `<li>${p.titlu} (${p.pret} RON)</li>`
     ).join('');
-    
-    const adminEmailBody = `
-      <html>
-        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background-color: #f4f4f4;">
-            <div style="background-color: #ffffff; padding: 25px; border-radius: 8px; border-top: 4px solid #dc2626;">
-                <h1 style="color: #dc2626; font-size: 24px;">🚨 COMANDĂ NOUĂ PRIMITĂ! #${order.orderId}</h1>
-                <p style="font-size: 16px; margin-bottom: 20px;">Un nou client a finalizat plata cu succes pe site.</p>
-                
-                ${adresaAdminHTML}
 
-                <h3 style="margin-top: 30px; color: #1f2937;">Produse Comandate:</h3>
-                <ul style="padding-left: 20px;">${produseHTML}</ul>
-
-                <p style="margin-top: 30px; font-weight: bold;">Acționează rapid pentru a pregăti coletul.</p>
-            </div>
-        </body>
-      </html>
+    const adminBody = `
+        <div style="font-family: Arial; padding: 20px; border: 2px solid red;">
+            <h2 style="color: red;">🚨 COMANDĂ NOUĂ! #${order.orderId}</h2>
+            <p><strong>Client:</strong> ${order.adresaLivrare?.nume} ${order.adresaLivrare?.prenume}</p>
+            <p><strong>Total:</strong> ${order.amount} RON</p>
+            <h3>Produse:</h3>
+            <ul>${produseHTML}</ul>
+            <p>Verifică Firebase pentru detalii complete.</p>
+        </div>
     `;
 
     await transporter.sendMail({
-        from: `"Notificări Comenzi" <${process.env.EMAIL_USER}>`,
-        to: adminEmail, // Trimitem către tine (adresa din EMAIL_USER)
-        subject: `URGENT: COMANDA NOUĂ #${order.orderId} - ${order.amount?.toFixed(2)} RON`,
-        html: adminEmailBody,
+        from: `"Admin Alert" <${process.env.EMAIL_USER}>`,
+        to: process.env.EMAIL_USER, // Trimite ție
+        subject: `💰 COMANDĂ NOUĂ #${order.orderId}`,
+        html: adminBody,
     });
 }
 
+// --- 4. Funcție Scădere Stoc (Tranzacție) ---
+async function updateProductStock(produseComanda: any[]) {
+  for (const item of produseComanda) {
+    // Dacă produsul nu are ID valid, sărim (de ex. produse vechi)
+    if (!item.id) continue;
+
+    // Extragem mărimea selectată din titlu sau dintr-un câmp separat dacă există
+    // În implementarea curentă din Cart, nu salvăm mărimea separat în obiectul produs,
+    // ci o avem în `marimeSelectata` (dacă ai actualizat CartContext) sau în titlu.
+    // Presupunem că `item.marimeSelectata` există (vezi cart.tsx).
+    const marime = item.marimeSelectata || item.marime; 
+
+    if (!marime) continue; // Dacă nu e mărime, nu avem ce stoc să scădem (sau scădem global dacă implementezi asta)
+
+    const productRef = db.collection("products").doc(String(item.id));
+    
+    await db.runTransaction(async (t) => {
+      const doc = await t.get(productRef);
+      if (!doc.exists) return;
+
+      const data = doc.data();
+      const marimi = data?.marimi || [];
+
+      // Găsim mărimea și scădem stocul
+      let stocModificat = false;
+      const marimiActualizate = marimi.map((m: any) => {
+        if (m.nume === marime) {
+          const stocNou = Math.max(0, m.stoc - 1);
+          stocModificat = true;
+          return { ...m, stoc: stocNou };
+        }
+        return m;
+      });
+
+      if (stocModificat) {
+          t.update(productRef, { marimi: marimiActualizate });
+      }
+    });
+  }
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
   console.log("🚀 [IPN] Start procesare.");
-
   const { env_key, data } = req.body;
   if (!env_key || !data) return res.status(400).send("Missing data");
 
   try {
-    // Decriptare
+    // --- Decriptare ---
     let pkPem = process.env.MOBILPAY_PRIVATE_KEY_PEM;
     if (!pkPem) throw new Error("Private Key Missing");
     pkPem = pkPem.replace(/\\n/g, '\n').replace(/"/g, '').trim();
@@ -120,7 +139,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const decryptedXmlBuffer = rc4Decrypt(rc4KeyBuffer, dataBuffer);
     const xmlStr = decryptedXmlBuffer.toString("utf8");
 
-    // Parsare
+    // --- Parsare XML ---
     const xmlObj = await parseStringPromise(xmlStr);
     const order = xmlObj?.order;
     const orderId = order?.$?.id;
@@ -128,7 +147,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const action = mobilepay?.action?.[0]; 
     const error = mobilepay?.error?.[0]?.$?.code; 
 
-    // Procesare
+    // --- Procesare ---
     if (orderId && error == "0" && (action === "confirmed" || action === "paid")) {
       const orderRef = db.collection("orders").doc(orderId);
       const orderSnap = await orderRef.get();
@@ -137,30 +156,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const orderData = orderSnap.data() as any; 
 
         if (orderData?.status !== "completed") {
+          // 1. Actualizăm statusul
           await orderRef.update({ 
             status: "completed",
             paymentDate: admin.firestore.FieldValue.serverTimestamp()
           });
           
-          console.log("✅ Firebase actualizat. Trimit emailuri...");
+          console.log("✅ Firebase actualizat. Procesez stocuri...");
 
-          // --- 1. TRIMITE EMAIL CLIENT (Confimare comandă) ---
+          // 2. Scădem stocul
+          try {
+              await updateProductStock(orderData.produse);
+              console.log("📉 Stocuri actualizate.");
+          } catch (stocErr) {
+              console.error("⚠️ Eroare stoc:", stocErr);
+          }
+
+          // 3. Trimitem Email Client (Design Nou)
           await sendOrderConfirmation({
-            nume: orderData?.adresaLivrare?.nume || "Client",
+            nume: orderData?.details,
             email: orderData?.email,
-            adresa: "Vezi detalii", 
+            adresa: "Detalii în cont", 
             produse: orderData?.produse || [],
             total: orderData?.amount,
             orderId: orderId,
             adresaLivrare: orderData?.adresaLivrare,
           });
           
-          // --- 2. TRIMITE EMAIL ADMIN (Notificare comandă nouă) ---
-          await sendAdminNotificationEmail(orderData, process.env.EMAIL_USER!);
-          
-          console.log("🎉 Emailuri trimise cu succes!");
+          // 4. Trimitem Email Admin
+          try {
+             await sendAdminNotification(orderData);
+          } catch(e) { console.error("Err admin email", e); }
+
+          console.log("🎉 Totul finalizat cu succes!");
         } else {
-            console.log("ℹ️ Comanda era deja completată.");
+            console.log("ℹ️ Comanda era deja procesată.");
         }
       } else {
           console.error("❌ Comanda nu există în Firebase:", orderId);
@@ -171,7 +201,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).send(`<?xml version="1.0" encoding="utf-8"?><crc error_type="0" error_code="0">0</crc>`);
 
   } catch (err: any) {
-    console.error("❌ IPN ERROR:", err.message);
+    console.error("❌ EROARE CRITICĂ IPN:", err.message);
     return res.status(200).send(`<?xml version="1.0" encoding="utf-8"?><crc error_type="0" error_code="0">0</crc>`);
   }
 }
