@@ -4,13 +4,18 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import Link from "next/link";
 import BlurredBackground from "@/components/BlurredBackground";
 
+type MarimeStoc = {
+  nume: string;
+  stoc: number;
+};
+
 type Produs = {
   id: string;
   titlu: string;
   pret: number;
   imagine: string;    
   imagini?: string[]; 
-  marimi?: string[];
+  marimi?: MarimeStoc[];
 };
 
 export default function Shop() {
@@ -23,10 +28,25 @@ export default function Shop() {
         const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
         const snapshot = await getDocs(q);
 
-        const data = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Produs[];
+        const data = snapshot.docs.map((doc) => {
+            const d = doc.data();
+            
+            // Compatibilitate mărimi
+            let marimiFinale: MarimeStoc[] = [];
+            if (Array.isArray(d.marimi)) {
+                if (typeof d.marimi[0] === 'string') {
+                    marimiFinale = d.marimi.map((m: string) => ({ nume: m, stoc: 99 }));
+                } else {
+                    marimiFinale = d.marimi;
+                }
+            }
+
+            return {
+                id: doc.id,
+                ...d,
+                marimi: marimiFinale
+            };
+        }) as Produs[];
 
         setProduse(data);
       } catch (error) {
@@ -67,37 +87,48 @@ export default function Shop() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {produse.map((produs) => {
               
-              // 1. Pregătim imaginile
-              // img1: Imaginea principală (mereu vizibilă sub)
               const img1 = produs.imagini?.[0] || produs.imagine || "/images/logo.jpg";
-              
-              // img2: Imaginea secundară (doar dacă există, altfel null)
               const img2 = (produs.imagini && produs.imagini.length > 1) ? produs.imagini[1] : null;
+
+              // 1. CALCUL STOC
+              // Dacă produsul are mărimi definite, calculăm suma stocurilor.
+              // Dacă nu are mărimi (produse vechi), considerăm că are stoc (0 la sumă, dar nu e marcat ca sold out).
+              const totalStoc = produs.marimi?.reduce((acc, m) => acc + m.stoc, 0) ?? 0;
+              
+              // E sold out DOAR dacă are lista de mărimi definită ȘI suma e 0
+              const isSoldOut = produs.marimi && produs.marimi.length > 0 && totalStoc <= 0;
 
               return (
                 <div
                   key={produs.id}
-                  // 'group' este esențial aici pentru hover
-                  className="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden flex flex-col group"
+                  className={`bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl transition-all duration-300 overflow-hidden flex flex-col group
+                    ${isSoldOut ? "opacity-80" : "hover:shadow-2xl hover:-translate-y-2"} 
+                  `}
                 >
-                  {/* ZONA DE IMAGINE */}
+                  {/* ZONA IMAGINE */}
                   <Link href={`/magazin/${produs.id}`} className="block relative h-72 bg-gray-50 overflow-hidden">
-                    
-                    {/* --- IMAGINEA 1 (Baza) --- */}
                     <img
                       src={img1}
                       alt={produs.titlu}
-                      className="absolute inset-0 w-full h-full object-contain p-6 transition-transform duration-500"
+                      className={`absolute inset-0 w-full h-full object-contain p-6 transition-transform duration-500 ${!isSoldOut && "group-hover:scale-110"} ${isSoldOut && "grayscale"}`}
                     />
-
-                    {/* --- IMAGINEA 2 (Overlay la Hover) --- */}
-                    {/* O randăm doar dacă există. Are opacity-0 standard și opacity-100 la hover */}
-                    {img2 && (
+                    
+                    {/* Hover image (doar dacă nu e sold out) */}
+                    {img2 && !isSoldOut && (
                       <img
                         src={img2}
-                        alt={`${produs.titlu} spate`}
+                        alt="spate"
                         className="absolute inset-0 w-full h-full object-contain p-6 bg-gray-50 transition-opacity duration-500 opacity-0 group-hover:opacity-100 z-10"
                       />
+                    )}
+
+                    {/* Badge SOLD OUT pe imagine */}
+                    {isSoldOut && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
+                            <span className="text-white font-black text-xl tracking-widest border-4 border-white px-4 py-2 transform -rotate-12">
+                                SOLD OUT
+                            </span>
+                        </div>
                     )}
                   </Link>
 
@@ -109,9 +140,17 @@ export default function Shop() {
                       </h3>
                     </Link>
                     
-                    <p className="text-2xl font-extrabold text-blue-600">
-                      {produs.pret} RON
-                    </p>
+                    {/* 2. LOGICA PREȚ vs SOLD OUT */}
+                    {isSoldOut ? (
+                        <p className="text-xl font-black text-red-600 uppercase tracking-wider mt-auto">
+                            Sold Out
+                        </p>
+                    ) : (
+                        <p className="text-2xl font-extrabold text-blue-600 mt-auto">
+                            {produs.pret} RON
+                        </p>
+                    )}
+
                   </div>
                 </div>
               );
