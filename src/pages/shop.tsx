@@ -67,26 +67,42 @@ export default function Shop() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {produse.map((produs) => {
               
-              const imaginePrincipala = (produs.imagini && produs.imagini.length > 0) 
-                  ? produs.imagini[0] 
-                  : produs.imagine;
+              // 1. Pregătim imaginile
+              // img1: Imaginea principală (mereu vizibilă sub)
+              const img1 = produs.imagini?.[0] || produs.imagine || "/images/logo.jpg";
+              
+              // img2: Imaginea secundară (doar dacă există, altfel null)
+              const img2 = (produs.imagini && produs.imagini.length > 1) ? produs.imagini[1] : null;
 
               return (
                 <div
                   key={produs.id}
+                  // 'group' este esențial aici pentru hover
                   className="bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden flex flex-col group"
                 >
-                  {/* IMAGINE (Clickabilă) */}
+                  {/* ZONA DE IMAGINE */}
                   <Link href={`/magazin/${produs.id}`} className="block relative h-72 bg-gray-50 overflow-hidden">
+                    
+                    {/* --- IMAGINEA 1 (Baza) --- */}
                     <img
-                      src={imaginePrincipala}
+                      src={img1}
                       alt={produs.titlu}
-                      className="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-110"
+                      className="absolute inset-0 w-full h-full object-contain p-6 transition-transform duration-500"
                     />
+
+                    {/* --- IMAGINEA 2 (Overlay la Hover) --- */}
+                    {/* O randăm doar dacă există. Are opacity-0 standard și opacity-100 la hover */}
+                    {img2 && (
+                      <img
+                        src={img2}
+                        alt={`${produs.titlu} spate`}
+                        className="absolute inset-0 w-full h-full object-contain p-6 bg-gray-50 transition-opacity duration-500 opacity-0 group-hover:opacity-100 z-10"
+                      />
+                    )}
                   </Link>
 
                   {/* DETALII */}
-                  <div className="p-6 flex flex-col flex-grow text-center">
+                  <div className="p-6 flex flex-col flex-grow text-center relative z-20 bg-white/95">
                     <Link href={`/magazin/${produs.id}`}>
                       <h3 className="font-bold text-xl text-gray-900 hover:text-blue-700 transition-colors mb-2 leading-tight">
                         {produs.titlu}
@@ -96,8 +112,6 @@ export default function Shop() {
                     <p className="text-2xl font-extrabold text-blue-600">
                       {produs.pret} RON
                     </p>
-
-                    {/* AM ȘTERS BUTONUL DE AICI */}
                   </div>
                 </div>
               );
