@@ -1,7 +1,6 @@
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/router";
 import { FiCheck, FiX } from "react-icons/fi";
-import Link from "next/link";
 
 export default function CartPopup() {
   const { isPopupOpen, closePopup, lastAddedItem, cart } = useCart();
@@ -44,19 +43,15 @@ export default function CartPopup() {
 
         {/* Butoane Acțiune */}
         <div className="flex flex-col gap-3">
+          {/* Buton VEZI COȘUL - Acum este principal */}
           <button 
             onClick={() => { closePopup(); router.push('/cart'); }}
-            className="w-full py-2 border border-white text-white text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-black transition"
+            className="w-full py-3 bg-white text-black text-sm font-bold uppercase tracking-wider hover:bg-gray-200 transition"
           >
             Vezi Coșul ({cart.length})
           </button>
           
-          <button 
-            onClick={() => { closePopup(); router.push('/checkout/adresa'); }}
-            className="w-full py-2 bg-white text-black text-sm font-bold uppercase tracking-wider hover:bg-gray-200 transition"
-          >
-            Finalizează Comanda
-          </button>
+          {/* ❌ AM ȘTERS BUTONUL DE FINALIZARE COMANDĂ */}
           
           <button 
             onClick={closePopup}
