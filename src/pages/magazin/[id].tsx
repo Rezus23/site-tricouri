@@ -77,6 +77,7 @@ export default function PaginaProdus() {
     adaugaInCos({
         id: 0, 
         titlu: titluFinal,
+        imagine: selectedImage || produs.imagini?.[0] || produs.imagine,
         pret: produs.pret
     });
 
