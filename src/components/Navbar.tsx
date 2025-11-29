@@ -28,7 +28,6 @@ export default function Navbar() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [allProducts, setAllProducts] = useState<SearchResult[]>([]);
 
-  // Scroll Effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -37,7 +36,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Fetch Produse
   useEffect(() => {
     if (!isShopPage) return;
     const fetchProductsForSearch = async () => {
@@ -54,7 +52,6 @@ export default function Navbar() {
     fetchProductsForSearch();
   }, [isShopPage]);
 
-  // Logică Căutare
   useEffect(() => {
     if (searchTerm.trim() === "") {
       setSearchResults([]);
@@ -80,16 +77,13 @@ export default function Navbar() {
           isScrolled || isMobileSearchOpen ? "bg-black/95 backdrop-blur-md shadow-lg" : "bg-black/80 backdrop-blur-sm"
         }`}
       >
-        {/* --- RÂNDUL PRINCIPAL (LOGO + ICONIȚE) --- */}
-        {/* ⚠️ FIX: Am mărit padding-ul la px-6 și py-4 pentru simetrie */}
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center h-20">
           
-          {/* LOGO - Stânga */}
-          <Link href="/" className="flex items-center z-50 relative shrink-0">
+          {/* LOGO */}
+          <Link href="/" className="flex items-center z-50 relative shrink-0 -ml-3 md:ml-0">
             <img 
               src="/images/logo.jpg" 
               alt="Logo" 
-              // Am ajustat dimensiunea pe mobil ca să nu fie prea mic/mare față de iconițe
               className="h-12 w-12 md:h-16 md:w-16 object-cover rounded-full hover:scale-105 transition border border-white/20" 
             />
           </Link>
@@ -124,32 +118,39 @@ export default function Navbar() {
             <div className="hidden md:block flex-1"></div>
           )}
 
-          {/* MENIU DREAPTA (Desktop) */}
+          {/* --- MENIU DREAPTA (DESKTOP) --- */}
+          {/* Ordinea: Home -> Magazin -> Coș -> Cont */}
           <div className="hidden md:flex items-center gap-8 text-white">
+            
+            {/* 1. Home */}
             <NavLink href="/" icon={<FiHome />} text="Home" />
+            
+            {/* 2. Magazin */}
             <NavLink href="/shop" icon={<FiGrid />} text="Magazin" />
             
-            <Link href="/contul_meu" className="hover:text-lime-400 transition flex flex-col items-center gap-1 group">
-              <FiUser className="text-xl group-hover:scale-110 transition" />
-              <span className="text-[10px] uppercase font-bold tracking-widest">Cont</span>
-            </Link>
-
+            {/* 3. Coș (Mutat aici) */}
             <Link href="/cart" className="relative hover:text-lime-400 transition flex flex-col items-center gap-1 group">
               <div className="relative">
                 <FiShoppingBag className="text-xl group-hover:scale-110 transition" />
                 {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-lime-400 text-black text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-lime-400 text-black text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center animate-bounce">
                     {cart.length}
                   </span>
                 )}
               </div>
               <span className="text-[10px] uppercase font-bold tracking-widest">Coș</span>
             </Link>
+
+            {/* 4. Cont (Mutat la final) */}
+            <Link href="/contul_meu" className="hover:text-lime-400 transition flex flex-col items-center gap-1 group">
+              <FiUser className="text-xl group-hover:scale-110 transition" />
+              <span className="text-[10px] uppercase font-bold tracking-widest">Cont</span>
+            </Link>
+
           </div>
 
-          {/* --- ICONIȚE MOBIL (Dreapta) --- */}
+          {/* --- ICONIȚE MOBIL --- */}
           <div className="flex md:hidden items-center gap-6 text-white">
-            
             {isShopPage && (
                 <button 
                     onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
@@ -169,7 +170,7 @@ export default function Navbar() {
             </Link>
 
             <button 
-                className="text-3xl z-50 flex items-center" // Text-3xl ca să fie egal vizual cu logo-ul
+                className="text-3xl z-50 flex items-center" 
                 onClick={() => {
                     setIsMobileMenuOpen(!isMobileMenuOpen);
                     setIsMobileSearchOpen(false);
@@ -180,7 +181,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* --- SEARCH BAR MOBIL --- */}
+        {/* SEARCH BAR MOBIL */}
         {isShopPage && isMobileSearchOpen && (
             <div className="md:hidden px-6 pb-4 bg-black/95 backdrop-blur-md border-b border-gray-800 animate-in slide-in-from-top-2 fade-in duration-200">
                 <div className="relative">
@@ -211,12 +212,13 @@ export default function Navbar() {
         )}
 
         {/* --- MENIU LATERAL MOBIL --- */}
+        {/* Ordine actualizată și aici */}
         <div className={`fixed inset-0 bg-black/95 z-40 transition-transform duration-300 flex flex-col justify-center px-8 ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
             <div className="flex flex-col gap-8 text-2xl font-bold text-white text-center">
                 <MobileLink href="/" text="Acasă" onClick={() => setIsMobileMenuOpen(false)} />
                 <MobileLink href="/shop" text="Magazin" onClick={() => setIsMobileMenuOpen(false)} />
-                <MobileLink href="/contul_meu" text="Contul Meu" onClick={() => setIsMobileMenuOpen(false)} />
                 <MobileLink href="/cart" text={`Coșul Meu (${cart.length})`} onClick={() => setIsMobileMenuOpen(false)} />
+                <MobileLink href="/contul_meu" text="Contul Meu" onClick={() => setIsMobileMenuOpen(false)} />
             </div>
         </div>
       </nav>
