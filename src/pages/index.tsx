@@ -10,24 +10,25 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="min-h-screen bg-black text-white font-sans flex flex-col">
+      {/* 👇 Container Principal: bg-black și pt-20 pentru spațiere */}
+      <div className="min-h-screen bg-black text-white font-sans flex flex-col pt-20">
         
         {/* --- HERO SECTION (Bannerul Mare) --- */}
-        <div className="relative h-[90vh] w-full overflow-hidden">
+        <div className="relative h-[85vh] w-full overflow-hidden">
           
           {/* Imaginea de Fundal */}
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{ 
-              backgroundImage: "url('/images/hero-banner.jpg')", // Asigură-te că ai poza asta în public/images/
+              backgroundImage: "url('/images/hero-banner.jpg')", // Asigură-te că poza există!
             }}
           >
-            {/* Overlay întunecat pentru contrast */}
+            {/* Overlay întunecat pentru contrast (gradient) */}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30"></div>
           </div>
 
           {/* Conținutul Hero */}
-          <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4 pt-20">
+          <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4">
             
             <h2 className="text-5xl md:text-7xl font-extrabold uppercase mb-6 tracking-tight drop-shadow-2xl animate-in fade-in zoom-in duration-700">
               <span className="text-white">Descoperă noua </span>
@@ -51,7 +52,7 @@ export default function Home() {
         </div>
 
         {/* --- FOOTER (Obligatoriu pentru Netopia & ANPC) --- */}
-        <footer className="bg-[#0a0a0a] py-12 text-center text-gray-500 text-sm border-t border-gray-900">
+        <footer className="bg-[#0a0a0a] py-12 text-center text-gray-500 text-sm border-t border-gray-900 mt-auto">
           
           {/* Copyright */}
           <p className="mb-6 text-gray-400">© 2025 Passion4Jerseys. Toate drepturile rezervate.</p>
@@ -75,7 +76,6 @@ export default function Home() {
           {/* Logo-uri ANPC (SAL / SOL) - Obligatorii pe Homepage */}
           <div className="flex justify-center gap-4 opacity-80 hover:opacity-100 transition-opacity">
             <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noreferrer">
-                {/* Folosim direct link-urile oficiale pentru imagini sau le descarci tu local */}
                 <img 
                     src="https://wp.anpc.ro/wp-content/uploads/2023/02/sal.png" 
                     alt="ANPC SAL" 
