@@ -80,7 +80,7 @@ export default function ContulMeu() {
       {/* 1. FUNDAL BLURAT */}
       <BlurredBackground />
 
-      <div className="p-4 max-w-5xl mx-auto pt-10 relative z-10">
+      <div className="p-4 max-w-5xl mx-auto pt-40 relative z-10">
         
         {/* HEADER + BUTOANE */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-white/30 pb-4">
