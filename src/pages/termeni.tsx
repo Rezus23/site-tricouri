@@ -61,7 +61,7 @@ export default function Termeni() {
             <h2 className="text-xl font-bold mb-2">5. Livrare</h2>
             <p>
               Livrarea se face prin curier rapid (Fan Courier / Sameday) oriunde în România.
-              Termenul estimativ de livrare este de <strong>24-48 de ore</strong> lucrătoare de la confirmarea comenzii.
+              Termenul estimativ de livrare este de <strong>2-5 zile</strong> lucrătoare de la confirmarea comenzii (excepţie face comanda personalizată, unde timpul de livrare este de aproximativ 12-15 zile lucrătoare).
               Costul transportului este afișat înainte de finalizarea comenzii (sau este gratuit peste o anumită sumă).
             </p>
           </section>
