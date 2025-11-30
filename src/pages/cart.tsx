@@ -12,7 +12,7 @@ export default function Cart() {
   const total = cart.reduce((acc, p) => acc + Number(p.pret), 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 pt-32">
       <div className="max-w-4xl mx-auto">
         
         {/* Titlu Pagină */}

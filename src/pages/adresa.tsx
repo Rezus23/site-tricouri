@@ -107,7 +107,7 @@ export default function AdresaLivrare() {
   );
 
   return (
-    <div className="p-4 max-w-2xl mx-auto min-h-screen">
+    <div className="p-4 max-w-2xl mx-auto min-h-screen pt-32">
       <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Pasul 1: Detalii Livrare</h1>
 
       <form onSubmit={handlePayWithNetopia} className="space-y-4">
