@@ -16,11 +16,10 @@ export default function Navbar() {
   const { cart } = useCart();
   const router = useRouter();
   
+  // Verificăm pagina curentă
   const isShopPage = router.pathname === "/shop";
-  const isHomePage = router.pathname === "/"; // 👈 Verificăm Home
 
   // Stări UI
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   
@@ -29,16 +28,7 @@ export default function Navbar() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [allProducts, setAllProducts] = useState<SearchResult[]>([]);
 
-  // Scroll Effect
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Fetch Produse
+  // Fetch Produse (doar pe shop)
   useEffect(() => {
     if (!isShopPage) return;
     const fetchProductsForSearch = async () => {
@@ -55,7 +45,7 @@ export default function Navbar() {
     fetchProductsForSearch();
   }, [isShopPage]);
 
-  // Logică Căutare
+  // Căutare Live
   useEffect(() => {
     if (searchTerm.trim() === "") {
       setSearchResults([]);
@@ -67,6 +57,7 @@ export default function Navbar() {
     setSearchResults(results.slice(0, 5)); 
   }, [searchTerm, allProducts]);
 
+  // Resetare la navigare
   useEffect(() => {
     setSearchTerm("");
     setSearchResults([]);
@@ -77,12 +68,8 @@ export default function Navbar() {
   return (
     <>
       <nav 
-        className={`fixed top-0 w-full z-50 transition-all duration-300 border-b border-white/10 ${
-          isScrolled || isMobileSearchOpen || !isHomePage ? "bg-black/95 backdrop-blur-md shadow-lg" : "bg-transparent"
-        }`}
+        className="fixed top-0 w-full z-50 bg-black shadow-lg border-b border-white/10 transition-all duration-300"
       >
-        {/* Pe Home (la început), navbarul va fi transparent, apoi devine negru la scroll */}
-        
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center h-20">
           
           {/* LOGO */}
@@ -94,14 +81,14 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* SEARCH BAR DESKTOP */}
+          {/* SEARCH BAR DESKTOP (Doar pe Shop) */}
           {isShopPage ? (
             <div className="hidden md:block relative flex-1 max-w-md mx-8 animate-in fade-in zoom-in duration-300">
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Caută..."
-                  className="w-full bg-gray-900/80 text-white border border-gray-700 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:border-lime-400 focus:bg-black transition-all placeholder-gray-500"
+                  className="w-full bg-gray-900 text-white border border-gray-700 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:border-lime-400 focus:bg-black transition-all placeholder-gray-500"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -168,7 +155,7 @@ export default function Navbar() {
 
         {/* SEARCH BAR MOBIL */}
         {isShopPage && isMobileSearchOpen && (
-            <div className="md:hidden px-6 pb-4 bg-black/95 backdrop-blur-md border-b border-gray-800">
+            <div className="md:hidden px-6 pb-4 bg-black border-b border-gray-800">
                 <div className="relative">
                     <input autoFocus type="text" placeholder="Caută..." className="w-full bg-gray-800 text-white p-3 pl-10 rounded-lg text-base focus:outline-none focus:ring-1 focus:ring-lime-400" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                     <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
@@ -189,7 +176,7 @@ export default function Navbar() {
         )}
 
         {/* MENIU MOBIL LATERAL */}
-        <div className={`fixed inset-0 bg-black/95 z-40 transition-transform duration-300 flex flex-col justify-center px-8 ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
+        <div className={`fixed inset-0 bg-black z-40 transition-transform duration-300 flex flex-col justify-center px-8 ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
             <div className="flex flex-col gap-8 text-2xl font-bold text-white text-center">
                 <MobileLink href="/" text="Acasă" onClick={() => setIsMobileMenuOpen(false)} />
                 <MobileLink href="/shop" text="Magazin" onClick={() => setIsMobileMenuOpen(false)} />
@@ -199,8 +186,8 @@ export default function Navbar() {
         </div>
       </nav>
       
-      {/* 👇 AICI E SCHIMBAREA: Spacer-ul dispare pe HomePage */}
-      {!isHomePage && <div className="h-20 md:h-24"></div>}
+      {/* 👇 AICI E SCHIMBAREA: Spacer-ul apare DOAR pe Shop */}
+      {isShopPage && <div className="h-20 md:h-24"></div>}
     </>
   );
 }
