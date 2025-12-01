@@ -77,14 +77,14 @@ export default function Home() {
           <div className="flex justify-center gap-4 opacity-80 hover:opacity-100 transition-opacity">
             <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noreferrer">
                 <img 
-                    src="/sal.png" 
+                    src="images/sal.png" 
                     alt="ANPC SAL" 
                     className="h-8 md:h-10 w-auto" 
                 />
             </a>
             <a href="https://europa.eu/youreurope/business/dealing-with-customers/solving-disputes/alternative-dispute-resolution/index_ro.html" target="_blank" rel="noreferrer">
                 <img 
-                    src="/sol.png" 
+                    src="images/sol.png" 
                     alt="ANPC SOL" 
                     className="h-8 md:h-10 w-auto" 
                 />
