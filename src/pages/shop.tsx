@@ -146,8 +146,8 @@ export default function Shop() {
 
                         </p>
                     ) : (
-                        <p className="text-2xl font-extrabold text-blue-600 mt-auto">
-                            {produs.pret} RON
+                        <p className="text-2xl font-mono font-bold text-blue-600 mt-auto tracking-tight">
+                          {produs.pret} RON
                         </p>
                     )}
 
