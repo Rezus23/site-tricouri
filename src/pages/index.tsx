@@ -28,8 +28,8 @@ export default function Home() {
           {/* Conținut Centrat */}
           <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4">
             <h2 className="text-5xl md:text-7xl font-extrabold uppercase mb-6 tracking-tight drop-shadow-2xl">
-              <span className="text-white">Descoperă noua </span>
-              <span className="text-lime-400 block md:inline">colecție</span>
+              <span className="text-white">Descoperă-ţi</span>
+              <span className="text-lime-400 block md:inline">pasiunea</span>
             </h2>
             
             <p className="text-gray-200 text-xl mb-12 max-w-2xl mx-auto font-medium drop-shadow-md">
