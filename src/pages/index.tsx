@@ -10,35 +10,31 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      {/* 👇 Container Principal: 
-          - min-h-screen: ocupă cel puțin toată înălțimea ecranului
-          - bg-black: fundal negru (siguranță)
-          - pt-20: spațiu sus pentru navbar
-          - w-full: lățime 100%
-          - overflow-x-hidden: ascunde scroll orizontal
-      */}
       <div className="min-h-screen bg-black text-white font-sans flex flex-col pt-20 w-full overflow-x-hidden">
         
-        {/* --- HERO SECTION (Bannerul Mare) --- */}
-        {/* relative h-[85vh]: ocupă 85% din înălțimea ecranului */}
+        {/* --- HERO SECTION --- */}
         <div className="relative h-[85vh] w-full overflow-hidden">
           
-          {/* Imaginea de Fundal */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ 
-              backgroundImage: "url('/images/hero-banner.jpg')", // Asigură-te că poza există!
-              width: '100%', // Forțăm lățimea 100%
-              height: '100%', // Forțăm înălțimea 100%
-            }}
-          >
-            {/* Overlay întunecat pentru contrast (gradient) */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30"></div>
+          {/* IMAGINE FUNDAL + EFECT BLURAT 
+             Acest container 'absolute inset-0' stă în spatele conținutului
+          */}
+          <div className="absolute inset-0 z-0">
+            {/* Imaginea de bază */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              style={{ backgroundImage: "url('/images/hero-banner.jpg')" }}
+            />
+            
+            {/* Stratul de Blur și Întunecare */}
+            {/* bg-black/70 face imaginea întunecată, backdrop-blur-md o face neclară */}
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
+            
+            {/* Gradient suplimentar pentru tranziție fină jos */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
           </div>
 
-          {/* Conținutul Hero */}
+          {/* CONȚINUT (Rămâne neschimbat, dar acum e peste fundalul blurat) */}
           <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4 w-full">
-            
             <h2 className="text-5xl md:text-7xl font-extrabold uppercase mb-6 tracking-tight drop-shadow-2xl animate-in fade-in zoom-in duration-700">
               <span className="text-white">Descoperă-ţi </span>
               <span className="text-lime-400 block md:inline">pasiunea</span>
@@ -52,17 +48,14 @@ export default function Home() {
               href="/shop"
               className="group relative px-12 py-4 border-2 border-lime-400 text-white uppercase tracking-[4px] text-sm font-bold overflow-hidden transition-all hover:text-black animate-in fade-in duration-1000 delay-500"
             >
-              {/* Efect de umplere la hover */}
               <span className="absolute inset-0 w-0 bg-lime-400 transition-all duration-[300ms] ease-out group-hover:w-full"></span>
               <span className="relative z-10">Cumpără Acum</span>
             </Link>
-
           </div>
         </div>
 
-        {/* --- FOOTER (Obligatoriu pentru Netopia & ANPC) --- */}
+        {/* --- FOOTER (Rămâne neschimbat) --- */}
         <footer className="bg-[#0a0a0a] py-12 text-center text-gray-500 text-sm border-t border-gray-900 mt-auto w-full">
-          
           <p className="mb-6 text-gray-400">© 2025 Passion4Jerseys. Toate drepturile rezervate.</p>
           
           <div className="flex flex-wrap justify-center gap-6 mb-8">
@@ -72,17 +65,14 @@ export default function Home() {
             <Link href="/contact" className="hover:text-lime-400 transition">Contact</Link>
           </div>
 
-          {/* --- INTEGRARE NETOPIA IFRAME --- */}
           <div className="flex justify-center mb-8">
             <iframe 
                 src="https://mny.ro/npId.html?color=%23050505&version=orizontal&secret=157332" 
                 title="NETOPIA Payments"
-                // Am convertit stilul HTML în obiect React și am mărit lățimea la 480px ca să încapă sigla orizontală
                 style={{ border: 'none', width: '480px', height: '60px', overflow: 'hidden' }} 
             />
           </div>
 
-          {/* Logo-uri ANPC */}
           <div className="flex justify-center gap-4 opacity-80 hover:opacity-100 transition-opacity">
             <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noreferrer">
                 <img src="/images/sal.png" alt="ANPC SAL" className="h-8 md:h-10 w-auto" />
