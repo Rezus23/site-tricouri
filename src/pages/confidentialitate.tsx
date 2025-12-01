@@ -14,20 +14,10 @@ export default function Confidentialitate() {
 
         <div className="space-y-8 text-sm md:text-base leading-relaxed text-gray-700">
           
-          <section>
-            <h2 className="text-xl font-bold mb-3 text-gray-900">1. Cine suntem?</h2>
-            <p>
-              Confidențialitatea datelor dumneavoastră este foarte importantă pentru noi. 
-              Site-ul <strong>www.passion4jerseys.ro</strong> este administrat de <strong>[NUMELE TĂU SAU AL FIRMEI]</strong>, 
-              având sediul în <strong>[ADRESA COMPLETĂ]</strong>, CUI <strong>[CODUL TĂU]</strong>.
-            </p>
-            <p>
-              În sensul legislației cu privire la protecția datelor, suntem operatori atunci când prelucrăm datele dvs. cu caracter personal.
-            </p>
-          </section>
+      
 
           <section>
-            <h2 className="text-xl font-bold mb-3 text-gray-900">2. Ce date colectăm?</h2>
+            <h2 className="text-xl font-bold mb-3 text-gray-900">• Ce date colectăm?</h2>
             <p>
               Colectăm doar datele strict necesare pentru procesarea comenzilor și îmbunătățirea experienței pe site:
             </p>
@@ -43,7 +33,7 @@ export default function Confidentialitate() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-3 text-gray-900">3. Scopul colectării datelor</h2>
+            <h2 className="text-xl font-bold mb-3 text-gray-900">• Scopul colectării datelor</h2>
             <p>Folosim datele dumneavoastră pentru:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li>Procesarea și livrarea comenzilor.</li>
@@ -54,7 +44,7 @@ export default function Confidentialitate() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-3 text-gray-900">4. Cui transmitem datele?</h2>
+            <h2 className="text-xl font-bold mb-3 text-gray-900">• Cui transmitem datele?</h2>
             <p>
               Datele dvs. nu sunt vândute către terți. Ele sunt transmise doar partenerilor noștri de încredere, strict pentru îndeplinirea serviciilor:
             </p>
@@ -66,7 +56,7 @@ export default function Confidentialitate() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-3 text-gray-900">5. Drepturile Dumneavoastră (GDPR)</h2>
+            <h2 className="text-xl font-bold mb-3 text-gray-900">• Drepturile Dumneavoastră (GDPR)</h2>
             <p>Conform Regulamentului 2016/679/UE, aveți următoarele drepturi:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li>Dreptul de acces la date (să știți ce date avem despre voi).</li>
