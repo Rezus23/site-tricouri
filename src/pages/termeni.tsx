@@ -16,22 +16,10 @@ export default function Termeni() {
 
         <div className="space-y-6 text-sm md:text-base leading-relaxed">
           
-          <section>
-            <h2 className="text-xl font-bold mb-2">1. Dispoziții Generale</h2>
-            <p>
-              Site-ul <strong>passion4jerseys.ro</strong> este administrat de <strong>[NUMELE TĂU SAU NUMELE PFA-ULUI]</strong>, 
-              având sediul social în <strong>[ADRESA TA DIN BULETIN/ACTE]</strong>, 
-              înregistrată la Registrul Comerțului sub nr. <strong>[NUMĂR REG COM, EX: F40/...]</strong>, 
-              având cod unic de înregistrare fiscală <strong>[CUI-ul TĂU]</strong>.
-            </p>
-            <p>
-              Folosirea acestui site implică acceptarea termenilor și condițiilor de mai jos. Recomandăm citirea cu atenție a acestora. 
-              Ne asumăm dreptul de a modifica aceste prevederi fără o altă notificare.
-            </p>
-          </section>
+        
 
           <section>
-            <h2 className="text-xl font-bold mb-2">2. Produsele și Serviciile</h2>
+            <h2 className="text-xl font-bold mb-2">• Produsele și Serviciile</h2>
             <p>
               Passion4Jerseys comercializează articole sportive și tricouri de fotbal. Imaginile produselor sunt cu titlu de prezentare. 
               Din cauza setărilor monitorului sau a ecranului, culorile pot diferi ușor față de realitate.
@@ -42,7 +30,7 @@ export default function Termeni() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-2">3. Comanda</h2>
+            <h2 className="text-xl font-bold mb-2">• Comanda</h2>
             <p>
               Clientul poate efectua comenzi pe site prin adăugarea produselor dorite în coșul de cumpărături și finalizarea procesului de plată. 
               Odată adăugat în coșul de cumpărături, un produs este disponibil pentru achiziție în măsura în care există stoc disponibil.
@@ -50,7 +38,7 @@ export default function Termeni() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-2">4. Plată</h2>
+            <h2 className="text-xl font-bold mb-2">• Plată</h2>
             <p>
               Plata produselor se poate efectua online, cu cardul bancar, prin intermediul procesatorului de plăți <strong>Netopia Payments</strong>. 
               Datele cardului dumneavoastră nu sunt stocate de către noi, ci sunt procesate securizat de către Netopia.
@@ -58,7 +46,7 @@ export default function Termeni() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-2">5. Livrare</h2>
+            <h2 className="text-xl font-bold mb-2">• Livrare</h2>
             <p>
               Livrarea se face prin curier rapid (Fan Courier / Sameday) oriunde în România.
               Termenul estimativ de livrare este de <strong>2-5 zile</strong> lucrătoare de la confirmarea comenzii (excepţie face comanda personalizată, unde timpul de livrare este de aproximativ 12-15 zile lucrătoare).
@@ -67,7 +55,7 @@ export default function Termeni() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-2">6. Politica de Retur (Dreptul de retragere)</h2>
+            <h2 className="text-xl font-bold mb-2">• Politica de Retur (Dreptul de retragere)</h2>
             <p>
               Conform OUG 34/2014, aveți dreptul de a vă retrage din contract (a returna produsul) în termen de <strong>14 zile calendaristice</strong>, fără a preciza motivele.
             </p>
@@ -78,7 +66,7 @@ export default function Termeni() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-2">7. Garanții</h2>
+            <h2 className="text-xl font-bold mb-2">• Garanții</h2>
             <p>
               Produsele comercializate beneficiază de condiții de garanție conform legislației în vigoare (Legea 449/2003). 
               Garanția comercială pentru produsele de îmbrăcăminte este de 30 de zile de la achiziție, pentru defecte de fabricație.
@@ -86,7 +74,7 @@ export default function Termeni() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-2">8. Confidențialitate (GDPR)</h2>
+            <h2 className="text-xl font-bold mb-2">• Confidențialitate (GDPR)</h2>
             <p>
               Respectăm confidențialitatea datelor dumneavoastră. Datele personale colectate (nume, adresă, telefon, email) sunt folosite 
               strict pentru procesarea și livrarea comenzilor. Pentru mai multe detalii, consultați <Link href="/confidentialitate" className="text-blue-600 underline">Politica de Confidențialitate</Link>.
@@ -94,7 +82,7 @@ export default function Termeni() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold mb-2">9. Litigii</h2>
+            <h2 className="text-xl font-bold mb-2">• Litigii</h2>
             <p>
               Orice litigiu apărut între Clienți și Societate va fi rezolvat pe cale amiabilă. 
               În cazul în care nu s-a reușit stingerea conflictului pe cale amiabilă, competența revine instanțelor de judecată din România.
@@ -106,10 +94,10 @@ export default function Termeni() {
         {/* Link-uri ANPC obligatorii */}
         <div className="mt-12 flex flex-col gap-4 border-t pt-6">
             <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noreferrer">
-                <img src="https://wp.anpc.ro/wp-content/uploads/2023/02/sal.png" alt="ANPC SAL" className="h-10" />
+                <img src="sal.png" alt="ANPC SAL" className="h-10" />
             </a>
-            <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">
-                <img src="https://wp.anpc.ro/wp-content/uploads/2023/02/sol.png" alt="ANPC SOL" className="h-10" />
+            <a href="https://europa.eu/youreurope/business/dealing-with-customers/solving-disputes/alternative-dispute-resolution/index_ro.html" target="_blank" rel="noreferrer">
+                <img src="sol.png" alt="ANPC SOL" className="h-10" />
             </a>
         </div>
 

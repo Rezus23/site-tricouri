@@ -77,14 +77,14 @@ export default function Home() {
           <div className="flex justify-center gap-4 opacity-80 hover:opacity-100 transition-opacity">
             <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noreferrer">
                 <img 
-                    src="https://wp.anpc.ro/wp-content/uploads/2023/02/sal.png" 
+                    src="sal.png" 
                     alt="ANPC SAL" 
                     className="h-8 md:h-10 w-auto" 
                 />
             </a>
-            <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">
+            <a href="https://europa.eu/youreurope/business/dealing-with-customers/solving-disputes/alternative-dispute-resolution/index_ro.html" target="_blank" rel="noreferrer">
                 <img 
-                    src="https://wp.anpc.ro/wp-content/uploads/2023/02/sol.png" 
+                    src="sol.png" 
                     alt="ANPC SOL" 
                     className="h-8 md:h-10 w-auto" 
                 />

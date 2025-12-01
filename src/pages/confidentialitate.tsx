@@ -75,7 +75,7 @@ export default function Confidentialitate() {
               <li>Dreptul de a vă opune prelucrării.</li>
             </ul>
             <p className="mt-2">
-              Pentru a exercita aceste drepturi, ne puteți trimite o cerere scrisă la adresa de email: <strong>[EMAILUL TĂU DE SUPORT]</strong>.
+              Pentru a exercita aceste drepturi, ne puteți trimite o cerere scrisă la adresa de email: <strong>passion4jerseys@gmail.com</strong>.
             </p>
           </section>
 
