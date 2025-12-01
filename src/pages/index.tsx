@@ -1,28 +1,7 @@
 import Link from "next/link";
 import Head from "next/head";
-import { useEffect, useRef } from "react"; 
 
 export default function Home() {
-  // Referință către containerul unde vom injecta scriptul Netopia
-  const netopiaRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Rulăm codul doar dacă containerul există și este gol (ca să nu punem scriptul de două ori)
-    if (netopiaRef.current && netopiaRef.current.children.length === 0) {
-      const script = document.createElement("script");
-      
-      // Setările din scriptul trimis de tine:
-      script.src = "https://mny.ro/npId.js?p=157332";
-      script.type = "text/javascript";
-      script.setAttribute("data-version", "orizontal"); // Aici ai cerut varianta orizontală
-      script.setAttribute("data-contrast-color", "#1a1919");
-      script.async = true; // Important pentru performanță
-
-      // Adăugăm scriptul în interiorul div-ului din footer
-      netopiaRef.current.appendChild(script);
-    }
-  }, []);
-
   return (
     <>
       <Head>
@@ -76,11 +55,14 @@ export default function Home() {
             <Link href="/contact" className="hover:text-lime-400 transition">Contact</Link>
           </div>
 
-          {/* --- INTEGRARE NETOPIA SCRIPT --- */}
-          {/* Aici scriptul se va injecta singur */}
+          {/* --- INTEGRARE NETOPIA IFRAME --- */}
           <div className="flex justify-center mb-8">
-            {/* Folosim un stil minim pentru a asigura că containerul are loc să afișeze ceva */}
-            <div ref={netopiaRef} className="min-h-[40px] flex items-center justify-center"></div> 
+            <iframe 
+                src="https://mny.ro/npId.html?color=%23050505&version=orizontal&secret=157332" 
+                title="NETOPIA Payments"
+                // Am convertit stilul HTML în obiect React și am mărit lățimea la 480px ca să încapă sigla orizontală
+                style={{ border: 'none', width: '480px', height: '60px', overflow: 'hidden' }} 
+            />
           </div>
 
           {/* Logo-uri ANPC */}
