@@ -146,7 +146,7 @@ export default function Shop() {
 
                         </p>
                     ) : (
-                        <p className="text-2xl font-mono font-bold text-blue-600 mt-auto tracking-tight">
+                        <p className="text-2xl font-black font-bold text-black-600 mt-auto tracking-tight">
                           {produs.pret} RON
                         </p>
                     )}
