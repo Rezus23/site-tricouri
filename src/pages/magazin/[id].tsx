@@ -251,13 +251,13 @@ export default function PaginaProdus() {
                 disabled={produs.marimi && produs.marimi.length > 0 && !selectedSize}
                 className="w-full bg-blue-600 text-white py-4 rounded-xl text-lg font-bold hover:bg-blue-700 transition-all shadow-lg active:scale-95 flex justify-center items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-                🛒 Adaugă în Coș
+                Adaugă în Coș
             </button>
 
             <div className="mt-6 flex items-center gap-2 text-sm text-gray-500 justify-center">
-                <span>🚚 Livrare rapidă</span>
+                <span> Livrare rapidă</span>
                 <span>•</span>
-                <span>💳 Plată Securizată Netopia</span>
+                <span> Plată Securizată Netopia</span>
             </div>
             </div>
         </div>
