@@ -249,7 +249,7 @@ export default function AdminDashboard() {
                     </div>
                 </div>
                 <button onClick={() => handleDelete(p.id)} className="bg-red-50 text-red-600 border border-red-100 py-2 mt-5 rounded-lg hover:bg-red-100 font-bold transition w-full">
-                     Șterge
+                    🗑️ Șterge
                 </button>
             </div>
         ))}
