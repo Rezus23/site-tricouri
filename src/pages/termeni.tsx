@@ -17,7 +17,17 @@ export default function Termeni() {
         <div className="space-y-6 text-sm md:text-base leading-relaxed">
           
         
-
+          <section>
+            <h2 className="text-xl font-bold mb-3 text-gray-900">• Cine suntem?</h2>
+            <p>
+              Confidențialitatea datelor dumneavoastră este foarte importantă pentru noi. 
+              Site-ul <strong>www.passion4jerseys.ro</strong> este administrat de <strong>Rezus Catalin Ionut Persoana Fizica Autorizata</strong>, 
+              având sediul în <strong>jud Arges, Mioveni, str Mioritei, nr 5</strong>, CUI <strong>52159689</strong>.
+            </p>
+            <p>
+              În sensul legislației cu privire la protecția datelor, suntem operatori atunci când prelucrăm datele dvs. cu caracter personal.
+            </p>
+          </section>
           <section>
             <h2 className="text-xl font-bold mb-2">• Produsele și Serviciile</h2>
             <p>
