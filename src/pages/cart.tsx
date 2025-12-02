@@ -44,7 +44,7 @@ export default function Cart() {
                   className="flex flex-col sm:flex-row items-center gap-6 p-6 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition"
                 >
                   {/* 1. IMAGINE (Clickabilă) */}
-                  <Link href={`/produs/${produs.id}`} className="flex-shrink-0 group">
+                  <Link href={`/magazin/${produs.id}`} className="flex-shrink-0 group">
                       <div className="h-24 w-24 overflow-hidden rounded-md border border-gray-200 bg-white group-hover:border-blue-400 transition">
                         <img 
                             src={produs.imagine || "/images/logo.jpg"} 
@@ -56,7 +56,7 @@ export default function Cart() {
 
                   {/* 2. DETALII TEXT (Titlu Clickabil) */}
                   <div className="flex-1 text-center sm:text-left">
-                    <Link href={`/produs/${produs.id}`}>
+                    <Link href={`/magazin/${produs.id}`}>
                         <h3 className="text-lg font-bold text-gray-900 hover:text-blue-600 transition cursor-pointer">
                             {produs.titlu}
                         </h3>
