@@ -1,7 +1,7 @@
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/router";
-import { FiTrash2, FiShoppingBag, FiArrowRight } from "react-icons/fi"; // Importăm iconițe profi
+import { FiTrash2, FiShoppingBag, FiArrowRight } from "react-icons/fi"; 
 import Link from "next/link";
 
 export default function Cart() {
@@ -15,14 +15,12 @@ export default function Cart() {
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 pt-32">
       <div className="max-w-4xl mx-auto">
         
-        {/* Titlu Pagină */}
         <h1 className="text-3xl font-extrabold text-gray-900 mb-8 flex items-center gap-3">
           <FiShoppingBag className="text-blue-600" />
           Coșul tău
         </h1>
 
         {cart.length === 0 ? (
-          // STARE: COȘ GOL
           <div className="bg-white rounded-2xl shadow-sm p-12 text-center border border-gray-100">
             <div className="bg-gray-100 h-24 w-24 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FiShoppingBag className="text-4xl text-gray-400" />
@@ -37,30 +35,33 @@ export default function Cart() {
             </Link>
           </div>
         ) : (
-          // STARE: COȘ CU PRODUSE
           <div className="space-y-6">
             
-            {/* Lista Produse */}
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
               {cart.map((produs) => (
                 <div
                   key={produs.cartId}
                   className="flex flex-col sm:flex-row items-center gap-6 p-6 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition"
                 >
-                  {/* 1. IMAGINEA PRODUSULUI (Mică) */}
-                  <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 bg-white">
-                    <img 
-                        src={produs.imagine || "/images/logo.jpg"} 
-                        alt={produs.titlu} 
-                        className="h-full w-full object-contain"
-                    />
-                  </div>
+                  {/* 1. IMAGINE (Clickabilă) */}
+                  <Link href={`/produs/${produs.id}`} className="flex-shrink-0 group">
+                      <div className="h-24 w-24 overflow-hidden rounded-md border border-gray-200 bg-white group-hover:border-blue-400 transition">
+                        <img 
+                            src={produs.imagine || "/images/logo.jpg"} 
+                            alt={produs.titlu} 
+                            className="h-full w-full object-contain group-hover:scale-110 transition duration-300"
+                        />
+                      </div>
+                  </Link>
 
-                  {/* Detalii Text */}
+                  {/* 2. DETALII TEXT (Titlu Clickabil) */}
                   <div className="flex-1 text-center sm:text-left">
-                    <h3 className="text-lg font-bold text-gray-900">{produs.titlu}</h3>
+                    <Link href={`/produs/${produs.id}`}>
+                        <h3 className="text-lg font-bold text-gray-900 hover:text-blue-600 transition cursor-pointer">
+                            {produs.titlu}
+                        </h3>
+                    </Link>
                     
-                    {/* Afișăm Mărimea dacă există */}
                     {produs.marime && (
                         <p className="text-sm text-gray-500 mt-1">
                             Mărime: <span className="font-semibold text-gray-700">{produs.marime}</span>
@@ -70,12 +71,12 @@ export default function Cart() {
                     <p className="text-blue-600 font-bold mt-2 sm:hidden">{produs.pret} RON</p>
                   </div>
 
-                  {/* Preț (Desktop) */}
+                  {/* Preț Desktop */}
                   <div className="hidden sm:block text-right">
                     <p className="text-lg font-bold text-gray-900">{produs.pret} RON</p>
                   </div>
 
-                  {/* 2. BUTON ȘTERGERE (Iconiță Profi) */}
+                  {/* Buton Ștergere */}
                   <button
                     onClick={() => stergeDinCos(produs.cartId)}
                     className="p-3 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 transition duration-200 group"
@@ -87,7 +88,6 @@ export default function Cart() {
               ))}
             </div>
 
-            {/* Sumar Comandă */}
             <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
               <div className="flex justify-between items-center mb-6 pb-6 border-b border-gray-100">
                 <span className="text-gray-600 text-lg">Total de plată</span>
@@ -95,8 +95,6 @@ export default function Cart() {
               </div>
 
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                
-                {/* Buton Golește */}
                 <button
                   onClick={golesteCos}
                   className="text-red-500 hover:text-red-700 text-sm font-semibold underline decoration-transparent hover:decoration-red-700 transition"
@@ -104,9 +102,8 @@ export default function Cart() {
                   Golește tot coșul
                 </button>
 
-                {/* Buton Continuă */}
                 <button
-                  onClick={() => router.push('/adresa')}
+                  onClick={() => router.push('/checkout/adresa')}
                   disabled={cart.length === 0}
                   className="w-full sm:w-auto bg-black text-white px-8 py-4 rounded-xl font-bold hover:bg-gray-800 transition flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95 disabled:bg-gray-400"
                 >
@@ -115,7 +112,6 @@ export default function Cart() {
                 </button>
               </div>
             </div>
-
           </div>
         )}
       </div>
