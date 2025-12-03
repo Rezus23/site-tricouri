@@ -103,7 +103,7 @@ export default function Cart() {
                 </button>
 
                 <button
-                  onClick={() => router.push('/checkout/adresa')}
+                  onClick={() => router.push('/adresa')}
                   disabled={cart.length === 0}
                   className="w-full sm:w-auto bg-black text-white px-8 py-4 rounded-xl font-bold hover:bg-gray-800 transition flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95 disabled:bg-gray-400"
                 >
