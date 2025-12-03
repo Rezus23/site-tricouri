@@ -61,8 +61,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Definește URL-ul de bază Netopia (folosind HTTPS pentru securitate)
     const envBase = 
       process.env.NETOPIA_ENV === "live"
-        ? "https://secure.mobilpay.ro" // Mod de producție
-        : "https://sandboxsecure.mobilpay.ro"; // Mod Sandbox
+         "https://secure.mobilpay.ro" // Mod de producție
+       
 
     const paymentUrl = `${envBase}`;
 
