@@ -147,7 +147,7 @@ export default function Shop() {
                         </p>
                     ) : (
                         <p className="text-2xl font-extrabold text-gray-900 mt-auto tracking-tight flex items-baseline justify-center gap-1">
-                            {produs.pret} <span className="text-sm font-medium text-gray-500 align-top">RON</span>
+                            {produs.pret} <span className="text-sm font-medium text-gray-800 align-top">RON</span>
                         </p>
                     )}
 
