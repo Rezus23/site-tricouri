@@ -29,7 +29,7 @@ export default function Esuat() {
         <div className="flex flex-col gap-4">
           {/* Buton Principal: Încearcă din nou (Trimite la Coș sau direct la Adresă) */}
           <button 
-            onClick={() => router.push('/checkout/adresa')} // Sau '/cart'
+            onClick={() => router.push('/adresa')} // Sau '/cart'
             className="w-full bg-red-600 text-white px-6 py-4 rounded-xl font-bold hover:bg-red-700 transition transform active:scale-95 shadow-lg shadow-red-200 flex items-center justify-center gap-2"
           >
             <FiRefreshCw className="text-xl" />
