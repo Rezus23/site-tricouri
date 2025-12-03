@@ -63,6 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // --- 3. DETECTARE MEDIU (LIVE vs SANDBOX) ---
     // Dacă variabila NETOPIA_ENV este 'live', folosim serverul real. Altfel, sandbox.
     const isLive = process.env.NETOPIA_ENV === "live";
+    
     const paymentUrl = isLive 
         ? "https://secure.mobilpay.ro" 
         : "https://sandboxsecure.mobilpay.ro";
