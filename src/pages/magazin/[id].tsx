@@ -12,6 +12,8 @@ import { LuRuler } from "react-icons/lu";
 type MarimeStoc = {
   nume: string;
   stoc: number;
+  piept?: number;  
+  lungime?: number;
 };
 
 type Produs = {
@@ -331,7 +333,11 @@ export default function PaginaProdus() {
             </div>
         )}
 
-        <SizeChart isOpen={isSizeChartOpen} onClose={() => setIsSizeChartOpen(false)} />
+        <SizeChart 
+    isOpen={isSizeChartOpen} 
+    onClose={() => setIsSizeChartOpen(false)} 
+    marimi={produs.marimi} // 👈 Trimitem lista de mărimi a produsului
+        />
       </div>
     </div>
   );
