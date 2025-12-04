@@ -34,7 +34,7 @@ export default function Shop() {
     { id: "tricouri", label: "Sezon 25/26" }, // "tricouri" e valoarea default din admin
     { id: "retro", label: "Retro" },
     { id: "nationale", label: "Echipe Naționale" },
-    { id: "sorturi", label: "Șorturi" },
+    { id: "sorturi", label: "Custom" },
   ];
 
   useEffect(() => {
