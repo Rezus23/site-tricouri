@@ -6,16 +6,16 @@ import { collection, addDoc, getDocs, deleteDoc, updateDoc, doc, serverTimestamp
 import { FiEdit, FiTrash2, FiX } from "react-icons/fi";
 
 // --- CONFIGURARE ---
-const CLOUDINARY_CLOUD_NAME = "dvj426x"; 
+const CLOUDINARY_CLOUD_NAME = "debck79qe"; 
 const CLOUDINARY_UPLOAD_PRESET = "pozetricouri"; 
 const ADMIN_EMAIL = "rezuscatalin@gmail.com"; 
 
 // Categoriile disponibile
 const CATEGORII = [
-  { id: "tricouri", label: "Sezon 24/25" },
+  { id: "tricouri", label: "Sezon 25/26" },
   { id: "retro", label: "Retro" },
   { id: "nationale", label: "Echipe Naționale" },
-  { id: "sorturi", label: "Șorturi" },
+  { id: "sorturi", label: "custom" },
 ];
 
 type MarimeStoc = {
