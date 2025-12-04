@@ -56,7 +56,7 @@ export default function Home() {
           {/* --- SOCIAL MEDIA --- */}
           <div className="flex justify-center gap-6 mb-8">
             <a 
-              href="https://www.instagram.com/numele_tau" 
+              href="https://www.instagram.com/passion4jerseys.ro/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="bg-white/10 p-3 rounded-full text-white hover:bg-pink-600 hover:scale-110 transition transform duration-300"
