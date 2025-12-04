@@ -10,7 +10,7 @@ const CLOUDINARY_CLOUD_NAME = "dvj426x";
 const CLOUDINARY_UPLOAD_PRESET = "pozetricouri"; 
 const ADMIN_EMAIL = "rezuscatalin@gmail.com"; 
 
-// Definim categoriile disponibile (TREBUIE SĂ FIE IDENTICE CU CELE DIN SHOP)
+// Categoriile disponibile
 const CATEGORII = [
   { id: "tricouri", label: "Sezon 24/25" },
   { id: "retro", label: "Retro" },
@@ -32,7 +32,7 @@ type Produs = {
   imagini: string[]; 
   marimi?: MarimeStoc[]; 
   descriere?: string;
-  categorie?: string; // 👈 Câmp NOU
+  categorie?: string; // 👈 Câmpul categorie
 };
 
 export default function AdminDashboard() {
@@ -42,20 +42,19 @@ export default function AdminDashboard() {
   const [produse, setProduse] = useState<Produs[]>([]);
   const [loading, setLoading] = useState(false);
   
-  // Stare Formular
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   
-  // Stare Editare
   const [editMode, setEditMode] = useState(false);
   const [editProductId, setEditProductId] = useState<string | null>(null);
   const [existingImages, setExistingImages] = useState<string[]>([]);
 
+  // 👇 STARE FORMULAR (Categorie default: tricouri)
   const [formData, setFormData] = useState({ 
     titlu: "", 
     pret: "", 
     marimi: "", 
     descriere: "",
-    categorie: "tricouri" // 👈 Valoare default
+    categorie: "tricouri" 
   });
 
   useEffect(() => {
@@ -69,25 +68,27 @@ export default function AdminDashboard() {
   }, [user, authLoading, router]);
 
   const fetchProduse = async () => {
-    const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-    const snap = await getDocs(q);
-    
-    const data = snap.docs.map(d => {
-        const docData = d.data();
-        const imagini = docData.imagini || (docData.imagine ? [docData.imagine] : []);
-        
-        let marimiFinale: MarimeStoc[] = [];
-        if (Array.isArray(docData.marimi)) {
-            if (typeof docData.marimi[0] === 'string') {
-                marimiFinale = docData.marimi.map((m: string) => ({ nume: m, stoc: 99 }));
-            } else {
-                marimiFinale = docData.marimi;
+    try {
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        const data = snap.docs.map(d => {
+            const docData = d.data();
+            const imagini = docData.imagini || (docData.imagine ? [docData.imagine] : []);
+            
+            let marimiFinale: MarimeStoc[] = [];
+            if (Array.isArray(docData.marimi)) {
+                if (typeof docData.marimi[0] === 'string') {
+                    marimiFinale = docData.marimi.map((m: string) => ({ nume: m, stoc: 99 }));
+                } else {
+                    marimiFinale = docData.marimi;
+                }
             }
-        }
-
-        return { id: d.id, ...docData, imagini, marimi: marimiFinale } as Produs;
-    });
-    setProduse(data);
+            return { id: d.id, ...docData, imagini, marimi: marimiFinale } as Produs;
+        });
+        setProduse(data);
+    } catch (e) {
+        console.error("Eroare fetch:", e);
+    }
   };
 
   const uploadSingleImage = async (file: File) => {
@@ -103,11 +104,11 @@ export default function AdminDashboard() {
     return json.secure_url;
   };
 
+  // --- SUBMIT (ADĂUGARE / EDITARE) ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (imageFiles.length === 0 && existingImages.length === 0) return alert("Alege măcar o poză!");
-    
     setLoading(true);
 
     try {
@@ -132,12 +133,13 @@ export default function AdminDashboard() {
         })
         .filter((m) => m.nume !== "");
 
+      // 👈 OBIECTUL CARE SE SALVEAZĂ ÎN FIREBASE
       const productData = {
         titlu: formData.titlu,
         pret: Number(formData.pret),
         marimi: marimiProcesate,
         descriere: formData.descriere,
-        categorie: formData.categorie, // 👈 SALVĂM CATEGORIA
+        categorie: formData.categorie || "tricouri", // Asigurăm că nu e undefined
         imagini: finalImages,
         ...(editMode ? { updatedAt: serverTimestamp() } : { createdAt: serverTimestamp() })
       };
@@ -150,14 +152,33 @@ export default function AdminDashboard() {
           alert("Produs adăugat! ✅");
       }
 
-      resetForm();
+      resetForm(); // Apelează funcția de resetare inteligentă
       fetchProduse();
     } catch (err) {
-      console.error(err);
-      alert("Eroare la salvare");
+      console.error("Eroare la salvare:", err);
+      alert("Eroare la salvare! Verifică consola (F12).");
     } finally {
       setLoading(false);
     }
+  };
+
+  // --- RESETARE FORMULAR (Păstrează categoria) ---
+  const resetForm = () => {
+      // Păstrăm categoria curentă ca să adaugi mai multe la rând
+      const currentCat = formData.categorie; 
+
+      setFormData({ 
+          titlu: "", 
+          pret: "", 
+          marimi: "", 
+          descriere: "", 
+          categorie: currentCat // 👈 Nu resetăm la default, ci păstrăm ce ai ales
+      });
+      
+      setImageFiles([]);
+      setExistingImages([]);
+      setEditMode(false);
+      setEditProductId(null);
   };
 
   const handleEditClick = (produs: Produs) => {
@@ -176,18 +197,9 @@ export default function AdminDashboard() {
           pret: String(produs.pret),
           marimi: marimiString,
           descriere: produs.descriere || "",
-          categorie: produs.categorie || "tricouri" // 👈 Setăm categoria la editare
+          categorie: produs.categorie || "tricouri"
       });
-      
       window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const resetForm = () => {
-      setFormData({ titlu: "", pret: "", marimi: "", descriere: "", categorie: "tricouri" });
-      setImageFiles([]);
-      setExistingImages([]);
-      setEditMode(false);
-      setEditProductId(null);
   };
 
   const handleDelete = async (id: string) => {
@@ -200,16 +212,14 @@ export default function AdminDashboard() {
 
   if (!user || user.email !== ADMIN_EMAIL) return null;
 
-  const inputClass = "border border-gray-300 p-3 rounded w-full text-black bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-sm";
-  const labelClass = "block text-sm font-bold text-gray-700 mb-1";
+  const inputClass = "border border-gray-400 p-3 rounded w-full text-black bg-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm font-medium";
+  const labelClass = "block text-sm font-bold text-gray-800 mb-1";
 
   return (
-    <div className="max-w-6xl mx-auto p-6 min-h-screen bg-gray-50 pt-32 text-gray-900">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900 border-b border-gray-300 pb-4">
-          🛠️ Admin Dashboard
-      </h1>
+    <div className="max-w-6xl mx-auto p-6 min-h-screen bg-gray-100 pt-32 text-gray-900">
+      <h1 className="text-3xl font-bold mb-8 text-gray-900 border-b border-gray-300 pb-4">🛠️ Admin Dashboard</h1>
 
-      <div className={`bg-white p-8 rounded-xl shadow-lg mb-12 border transition-colors duration-300 ${editMode ? 'border-blue-400 ring-2 ring-blue-100' : 'border-gray-200'}`}>
+      <div className={`bg-white p-8 rounded-xl shadow-lg mb-12 border ${editMode ? 'border-blue-500 ring-2 ring-blue-100' : 'border-gray-200'}`}>
         <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-800">
                 {editMode ? `✏️ Editează Produsul` : `➕ Adaugă Produs Nou`}
@@ -232,7 +242,7 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className={labelClass}>Preț (RON)</label>
-                        <input placeholder="Ex: 250" type="number" className={inputClass} value={formData.pret} onChange={e => setFormData({...formData, pret: e.target.value})} required />
+                        <input placeholder="250" type="number" className={inputClass} value={formData.pret} onChange={e => setFormData({...formData, pret: e.target.value})} required />
                     </div>
                     
                     {/* 👇 SELECTOR CATEGORIE */}
@@ -251,14 +261,13 @@ export default function AdminDashboard() {
                 </div>
             </div>
             
-            {/* ... restul input-urilor (mărimi, imagini, descriere) ... */}
-             <div>
+            <div>
                 <label className={labelClass}>Mărimi și Stoc</label>
-                <input placeholder="Format: S:5:50:70, M:10" className={inputClass} value={formData.marimi} onChange={e => setFormData({...formData, marimi: e.target.value})} required />
-                <p className="text-xs text-gray-500 mt-1">Format: Mărime:Stoc[:Piept:Lungime]</p>
+                <input placeholder="Ex: S:5, M:10" className={inputClass} value={formData.marimi} onChange={e => setFormData({...formData, marimi: e.target.value})} required />
             </div>
 
-            <div>
+            {/* ... zona de imagini rămâne neschimbată ... */}
+             <div>
                 <label className={labelClass}>Imagini</label>
                 
                 {editMode && existingImages.length > 0 && imageFiles.length === 0 && (
@@ -266,26 +275,17 @@ export default function AdminDashboard() {
                         {existingImages.map((img, idx) => (
                             <img key={idx} src={img} className="h-16 w-16 object-cover rounded border border-blue-200" alt="old" />
                         ))}
-                        <p className="text-xs text-gray-500 w-full mt-1">Imagini curente. Selectează altele noi pentru a le înlocui.</p>
+                        <p className="text-xs text-gray-500 w-full mt-1">Imagini curente.</p>
                     </div>
                 )}
 
-                <div className="border-2 border-dashed border-gray-300 p-6 rounded-lg text-center cursor-pointer hover:bg-gray-50 transition relative bg-white">
+                <div className="border-2 border-dashed border-gray-400 p-6 rounded-lg text-center cursor-pointer hover:bg-gray-50 transition relative bg-white">
                     <label className="cursor-pointer block w-full h-full">
-                        <span className="font-bold text-gray-500 block mb-2">
-                            {imageFiles.length > 0 
-                                ? `📸 ${imageFiles.length} poze noi selectate` 
-                                : (editMode ? "Click pentru a schimba pozele" : "Click pentru a alege pozele")}
+                        <span className="font-bold text-gray-600 block mb-2">
+                            {imageFiles.length > 0 ? `📸 ${imageFiles.length} poze` : (editMode ? "Schimbă pozele" : "Alege pozele")}
                         </span>
                         <input type="file" accept="image/*" multiple className="hidden" onChange={e => { if (e.target.files) setImageFiles(Array.from(e.target.files)); }} />
                     </label>
-                    {imageFiles.length > 0 && (
-                        <div className="flex gap-2 justify-center mt-4 flex-wrap">
-                            {imageFiles.map((file, i) => (
-                                <img key={i} src={URL.createObjectURL(file)} className="h-16 w-16 object-cover rounded border border-gray-300 shadow-sm" alt="preview"/>
-                            ))}
-                        </div>
-                    )}
                 </div>
             </div>
 
@@ -295,45 +295,34 @@ export default function AdminDashboard() {
             </div>
             
             <button disabled={loading} className={`px-6 py-4 rounded-lg w-full font-bold transition shadow-md text-lg text-white ${editMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-black hover:bg-gray-800'}`}>
-                {loading ? "Se procesează..." : (editMode ? "Actualizează Produsul" : "Salvează Produsul")}
+                {loading ? "Se procesează..." : (editMode ? "Actualizează" : "Salvează")}
             </button>
         </form>
       </div>
 
-      {/* LISTA PRODUSE */}
+      {/* LISTA PRODUSE - Cu etichetă de categorie */}
       <h2 className="text-2xl font-bold mb-6 text-gray-900">Produse Existente</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {produse.map(p => (
-            <div key={p.id} className={`bg-white border p-5 rounded-xl shadow-sm flex flex-col justify-between transition ${editProductId === p.id ? 'border-blue-500 ring-2 ring-blue-100' : 'border-gray-200 hover:shadow-md'}`}>
+            <div key={p.id} className={`bg-white border p-5 rounded-xl shadow-sm flex flex-col justify-between transition ${editProductId === p.id ? 'border-blue-500 ring-2 ring-blue-100' : 'border-gray-200'}`}>
                 <div>
-                    <div className="h-48 w-full mb-4 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100 relative group">
+                    <div className="h-48 w-full mb-4 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100 relative">
                         <img src={p.imagini[0]} alt={p.titlu} className="h-full object-contain p-2" />
-                        <div className="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded text-xs font-bold border border-gray-200 shadow-sm">
-                            {/* Afișăm categoria pe card */}
-                            {CATEGORII.find(c => c.id === p.categorie)?.label || p.categorie || "Tricouri"}
+                        {/* Badge Categorie */}
+                        <div className="absolute top-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-bold shadow-sm">
+                            {CATEGORII.find(c => c.id === p.categorie)?.label || "Nedefinit"}
                         </div>
                     </div>
                     <h3 className="font-bold text-lg text-gray-900 mb-1">{p.titlu}</h3>
                     <p className="text-blue-600 font-bold mb-3 text-xl">{p.pret} RON</p>
-                    
-                    <div className="text-xs bg-gray-50 p-3 rounded border border-gray-200 text-gray-700">
-                        <p className="font-bold mb-2">Stoc:</p>
-                        <div className="flex flex-wrap gap-2">
-                            {p.marimi?.map((m, idx) => (
-                                <span key={idx} className={`px-2 py-1 rounded border ${m.stoc > 0 ? 'bg-white border-gray-300' : 'bg-red-50 text-red-600 border-red-200'}`}>
-                                    {m.nume}: <b>{m.stoc}</b>
-                                </span>
-                            ))}
-                        </div>
-                    </div>
                 </div>
                 
                 <div className="flex gap-2 mt-5">
                     <button onClick={() => handleEditClick(p)} className="flex-1 bg-blue-50 text-blue-600 border border-blue-200 py-2 rounded-lg hover:bg-blue-100 font-bold transition flex items-center justify-center gap-2">
-                        <FiEdit /> Editează
+                        <FiEdit />
                     </button>
-                    <button onClick={() => handleDelete(p.id)} className="flex-1 bg-red-50 text-red-600 border border-red-100 py-2 rounded-lg hover:bg-red-100 font-bold transition flex items-center justify-center gap-2">
-                        <FiTrash2 /> Șterge
+                    <button onClick={() => handleDelete(p.id)} className="flex-1 bg-red-50 text-red-600 border border-red-200 py-2 rounded-lg hover:bg-red-100 font-bold transition flex items-center justify-center gap-2">
+                        <FiTrash2 />
                     </button>
                 </div>
             </div>
