@@ -109,6 +109,7 @@ export default function AdminDashboard() {
     e.preventDefault();
     
     if (imageFiles.length === 0 && existingImages.length === 0) return alert("Alege măcar o poză!");
+    
     setLoading(true);
 
     try {
@@ -129,18 +130,24 @@ export default function AdminDashboard() {
           const piept = parts[2] ? parseInt(parts[2].trim()) : undefined;
           const lungime = parts[3] ? parseInt(parts[3].trim()) : undefined;
           
-          return { nume, stoc, piept, lungime };
+          // 💡 FIX: Convertim 'undefined' la 'null' pentru Firestore, sau nu le includem dacă sunt undefined
+          // Firestore nu acceptă undefined.
+          const obj: any = { nume, stoc };
+          if (piept !== undefined) obj.piept = piept;
+          if (lungime !== undefined) obj.lungime = lungime;
+          
+          return obj as MarimeStoc;
         })
         .filter((m) => m.nume !== "");
 
-      // 👈 OBIECTUL CARE SE SALVEAZĂ ÎN FIREBASE
+      // 💡 FIX CRITIC: Asigurăm valori implicite pentru câmpurile opționale
       const productData = {
-        titlu: formData.titlu,
-        pret: Number(formData.pret),
+        titlu: formData.titlu || "",
+        pret: Number(formData.pret) || 0,
         marimi: marimiProcesate,
-        descriere: formData.descriere,
-        categorie: formData.categorie || "tricouri", // Asigurăm că nu e undefined
-        imagini: finalImages,
+        descriere: formData.descriere || "",
+        categorie: formData.categorie || "tricouri", // Default dacă lipsește
+        imagini: finalImages || [],
         ...(editMode ? { updatedAt: serverTimestamp() } : { createdAt: serverTimestamp() })
       };
 
