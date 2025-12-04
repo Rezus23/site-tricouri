@@ -127,7 +127,7 @@ export default function Shop() {
           <div className="text-center mt-10 p-8 bg-white/90 backdrop-blur-md rounded-xl shadow-xl max-w-lg mx-auto animate-in fade-in zoom-in duration-300">
             <div className="text-4xl mb-4">🤔</div>
             <h3 className="text-xl text-gray-900 font-bold mb-2">Nu am găsit produse aici.</h3>
-            <p className="text-gray-600 mb-6">Momentan nu avem produse în categoria selectată.</p>
+            <p className="text-gray-600 mb-6">Dacă ştii ce iţi doreşti intra în categoria Custom şi hai să stam de vorbă!</p>
             <div className="border-t pt-6">
                 <Link href="/contact" className="inline-block bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition">
                     Contactează-ne
