@@ -3,12 +3,20 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/router";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, getDocs, deleteDoc, updateDoc, doc, serverTimestamp, query, orderBy } from "firebase/firestore";
-import { FiEdit, FiTrash2, FiX } from "react-icons/fi"; // Import iconițe
+import { FiEdit, FiTrash2, FiX } from "react-icons/fi";
 
 // --- CONFIGURARE ---
 const CLOUDINARY_CLOUD_NAME = "dvj426x"; 
 const CLOUDINARY_UPLOAD_PRESET = "pozetricouri"; 
 const ADMIN_EMAIL = "rezuscatalin@gmail.com"; 
+
+// Definim categoriile disponibile (TREBUIE SĂ FIE IDENTICE CU CELE DIN SHOP)
+const CATEGORII = [
+  { id: "tricouri", label: "Sezon 24/25" },
+  { id: "retro", label: "Retro" },
+  { id: "nationale", label: "Echipe Naționale" },
+  { id: "sorturi", label: "Șorturi" },
+];
 
 type MarimeStoc = {
   nume: string;
@@ -23,7 +31,8 @@ type Produs = {
   pret: number; 
   imagini: string[]; 
   marimi?: MarimeStoc[]; 
-  descriere?: string; // Adăugat și aici
+  descriere?: string;
+  categorie?: string; // 👈 Câmp NOU
 };
 
 export default function AdminDashboard() {
@@ -39,16 +48,16 @@ export default function AdminDashboard() {
   // Stare Editare
   const [editMode, setEditMode] = useState(false);
   const [editProductId, setEditProductId] = useState<string | null>(null);
-  const [existingImages, setExistingImages] = useState<string[]>([]); // Pentru editare, păstrăm pozele vechi
+  const [existingImages, setExistingImages] = useState<string[]>([]);
 
   const [formData, setFormData] = useState({ 
     titlu: "", 
     pret: "", 
     marimi: "", 
-    descriere: "" 
+    descriere: "",
+    categorie: "tricouri" // 👈 Valoare default
   });
 
-  // 1. SECURITATE
   useEffect(() => {
     if (!authLoading) {
         if (!user || user.email !== ADMIN_EMAIL) {
@@ -94,27 +103,20 @@ export default function AdminDashboard() {
     return json.secure_url;
   };
 
-  // 4. Submit (Adăugare sau Editare)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validare imagine: trebuie să avem fie fișiere noi, fie imagini existente (la editare)
     if (imageFiles.length === 0 && existingImages.length === 0) return alert("Alege măcar o poză!");
     
     setLoading(true);
 
     try {
-      // Upload poze noi (dacă există)
       let newImageUrls: string[] = [];
       if (imageFiles.length > 0) {
           const uploadPromises = imageFiles.map(file => uploadSingleImage(file));
           newImageUrls = await Promise.all(uploadPromises);
       }
 
-      // Combinăm pozele vechi (dacă am păstrat vreuna) cu cele noi
-      // La editare: poți decide dacă vrei să înlocuiești tot sau să adaugi. 
-      // Aici simplificăm: dacă pui poze noi, le înlocuiești pe cele vechi. 
-      // Dacă nu pui poze noi, păstrăm cele vechi.
       const finalImages = imageFiles.length > 0 ? newImageUrls : existingImages;
 
       const marimiProcesate: MarimeStoc[] = formData.marimi
@@ -135,17 +137,15 @@ export default function AdminDashboard() {
         pret: Number(formData.pret),
         marimi: marimiProcesate,
         descriere: formData.descriere,
+        categorie: formData.categorie, // 👈 SALVĂM CATEGORIA
         imagini: finalImages,
-        // La editare nu schimbăm createdAt, la adăugare punem timestamp
         ...(editMode ? { updatedAt: serverTimestamp() } : { createdAt: serverTimestamp() })
       };
 
       if (editMode && editProductId) {
-          // UPDATE
           await updateDoc(doc(db, "products", editProductId), productData);
           alert("Produs actualizat! ✏️");
       } else {
-          // CREATE
           await addDoc(collection(db, "products"), productData);
           alert("Produs adăugat! ✅");
       }
@@ -160,13 +160,11 @@ export default function AdminDashboard() {
     }
   };
 
-  // Funcție pentru a popula formularul la editare
   const handleEditClick = (produs: Produs) => {
       setEditMode(true);
       setEditProductId(produs.id);
       setExistingImages(produs.imagini);
       
-      // Convertim array-ul de mărimi înapoi în string pentru input
       const marimiString = produs.marimi?.map(m => {
           let str = `${m.nume}:${m.stoc}`;
           if (m.piept || m.lungime) str += `:${m.piept || ''}:${m.lungime || ''}`;
@@ -177,15 +175,15 @@ export default function AdminDashboard() {
           titlu: produs.titlu,
           pret: String(produs.pret),
           marimi: marimiString,
-          descriere: produs.descriere || ""
+          descriere: produs.descriere || "",
+          categorie: produs.categorie || "tricouri" // 👈 Setăm categoria la editare
       });
       
-      // Scroll sus la formular
       window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const resetForm = () => {
-      setFormData({ titlu: "", pret: "", marimi: "", descriere: "" });
+      setFormData({ titlu: "", pret: "", marimi: "", descriere: "", categorie: "tricouri" });
       setImageFiles([]);
       setExistingImages([]);
       setEditMode(false);
@@ -211,7 +209,6 @@ export default function AdminDashboard() {
           🛠️ Admin Dashboard
       </h1>
 
-      {/* FORMULAR */}
       <div className={`bg-white p-8 rounded-xl shadow-lg mb-12 border transition-colors duration-300 ${editMode ? 'border-blue-400 ring-2 ring-blue-100' : 'border-gray-200'}`}>
         <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-800">
@@ -231,13 +228,31 @@ export default function AdminDashboard() {
                     <label className={labelClass}>Nume Produs</label>
                     <input placeholder="Ex: Tricou Real Madrid" className={inputClass} value={formData.titlu} onChange={e => setFormData({...formData, titlu: e.target.value})} required />
                 </div>
-                <div>
-                    <label className={labelClass}>Preț (RON)</label>
-                    <input placeholder="Ex: 250" type="number" className={inputClass} value={formData.pret} onChange={e => setFormData({...formData, pret: e.target.value})} required />
+                
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className={labelClass}>Preț (RON)</label>
+                        <input placeholder="Ex: 250" type="number" className={inputClass} value={formData.pret} onChange={e => setFormData({...formData, pret: e.target.value})} required />
+                    </div>
+                    
+                    {/* 👇 SELECTOR CATEGORIE */}
+                    <div>
+                        <label className={labelClass}>Categorie</label>
+                        <select 
+                            className={inputClass} 
+                            value={formData.categorie} 
+                            onChange={e => setFormData({...formData, categorie: e.target.value})}
+                        >
+                            {CATEGORII.map(cat => (
+                                <option key={cat.id} value={cat.id}>{cat.label}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
             
-            <div>
+            {/* ... restul input-urilor (mărimi, imagini, descriere) ... */}
+             <div>
                 <label className={labelClass}>Mărimi și Stoc</label>
                 <input placeholder="Format: S:5:50:70, M:10" className={inputClass} value={formData.marimi} onChange={e => setFormData({...formData, marimi: e.target.value})} required />
                 <p className="text-xs text-gray-500 mt-1">Format: Mărime:Stoc[:Piept:Lungime]</p>
@@ -246,13 +261,12 @@ export default function AdminDashboard() {
             <div>
                 <label className={labelClass}>Imagini</label>
                 
-                {/* Previzualizare imagini existente (la editare) */}
                 {editMode && existingImages.length > 0 && imageFiles.length === 0 && (
                     <div className="mb-3 flex gap-2 flex-wrap">
                         {existingImages.map((img, idx) => (
                             <img key={idx} src={img} className="h-16 w-16 object-cover rounded border border-blue-200" alt="old" />
                         ))}
-                        <p className="text-xs text-gray-500 w-full mt-1">Acestea sunt imaginile curente. Dacă alegi altele noi, acestea vor fi înlocuite.</p>
+                        <p className="text-xs text-gray-500 w-full mt-1">Imagini curente. Selectează altele noi pentru a le înlocui.</p>
                     </div>
                 )}
 
@@ -294,11 +308,9 @@ export default function AdminDashboard() {
                 <div>
                     <div className="h-48 w-full mb-4 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100 relative group">
                         <img src={p.imagini[0]} alt={p.titlu} className="h-full object-contain p-2" />
-                        {/* Buton rapid de editare pe imagine */}
-                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                            <button onClick={() => handleEditClick(p)} className="bg-white text-blue-600 p-2 rounded-full shadow-lg transform hover:scale-110 transition">
-                                <FiEdit size={20} />
-                            </button>
+                        <div className="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded text-xs font-bold border border-gray-200 shadow-sm">
+                            {/* Afișăm categoria pe card */}
+                            {CATEGORII.find(c => c.id === p.categorie)?.label || p.categorie || "Tricouri"}
                         </div>
                     </div>
                     <h3 className="font-bold text-lg text-gray-900 mb-1">{p.titlu}</h3>
