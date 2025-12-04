@@ -86,7 +86,7 @@ export default function Home() {
             </a>
           </div>
         
-        className="bg-[#0a0a0a] py-12 text-center text-gray-500 text-sm border-t border-gray-900 mt-auto w-full">
+        
           
           <p className="mb-6 text-gray-400">© 2025 Passion4Jerseys. Toate drepturile rezervate.</p>
           
