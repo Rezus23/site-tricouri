@@ -30,8 +30,8 @@ export default function Shop() {
 
   // Lista de categorii (Trebuie să coincidă cu ce ai în Admin)
   const categories = [
-    { id: "all", label: "Toate" },
-    { id: "tricouri", label: "Sezon 24/25" }, // "tricouri" e valoarea default din admin
+    
+    { id: "tricouri", label: "Sezon 25/26" }, // "tricouri" e valoarea default din admin
     { id: "retro", label: "Retro" },
     { id: "nationale", label: "Echipe Naționale" },
     { id: "sorturi", label: "Șorturi" },
