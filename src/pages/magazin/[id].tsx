@@ -289,9 +289,11 @@ export default function PaginaProdus() {
 
                 <div className="mb-10">
                     <h3 className="font-bold text-lg mb-3 border-b pb-2 text-gray-800">Descriere Produs</h3>
-                    <p className="text-gray-600 leading-relaxed whitespace-pre-line">
-                        {produs.descriere || "Nu există o descriere detaliată pentru acest produs."}
-                    </p>
+                    <div 
+                        className="text-gray-600 leading-relaxed whitespace-pre-line product-description"
+    // Această comandă spune React-ului: "Dacă găsești cod HTML în text, afișează-l, nu îl scrie ca text."
+                        dangerouslySetInnerHTML={{ __html: produs.descriere || "Nu există o descriere detaliată pentru acest produs." }}
+                    />
                 </div>
 
                 <button
