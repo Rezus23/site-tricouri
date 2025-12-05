@@ -16,7 +16,7 @@ type Produs = {
   imagine: string;    
   imagini?: string[]; 
   marimi?: MarimeStoc[];
-  categorie?: string;
+  categorie?: string; // Avem nevoie de acest câmp pentru filtrare
 };
 
 export default function Shop() {
@@ -26,13 +26,14 @@ export default function Shop() {
   
   const [activeCategory, setActiveCategory] = useState("all");
 
-  // Lista categorii
+  // Lista categorii (Poți adăuga și buton pentru Custom dacă vrei să fie accesibil separat)
   const categories = [
     { id: "all", label: "Toate" },
     { id: "tricouri", label: "Sezon 24/25" },
     { id: "retro", label: "Retro" },
     { id: "nationale", label: "Echipe Naționale" },
-    { id: "sorturi", label: "Custom" },
+    { id: "sorturi", label: "Șorturi" },
+    // { id: "custom", label: "Custom" }, // Decomentează dacă vrei buton dedicat
   ];
 
   useEffect(() => {
@@ -55,9 +56,13 @@ export default function Shop() {
         }) as Produs[];
 
         setAllProducts(data);
-        setFilteredProducts(data);
+        
+        // Initial load: aplicăm filtrarea de excludere 'custom'
+        const initialList = data.filter(p => p.categorie !== "custom");
+        setFilteredProducts(initialList);
+
       } catch (error) {
-        console.error("Eroare:", error);
+        console.error("Eroare la încărcarea produselor:", error);
       } finally {
         setLoading(false);
       }
@@ -65,23 +70,23 @@ export default function Shop() {
     fetchProduse();
   }, []);
 
-  // Filtrare
+  // 👇 LOGICA DE FILTRARE ACTUALIZATĂ
   useEffect(() => {
     if (activeCategory === "all") {
-        setFilteredProducts(allProducts);
+        // Când suntem pe "Toate", arătăm tot MAI PUȚIN categoria 'custom'
+        const filtered = allProducts.filter(p => p.categorie !== "custom");
+        setFilteredProducts(filtered);
     } else {
+        // Când selectăm o categorie specifică (inclusiv 'custom' dacă ai buton), arătăm doar acea categorie
         const filtered = allProducts.filter(p => p.categorie === activeCategory);
         setFilteredProducts(filtered);
     }
   }, [activeCategory, allProducts]);
 
-  // 👇 FUNCȚIA NOUĂ DE TOGGLE
   const handleCategoryClick = (categoryId: string) => {
     if (activeCategory === categoryId && categoryId !== "all") {
-        // Dacă apăsăm pe categoria deja activă (și nu e "Toate"), o dezactivăm -> Revine la "Toate"
         setActiveCategory("all");
     } else {
-        // Altfel, o activăm pe cea nouă
         setActiveCategory(categoryId);
     }
   };
@@ -102,16 +107,16 @@ export default function Shop() {
       <BlurredBackground />
 
       <div className="max-w-7xl mx-auto p-6 relative z-10 pt-10">
-        <h1 className="text-5xl font-extrabold text-center mb-8 text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
+        <h1 className="text-5xl font-extrabold text-center mb-12 text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
           Magazin Tricouri
         </h1>
 
-        {/* FILTRE (CATEGORII) */}
+        {/* FILTRE */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">
             {categories.map(cat => (
                 <button
                     key={cat.id}
-                    onClick={() => handleCategoryClick(cat.id)} // 👈 Folosim funcția nouă
+                    onClick={() => handleCategoryClick(cat.id)}
                     className={`px-6 py-2 rounded-full font-bold transition-all duration-300 shadow-lg border 
                         ${activeCategory === cat.id 
                             ? "bg-white text-black border-white scale-105" 
@@ -124,21 +129,15 @@ export default function Shop() {
         </div>
 
         {filteredProducts.length === 0 ? (
-          <div className="text-center mt-10 p-8 bg-white/90 backdrop-blur-md rounded-xl shadow-xl max-w-lg mx-auto animate-in fade-in zoom-in duration-300">
-            <div className="text-4xl mb-4">🤔</div>
-            <h3 className="text-xl text-gray-900 font-bold mb-2">Nu am găsit produse aici.</h3>
-            <p className="text-gray-600 mb-6">Dacă ştii ce iţi doreşti intra în categoria Custom şi hai să stam de vorbă!</p>
-            <div className="border-t pt-6">
-                <Link href="/contact" className="inline-block bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition">
-                    Contactează-ne
-                </Link>
-            </div>
+          <div className="text-center mt-20 p-8 bg-white/80 backdrop-blur-md rounded-xl shadow-xl max-w-md mx-auto">
+            <p className="text-xl text-gray-600 font-semibold">Nu există produse momentan.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {filteredProducts.map((produs) => {
               const img1 = produs.imagini?.[0] || produs.imagine || "/images/logo.jpg";
               const img2 = (produs.imagini && produs.imagini.length > 1) ? produs.imagini[1] : null;
+
               const totalStoc = produs.marimi?.reduce((acc, m) => acc + m.stoc, 0) ?? 0;
               const isSoldOut = produs.marimi && produs.marimi.length > 0 && totalStoc <= 0;
 
@@ -155,6 +154,7 @@ export default function Shop() {
                       alt={produs.titlu}
                       className={`absolute inset-0 w-full h-full object-contain p-6 transition-transform duration-500 ${!isSoldOut && "group-hover:scale-110"} ${isSoldOut && "grayscale brightness-75"}`}
                     />
+                    
                     {img2 && !isSoldOut && (
                       <img
                         src={img2}
@@ -162,6 +162,7 @@ export default function Shop() {
                         className="absolute inset-0 w-full h-full object-contain p-6 bg-gray-50 transition-opacity duration-500 opacity-0 group-hover:opacity-100 z-10"
                       />
                     )}
+
                     {isSoldOut && (
                         <div className="absolute inset-0 flex items-center justify-center z-20">
                             <span className="bg-white text-red-600 px-6 py-3 font-black text-2xl uppercase tracking-widest transform -rotate-12 shadow-2xl border-4 border-double border-red-600">
