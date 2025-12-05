@@ -29,11 +29,10 @@ export default function Shop() {
   // Lista categorii (Poți adăuga și buton pentru Custom dacă vrei să fie accesibil separat)
   const categories = [
     { id: "all", label: "Toate" },
-    { id: "tricouri", label: "Sezon 24/25" },
+    { id: "tricouri", label: "Sezon 25/26" },
     { id: "retro", label: "Retro" },
     { id: "nationale", label: "Echipe Naționale" },
-    { id: "custom", label: "Custom" },
-    // { id: "custom", label: "Custom" }, // Decomentează dacă vrei buton dedicat
+    { id: "custom", label: "Custom" }, // Decomentează dacă vrei buton dedicat
   ];
 
   useEffect(() => {
