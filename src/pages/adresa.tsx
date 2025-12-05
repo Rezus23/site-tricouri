@@ -195,7 +195,7 @@ export default function AdresaLivrare() {
             <div className="flex gap-2">
                 <input 
                     type="text" 
-                    placeholder="Ai un cod? (ex: PASSION15)" 
+                    placeholder="Ai un cod? Inserează-l aici cu litere mari" 
                     className="flex-1 p-3 border border-gray-300 rounded-lg bg-white text-black uppercase focus:ring-2 focus:ring-blue-500 outline-none"
                     value={promoInput}
                     onChange={(e) => setPromoInput(e.target.value)}
