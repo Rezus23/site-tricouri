@@ -66,7 +66,7 @@ export default function Home() {
             </a>
             
             <a 
-              href="https://www.tiktok.com/@numele_tau" 
+              href="https://www.tiktok.com/@passion4jerseys.ro" 
               target="_blank" 
               rel="noopener noreferrer"
               className="bg-white/10 p-3 rounded-full text-white hover:bg-black hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] hover:scale-110 transition transform duration-300"
@@ -76,7 +76,7 @@ export default function Home() {
             </a>
 
             <a 
-              href="https://www.facebook.com/numele_tau" 
+              href="https://www.facebook.com/profile.php?id=61584609665427" 
               target="_blank" 
               rel="noopener noreferrer"
               className="bg-white/10 p-3 rounded-full text-white hover:bg-blue-600 hover:scale-110 transition transform duration-300"
