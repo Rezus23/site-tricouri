@@ -32,7 +32,7 @@ export default function Shop() {
     { id: "tricouri", label: "Sezon 24/25" },
     { id: "retro", label: "Retro" },
     { id: "nationale", label: "Echipe Naționale" },
-    { id: "sorturi", label: "Șorturi" },
+    { id: "custom", label: "Custom" },
     // { id: "custom", label: "Custom" }, // Decomentează dacă vrei buton dedicat
   ];
 
