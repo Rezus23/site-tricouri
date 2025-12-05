@@ -15,7 +15,7 @@ const CATEGORII = [
   { id: "tricouri", label: "Sezon 25/26" },
   { id: "retro", label: "Retro" },
   { id: "nationale", label: "Echipe Naționale" },
-  { id: "sorturi", label: "custom" },
+  { id: "custom", label: "custom" },
 ];
 
 type MarimeStoc = {
