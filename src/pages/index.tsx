@@ -28,27 +28,53 @@ export default function Home() {
 
 
         {/* --- CONȚINUTUL PAGINII --- */}
-        {/* HERO SECTION - Acum fără imagine proprie, stă pe fundalul global */}
-        <div className="relative h-[85vh] w-full flex flex-col justify-center items-center text-center px-4">
-            
-            <h2 className="text-5xl md:text-7xl font-extrabold uppercase mb-6 tracking-tight drop-shadow-2xl animate-in fade-in zoom-in duration-700">
-              <span className="text-white">Descoperă-ţi </span>
-              <span className="text-lime-400 block md:inline">pasiunea</span>
-            </h2>
-            
-            <p className="text-gray-200 text-xl mb-12 max-w-2xl mx-auto font-medium drop-shadow-md">
-              "Eroi de ieri, idoli de azi. Aceeași emoţie."
-            </p>
+        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+  
+  {/* Background Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/30 rounded-full blur-[120px] pointer-events-none" />
 
-            <Link 
-              href="/shop"
-              className="group relative px-12 py-4 border-2 border-lime-400 text-white uppercase tracking-[4px] text-sm font-bold overflow-hidden transition-all hover:text-black"
-            >
-              <span className="absolute inset-0 w-0 bg-lime-400 transition-all duration-[300ms] ease-out group-hover:w-full"></span>
-              <span className="relative z-10">Cumpără Acum</span>
-            </Link>
+      <div className="container mx-auto px-6 relative z-10 text-center">
+    
+    <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-blue-400 text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      NEW SEASON 24/25
+    </span>
 
-        </div>
+    <h1 className="text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl animate-in zoom-in duration-700">
+      WEAR THE <br />
+      <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 animate-gradient bg-300%">
+        PASSION.
+      </span>
+    </h1>
+
+    <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+      Tricouri de fotbal autentice. Retro, Naționale și cele mai noi kit-uri de joc. 
+      Calitate premium pentru suporteri adevărați.
+    </p>
+
+    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+      <Link 
+        href="/shop" 
+        className="px-10 py-4 bg-white text-black font-bold text-lg rounded-full hover:bg-blue-50 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+      >
+        Vezi Colecția
+      </Link>
+      <Link 
+        href="/contact" 
+        className="px-10 py-4 bg-transparent border border-white/30 text-white font-bold text-lg rounded-full hover:bg-white/10 transition-all backdrop-blur-sm"
+      >
+        Contact
+      </Link>
+    </div>
+
+    </div>
+
+      {/* Scroll Down Indicator */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-white/50">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+      </div>
+      </section>
 
         {/* Footer */}
         <footer className="bg-[#0a0a0a] py-12 text-center text-gray-500 text-sm border-t border-gray-900 mt-auto w-full">
