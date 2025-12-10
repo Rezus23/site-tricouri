@@ -63,7 +63,13 @@ export default function Home() {
         
         {/* 2. HERO SECTION */}
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden w-full border-b border-gray-900">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-600/20 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+            w-[250px] h-[250px] md:w-[500px] md:h-[500px] 
+            bg-blue-600/50 md:bg-blue-600/20 
+            rounded-full 
+            blur-[60px] md:blur-[100px] 
+            pointer-events-none" 
+        />
 
           <div className="container mx-auto px-6 relative z-10 text-center">
             <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-blue-400 text-xs md:text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
