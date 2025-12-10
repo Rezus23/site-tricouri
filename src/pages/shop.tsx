@@ -3,9 +3,9 @@ import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import Link from "next/link";
 import BlurredBackground from "@/components/BlurredBackground";
-import { FiChevronDown } from "react-icons/fi"; // 👈 IMPORT ICONIȚĂ
+import { FiChevronDown } from "react-icons/fi";
+import { useRouter } from "next/router"; // 👈 IMPORT NOU
 
-// --- TIPURI ---
 type MarimeStoc = {
   nume: string;
   stoc: number;
@@ -22,25 +22,23 @@ type Produs = {
 };
 
 export default function Shop() {
+  const router = useRouter(); // 👈 Activăm Router-ul
   const [allProducts, setAllProducts] = useState<Produs[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Produs[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Stare Categorie
   const [activeCategory, setActiveCategory] = useState("all");
-  
-  // 👇 STARE NOUĂ PENTRU DROPDOWN
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Lista categorii
   const categories = [
-    { id: "all", label: "Toate Produsele" }, // Am redenumit puțin pentru claritate
-    { id: "tricouri", label: "Sezon 25/26" },
+    { id: "all", label: "Toate Produsele" },
+    { id: "tricouri", label: "Sezon 24/25" },
     { id: "retro", label: "Retro" },
     { id: "nationale", label: "Echipe Naționale" },
     { id: "custom", label: "Precomandă" },
   ];
 
+  // 1. FETCH PRODUSE
   useEffect(() => {
     const fetchProduse = async () => {
       try {
@@ -62,12 +60,9 @@ export default function Shop() {
 
         setAllProducts(data);
         
-        // Excludem custom din default
-        const initialList = data.filter(p => p.categorie !== "custom");
-        setFilteredProducts(initialList);
-
+        // Nu setăm filteredProducts aici încă, așteptăm router-ul
       } catch (error) {
-        console.error("Eroare la încărcarea produselor:", error);
+        console.error("Eroare:", error);
       } finally {
         setLoading(false);
       }
@@ -75,8 +70,24 @@ export default function Shop() {
     fetchProduse();
   }, []);
 
-  // --- LOGICA DE FILTRARE ---
+  // 2. DETECTARE URL PARAMETER (?categorie=...)
   useEffect(() => {
+    if (router.isReady) {
+        const urlCategory = router.query.categorie as string;
+        
+        // Dacă avem o categorie în URL și ea există în lista noastră
+        if (urlCategory && categories.some(c => c.id === urlCategory)) {
+            setActiveCategory(urlCategory);
+        } else {
+            setActiveCategory("all");
+        }
+    }
+  }, [router.isReady, router.query]);
+
+  // 3. LOGICA DE FILTRARE (Se activează când se schimbă activeCategory sau produsele)
+  useEffect(() => {
+    if (allProducts.length === 0) return;
+
     if (activeCategory === "all") {
         const filtered = allProducts.filter(p => p.categorie !== "custom");
         setFilteredProducts(filtered);
@@ -86,13 +97,17 @@ export default function Shop() {
     }
   }, [activeCategory, allProducts]);
 
-  // Selectare Categorie din Dropdown
   const handleSelectCategory = (categoryId: string) => {
     setActiveCategory(categoryId);
-    setIsDropdownOpen(false); // Închidem meniul după selecție
+    setIsDropdownOpen(false);
+    
+    // Opțional: Actualizăm și URL-ul vizual fără refresh
+    router.push({
+        pathname: '/shop',
+        query: categoryId === 'all' ? {} : { categorie: categoryId }
+    }, undefined, { shallow: true });
   };
 
-  // Găsim eticheta categoriei curente pentru a o afișa pe buton
   const currentLabel = categories.find(c => c.id === activeCategory)?.label || "Toate Produsele";
 
   if (loading) {
@@ -112,14 +127,12 @@ export default function Shop() {
 
       <div className="max-w-[1400px] mx-auto p-6 relative z-10 pt-10">
         <h1 className="text-5xl md:text-7xl font-black text-center mb-8 text-white tracking-tighter drop-shadow-xl uppercase">
-           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600"> Catalog tricouri</span>
+          Magazin <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">Oficial</span>
         </h1>
 
-        {/* --- 🔽 NOUL MENU DROPDOWN --- */}
+        {/* DROPDOWN MENU */}
         <div className="relative flex justify-center mb-16 z-50">
             <div className="relative inline-block text-left w-72">
-                
-                {/* Butonul Principal */}
                 <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="flex items-center justify-between w-full px-6 py-4 bg-white/95 backdrop-blur-md text-gray-900 font-bold text-lg rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:bg-white transition-all duration-300 border border-white/20 uppercase tracking-wide group"
@@ -128,7 +141,6 @@ export default function Shop() {
                     <FiChevronDown className={`text-xl transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {/* Lista Expandabilă */}
                 {isDropdownOpen && (
                     <div className="absolute mt-2 w-full bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border border-gray-100 origin-top">
                         <div className="py-2">
@@ -151,12 +163,12 @@ export default function Shop() {
             </div>
         </div>
 
-        {/* --- LISTA PRODUSE --- */}
+        {/* LISTA PRODUSE */}
         {filteredProducts.length === 0 ? (
           <div className="text-center mt-20 p-10 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 max-w-lg mx-auto">
             <div className="text-5xl mb-4">🤔</div>
             <h3 className="text-xl text-white font-bold mb-2">Niciun produs aici.</h3>
-            <p className="text-gray-400 mb-6">Momentan nu avem produse în această categorie.</p>
+            <p className="text-gray-400 mb-6">Momentan nu avem produse în categoria <strong>{currentLabel}</strong>.</p>
             <Link href="/contact" className="inline-block bg-white text-black px-6 py-3 rounded-full font-bold hover:bg-gray-200 transition">
                 Cere un produs
             </Link>

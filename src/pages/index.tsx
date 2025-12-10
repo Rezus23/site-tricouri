@@ -7,19 +7,19 @@ const REVIEWS = [
   {
     id: 1,
     nume: "Andrei M.",
-    text: "Calitatea tricoului este incredibilă, exact ca varianta de jucător. Materialul respiră foarte bine. Recomand!",
+    text: "Calitatea tricoului este incredibilă, exact ca varianta de jucător. Materialul respiră foarte bine, iar detaliile sunt impecabile. Recomand cu încredere!",
     rating: 5,
   },
   {
     id: 2,
     nume: "Radu S.",
-    text: "Am comandat un tricou retro cu Ronaldo și a ajuns în 2 zile. Arată genial în colecție.",
+    text: "Am comandat un tricou retro cu Ronaldo și a ajuns în 2 zile. Arată genial în colecție. Cu siguranță voi mai reveni pentru altele.",
     rating: 5,
   },
   {
     id: 3,
     nume: "Marius D.",
-    text: "Cel mai bun raport calitate-preț de pe piață. Bravo echipei pentru seriozitate!",
+    text: "Cel mai bun raport calitate-preț de pe piață. Mi-a plăcut că am primit update-uri constante despre comandă. Bravo echipei!",
     rating: 5,
   },
 ];
@@ -30,33 +30,28 @@ const CATEGORIES = [
     id: 1,
     titlu: "NOUL SEZON 25/26",
     descriere: "Cele mai noi kit-uri de joc.",
-    img: "/images/cat-new.jpg", // ⚠️ Încarcă o poză cu numele ăsta în public/images
-    link: "/shop", // Link către magazin
+    img: "/images/cat-new.jpg",
+    link: "/shop?categorie=tricouri", // 👈 Am adăugat ?categorie=...
   },
   {
     id: 2,
     titlu: "RETRO LEGENDS",
     descriere: "Istoria fotbalului pe tine.",
-    img: "/images/cat-retro.jpg", // ⚠️ Încarcă o poză cu numele ăsta
-    link: "/shop",
+    img: "/images/cat-retro.jpg",
+    link: "/shop?categorie=retro", // 👈 Link specific
   },
   {
     id: 3,
     titlu: "ECHIPE NAȚIONALE",
     descriere: "Susține-ți culorile.",
-    img: "/images/cat-national.jpg", // ⚠️ Încarcă o poză cu numele ăsta
-    link: "/shop",
+    img: "/images/cat-national.jpg",
+    link: "/shop?categorie=nationale", // 👈 AICI ESTE CHEIA
   },
-];
+]
 
 export default function Home() {
   return (
     <>
-      <Head>
-        <title>Passion4Jerseys - Tricouri Fotbal Premium</title>
-        <meta name="description" content="Cele mai noi echipamente de fotbal." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
 
        {/* 1. BARA PROMOȚIONALĂ */}
 
@@ -200,10 +195,10 @@ export default function Home() {
             <div className="container mx-auto px-6">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-4">
-                        Ce spun <span className="text-blue-500">Suporterii</span>
+                        Părerea voastră  <span className="text-blue-500">CONTEAZĂ</span>
                     </h2>
                     <p className="text-gray-400 max-w-xl mx-auto">
-                        Peste 500 de clienți mulțumiți poartă deja echipamentele Passion4Jerseys.
+                        Fii şi tu parte din comunitatea de clienți mulțumiți ce poartă deja echipamentele de pe Passion4Jerseys.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
