@@ -1,151 +1,101 @@
-import Link from "next/link";
 import Head from "next/head";
+import Link from "next/link";
+import Navbar from "@/components/Navbar"; // Asigură-te că ai Navbar importat (sau codul lui aici)
 import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
-import BlurredBackground from "@/components/BlurredBackground"; // Asigură-te că e importat
 
 export default function Home() {
   return (
     <>
       <Head>
-        <title>Passion4Jerseys - Tricouri Fotbal Premium</title>
-        <meta name="description" content="Cele mai noi echipamente de fotbal." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Passion4Jerseys - Magazin Oficial</title>
       </Head>
 
-      {/* Container Principal */}
-      <div className="min-h-screen relative flex flex-col pt-20 w-full overflow-x-hidden">
-        
-        {/* --- FUNDALUL BLURAT NEGRU --- */}
-        {/* --- 👇 BARA PROMOȚIONALĂ ANIMATĂ --- */}
-      <div className="bg-black text-white py-2 overflow-hidden relative z-50 shadow-sm border-b border-gray-800">
-        <div className="whitespace-nowrap animate-marquee font-bold text-sm tracking-wide uppercase">
-          🔥 Folosește codul promoțional <span className="bg-white text-black px-2 py-0.5 rounded mx-1 font-extrabold">PASSION15</span> în perioada 15.12 - 31.12 pentru <span className="underline decoration-white decoration-2 underline-offset-4">15% REDUCERE</span> la orice comandă! 
+      {/* 1. BARA PROMO (Responsive & Fără scroll lateral) */}
+      <div className="w-full bg-black text-white py-2 overflow-hidden relative z-50 shadow-sm border-b border-gray-800">
+        <div className="whitespace-nowrap animate-marquee font-bold text-xs md:text-sm tracking-wide uppercase px-4">
+          🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded mx-1 font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
         </div>
       </div>
-      {/* --- 👆 END BARĂ --- */}
-        {/* Folosim componenta existentă, dar punem un overlay negru puternic peste ea */}
-        <div className="fixed inset-0 z-[-1]">
-            <div 
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: "url('/images/hero-banner.jpg')" }}
-            ></div>
-            {/* Acest div face magia: Blur + Negru transparent */}
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
-        </div>
 
+      {/* 2. NAVBAR (Trebuie să fie în componentă, dar aici e structura safe) */}
+      {/* <Navbar /> */} 
+      {/* Dacă nu ai componenta Navbar, asigură-te că wrapper-ul ei are 'w-full' */}
 
-        {/* --- CONȚINUTUL PAGINII --- */}
-        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+      <main className="w-full overflow-x-hidden">
+        
+        {/* --- HERO SECTION RESPONSIVE --- */}
+        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden w-full">
           
-  
-  {/* Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/30 rounded-full blur-[120px] pointer-events-none" />
+          {/* Background Glow (Limitat să nu iasă din ecran) */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-600/30 rounded-full blur-[80px] md:blur-[120px] pointer-events-none" />
 
-      <div className="container mx-auto px-6 relative z-10 text-center">
-    
-    <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-blue-400 text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      NEW SEASON 25/26
-    </span>
-
-    <h1 className="text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl animate-in zoom-in duration-700">
-      WEAR THE <br />
-      <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 animate-gradient bg-300%">
-        PASSION.
-      </span>
-    </h1>
-
-    <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
-      Tricouri de fotbal - Retro, Naționale și cele mai noi kit-uri de joc. 
-      Calitate premium pentru suporteri adevărați.
-    </p>
-
-    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-      <Link 
-        href="/shop" 
-        className="px-10 py-4 bg-white text-black font-bold text-lg rounded-full hover:bg-blue-50 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-      >
-        Vezi Colecția
-      </Link>
-      
-    </div>
-
-    </div>
-
-      
-      </section>
-
-        {/* Footer */}
-        <footer className="bg-[#0a0a0a] py-12 text-center text-gray-500 text-sm border-t border-gray-900 mt-auto w-full">
-          
-          {/* --- SOCIAL MEDIA --- */}
-          <div className="flex justify-center gap-6 mb-8">
-            <a 
-              href="https://www.instagram.com/passion4jerseys.ro/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-white/10 p-3 rounded-full text-white hover:bg-pink-600 hover:scale-110 transition transform duration-300"
-              aria-label="Instagram"
-            >
-              <FaInstagram className="text-xl" />
-            </a>
+          {/* Container Conținut (Se adaptează automat) */}
+          <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center w-full max-w-7xl">
             
-            <a 
-              href="https://www.tiktok.com/@passion4jerseys.ro" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-white/10 p-3 rounded-full text-white hover:bg-black hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] hover:scale-110 transition transform duration-300"
-              aria-label="TikTok"
-            >
-              <FaTiktok className="text-xl" />
-            </a>
+            <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-blue-400 text-xs md:text-sm font-bold tracking-widest mb-4 md:mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              NEW SEASON 24/25
+            </span>
 
-            <a 
-              href="https://www.facebook.com/profile.php?id=61584609665427" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-white/10 p-3 rounded-full text-white hover:bg-blue-600 hover:scale-110 transition transform duration-300"
-              aria-label="Facebook"
-            >
-              <FaFacebookF className="text-xl" />
-            </a>
-          </div>
-        
-        
-          
-          <p className="mb-6 text-gray-400">© 2025 Passion4Jerseys. Toate drepturile rezervate.</p>
-          
-          <div className="flex flex-wrap justify-center gap-6 mb-8">
-            <Link href="/termeni" className="hover:text-lime-400 transition">Termeni și Condiții</Link>
-            <Link href="/confidentialitate" className="hover:text-lime-400 transition">Politica de Confidențialitate</Link>
-            <Link href="/retur" className="hover:text-lime-400 transition">Politica de Retur</Link>
-            <Link href="/contact" className="hover:text-lime-400 transition">Contact</Link>
-          </div>
+            {/* Titlu care se micșorează pe telefon (text-5xl) și crește pe desktop (text-8xl) */}
+            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl animate-in zoom-in duration-700">
+              WEAR THE <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 animate-gradient bg-300%">
+                PASSION.
+              </span>
+            </h1>
 
-          {/* --- INTEGRARE NETOPIA IFRAME --- */}
-          <div className="flex justify-center mb-8">
-            <iframe 
-                src="https://mny.ro/npId.html?color=%23050505&version=orizontal&secret=157332" 
-                title="NETOPIA Payments"
-                // Am convertit stilul HTML în obiect React și am mărit lățimea la 480px ca să încapă sigla orizontală
-                style={{ border: 'none', width: '480px', height: '60px', overflow: 'hidden' }} 
-            />
+            <p className="text-base md:text-xl text-gray-400 max-w-xl mx-auto mb-8 md:mb-10 leading-relaxed font-light px-4">
+              Tricouri de fotbal autentice. Retro, Naționale și cele mai noi kit-uri.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full px-4">
+              <Link 
+                href="/shop" 
+                className="w-full sm:w-auto px-10 py-4 bg-white text-black font-bold text-lg rounded-full hover:bg-blue-50 transition-all transform hover:scale-105 text-center"
+              >
+                Vezi Colecția
+              </Link>
+              <Link 
+                href="/contact" 
+                className="w-full sm:w-auto px-10 py-4 bg-transparent border border-white/30 text-white font-bold text-lg rounded-full hover:bg-white/10 transition-all backdrop-blur-sm text-center"
+              >
+                Contact
+              </Link>
+            </div>
           </div>
 
-          {/* Logo-uri ANPC */}
-          <div className="flex justify-center gap-4 opacity-80 hover:opacity-100 transition-opacity">
-            <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noreferrer">
-                <img src="/images/sal.png" alt="ANPC SAL" className="h-8 md:h-10 w-auto" />
-            </a>
-            <a href="https://europa.eu/youreurope/business/dealing-with-customers/solving-disputes/alternative-dispute-resolution/index_ro.html" target="_blank" rel="noreferrer">
-                <img src="/images/sol.png" alt="ANPC SOL" className="h-8 md:h-10 w-auto" />
-            </a>
+          {/* Scroll Indicator Centrat */}
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-white/50">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
           </div>
+        </section>
 
-          <div className="mt-6 text-xs text-gray-600">
-            <p>Imaginile produselor sunt cu titlu de prezentare.</p>
+      </main>
+
+      {/* --- FOOTER RESPONSIVE --- */}
+      <footer className="bg-[#0a0a0a] py-12 border-t border-gray-900 w-full">
+          <div className="container mx-auto px-6 flex flex-col items-center">
+            
+            {/* Social Media */}
+            <div className="flex justify-center gap-6 mb-8 flex-wrap">
+              <a href="#" className="bg-white/10 p-3 rounded-full text-white hover:bg-pink-600 transition"><FaInstagram /></a>
+              <a href="#" className="bg-white/10 p-3 rounded-full text-white hover:bg-black transition"><FaTiktok /></a>
+              <a href="#" className="bg-white/10 p-3 rounded-full text-white hover:bg-blue-600 transition"><FaFacebookF /></a>
+            </div>
+
+            <p className="mb-6 text-gray-400 text-sm text-center">© 2025 Passion4Jerseys. Toate drepturile rezervate.</p>
+            
+            {/* Link-uri Legale (Responsive: coloană pe mobil, rând pe desktop) */}
+            <div className="flex flex-col md:flex-row gap-4 md:gap-8 text-gray-500 text-xs text-center">
+                <Link href="/termeni">Termeni și Condiții</Link>
+                <Link href="/gdpr">Politica de Confidențialitate</Link>
+                <Link href="/retur">Politica de Retur</Link>
+                <Link href="/contact">Contact</Link>
+            </div>
           </div>
-        </footer>
-      </div>
+      </footer>
     </>
   );
 }
