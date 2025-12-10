@@ -245,36 +245,38 @@ export default function Home() {
                 </p>
 
                 {/* ZONA PENTRU POZA EXPLICATIVĂ */}
-                <div className="relative max-w-5xl mx-auto rounded-3xl overflow-hidden border border-gray-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] group">
+                {/* Am scos 'aspect-[16/9]' pentru a lăsa containerul să se adapteze la înălțimea imaginii */}
+                <div className="relative max-w-5xl mx-auto rounded-3xl overflow-hidden border border-gray-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] group bg-[#0a0a0a]">
                     
-                    {/* Placeholder gri dacă nu ai poza încă */}
-                    <div className="bg-gray-900 aspect-[16/9] flex items-center justify-center text-gray-600">
-                        {/* 👇 AICI PUI IMAGINEA TA REALĂ */}
-                        <img 
-                            src="/images/custom-guide.jpg" 
-                            alt="Ghid Comanda Custom" 
-                            className="w-full h-full object-cover"
-                            // Această linie ascunde img dacă nu există fișierul, ca să nu arate broken
-                            onError={(e) => { e.currentTarget.style.display = 'none'; }} 
-                        />
-                        
-                        {/* Text care apare doar dacă nu ai pus poza încă */}
-                        <span className="absolute">Încarcă poza 'custom-guide.jpg' în public/images</span>
-                    </div>
+                    {/* 👇 AICI ESTE MODIFICAREA PRINCIPALĂ */}
+                    <img 
+                        src="/images/custom-guide.jpg" 
+                        alt="Ghid Comanda Custom" 
+                        // 1. Am scos 'h-full' ca să nu forțăm înălțimea
+                        // 2. Am pus 'w-full' și 'h-auto' ca să se adapteze natural
+                        // 3. Am lăsat 'object-contain' ca siguranță
+                        className="w-full h-auto object-contain block"
+                        onError={(e) => { 
+                            // Fallback îmbunătățit dacă nu există poza
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement!.classList.add('min-h-[300px]', 'flex', 'items-center', 'justify-center');
+                            e.currentTarget.parentElement!.innerHTML = '<span class="text-gray-500 p-10">Încarcă poza "custom-guide.jpg" în public/images</span>';
+                        }} 
+                    />
 
-                    {/* Efect lucios pe imagine */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    {/* Efect lucios pe imagine (opțional, îl poți scoate dacă deranjează la citit) */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 </div>
 
-                {/* Buton CTA (Call to Action) */}
+                {/* Buton CTA */}
                 <div className="mt-10">
                     <Link 
-                        href="/shop?categorie=custom" 
+                        href="/contact" 
                         className="inline-flex items-center gap-2 bg-white text-black px-10 py-4 rounded-full font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                     >
-                        Precomandă
+                        Trimite-ne un mesaj
                     </Link>
-                    <p className="mt-4 text-xs text-gray-500">Răspundem rapid pe Mail sau Instagram!</p>
+                    <p className="mt-4 text-xs text-gray-500">Răspundem rapid pe WhatsApp sau Instagram!</p>
                 </div>
 
             </div>
