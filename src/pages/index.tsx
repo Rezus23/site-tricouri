@@ -21,11 +21,11 @@ export default function Home() {
         {/* BLOC 1 */}
         <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
           <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span>  in perioada 15.12-31.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span>  in perioada 15.12-31.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă!</span>!
           </span>
           <span className="mx-4 text-gray-600">|</span>
           <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span>  in perioada 15.12-31.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span>  in perioada 15.12-31.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă!</span>!
           </span>
           <span className="mx-4 text-gray-600">|</span>
         </div>
@@ -33,11 +33,11 @@ export default function Home() {
         {/* BLOC 2 */}
         <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
           <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> in perioada 15.12-31.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> in perioada 15.12-31.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă!</span>!
           </span>
           <span className="mx-4 text-gray-600">|</span>
           <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span>  in perioada 15.12-31.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span>  in perioada 15.12-31.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă!</span>!
           </span>
           <span className="mx-4 text-gray-600">|</span>
         </div>
