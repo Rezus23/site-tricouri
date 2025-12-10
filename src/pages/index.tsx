@@ -17,11 +17,16 @@ export default function Home() {
         
         {/* --- FUNDALUL BLURAT NEGRU --- */}
         {/* --- 👇 BARA PROMOȚIONALĂ ANIMATĂ --- */}
-      <div className="bg-black text-white py-2 overflow-hidden relative z-50 shadow-sm border-b border-gray-800">
-        <div className="whitespace-nowrap animate-marquee font-bold text-sm tracking-wide uppercase">
-          🔥 Folosește codul promoțional <span className="bg-white text-black px-2 py-0.5 rounded mx-1 font-extrabold">PASSION15</span> în perioada 15.12 - 31.12 pentru <span className="underline decoration-white decoration-2 underline-offset-4">15% REDUCERE</span> la orice comandă! 
-        </div>
+     <div className="animate-marquee whitespace-nowrap flex-shrink-0 px-4">
+          <span className="font-bold text-sm tracking-wide uppercase mx-4">
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded mx-1 font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>! 
+          </span>
       </div>
+      <div className="animate-marquee whitespace-nowrap flex-shrink-0 px-4">
+          <span className="font-bold text-sm tracking-wide uppercase mx-4">
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded mx-1 font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>! 
+          </span>
+        </div>
       {/* --- 👆 END BARĂ --- */}
         {/* Folosim componenta existentă, dar punem un overlay negru puternic peste ea */}
         <div className="fixed inset-0 z-[-1]">
