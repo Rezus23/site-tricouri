@@ -58,7 +58,8 @@ export default function Home() {
           <span className="mx-4 text-gray-600">|</span>
         </div>
       </div>
-      {/* BACKGROUND IMAGE FIX */}
+      
+      <main className="w-full overflow-x-hidden bg-black">
         <div className="fixed inset-0 z-[-1]">
           <div 
               className="absolute inset-0 bg-cover bg-center"
@@ -68,7 +69,6 @@ export default function Home() {
           {/* Strat negru transparent peste poză ca să se vadă textul */}
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
       </div>
-      <main className="w-full overflow-x-hidden bg-black">
         
         {/* 2. HERO SECTION */}
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden w-full border-b border-gray-900">
