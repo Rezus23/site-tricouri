@@ -24,6 +24,7 @@ export default function Home() {
             🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
           </span>
           <span className="mx-4 text-gray-600">|</span>
+          🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
           <span className="mx-4 text-gray-600">|</span>
         </div>
 
@@ -33,6 +34,7 @@ export default function Home() {
             🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
           </span>
           <span className="mx-4 text-gray-600">|</span>
+          🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
           <span className="mx-4 text-gray-600">|</span>
         </div>
 
