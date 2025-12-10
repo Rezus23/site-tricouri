@@ -110,53 +110,7 @@ export default function Contact() {
 
             </div>
 
-            {/* --- COLOANA DREAPTA: FORMULAR --- */}
-            <div className="bg-white/5 backdrop-blur-sm p-8 md:p-10 rounded-3xl border border-white/10 shadow-2xl">
-                <h3 className="text-2xl font-black uppercase mb-6">Trimite un mesaj</h3>
-                
-                {success ? (
-                    <div className="bg-green-500/20 border border-green-500 text-green-400 p-6 rounded-xl text-center animate-in fade-in zoom-in">
-                        <h4 className="text-xl font-bold mb-2">Mesaj Trimis! ✅</h4>
-                        <p>Îți mulțumim! Te vom contacta în cel mai scurt timp posibil.</p>
-                        <button onClick={() => setSuccess(false)} className="mt-4 text-sm underline hover:text-white">Trimite alt mesaj</button>
-                    </div>
-                ) : (
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-xs font-bold uppercase text-gray-400 mb-2 ml-1">Numele tău</label>
-                                <input required type="text" placeholder="ex: Andrei Popescu" className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold uppercase text-gray-400 mb-2 ml-1">Telefon</label>
-                                <input required type="tel" placeholder="07xx xxx xxx" className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-xs font-bold uppercase text-gray-400 mb-2 ml-1">Adresă Email</label>
-                            <input required type="email" placeholder="nume@email.com" className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition" />
-                        </div>
-
-                        <div>
-                            <label className="block text-xs font-bold uppercase text-gray-400 mb-2 ml-1">Mesajul tău</label>
-                            <textarea required rows={4} placeholder="Salut, aș vrea să comand un tricou custom..." className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition resize-none"></textarea>
-                        </div>
-
-                        <button 
-                            type="submit" 
-                            disabled={loading}
-                            className="w-full bg-white text-black font-black py-4 rounded-xl uppercase tracking-widest hover:bg-gray-200 transition transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {loading ? "Se trimite..." : "Trimite Mesajul"}
-                        </button>
-                        
-                        <p className="text-xs text-gray-500 text-center">
-                            Prin trimiterea formularului ești de acord cu politica de confidențialitate.
-                        </p>
-                    </form>
-                )}
-            </div>
+            
 
         </div>
       </div>
