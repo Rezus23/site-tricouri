@@ -17,9 +17,9 @@ export default function Home() {
         
         {/* --- FUNDALUL BLURAT NEGRU --- */}
         {/* --- 👇 BARA PROMOȚIONALĂ ANIMATĂ --- */}
-      <div className="bg-yellow-400 text-black py-2 overflow-hidden relative z-50 shadow-sm border-b border-yellow-500">
+      <div className="bg-black text-white py-2 overflow-hidden relative z-50 shadow-sm border-b border-gray-800">
         <div className="whitespace-nowrap animate-marquee font-bold text-sm tracking-wide uppercase">
-          🔥 Folosește codul promoțional <span className="bg-black text-white px-2 py-0.5 rounded mx-1">PASSION15</span> în perioada 15.12 - 31.12 pentru <span className="underline decoration-black">15% REDUCERE</span> la orice comandă! ⚽
+          🔥 Folosește codul promoțional <span className="bg-white text-black px-2 py-0.5 rounded mx-1 font-extrabold">PASSION15</span> în perioada 15.12 - 31.12 pentru <span className="underline decoration-white decoration-2 underline-offset-4">15% REDUCERE</span> la orice comandă! 
         </div>
       </div>
       {/* --- 👆 END BARĂ --- */}
