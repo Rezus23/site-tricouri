@@ -82,7 +82,7 @@ export default function Contact() {
                         <FaClock /> <span className="font-bold uppercase">Program Online</span>
                     </div>
                     <ul className="text-sm text-gray-400 space-y-2">
-                        <li className="flex justify-between"><span>Luni - Duminică:</span> <span className="text-white font-bold">Non-Stop</span></li>
+                        <li className="flex justify-between"><span>Luni - Duminică:</span> <span className="text-white font-bold">11:00 - 17:00</span></li>
                     </ul>
                 </div>
 
