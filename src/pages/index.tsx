@@ -50,7 +50,7 @@ export default function Home() {
           <div 
               className="absolute inset-0 bg-cover bg-center"
               // 👇 AICI SCHIMBI NUMELE POZEI
-              style={{ backgroundImage: "url('/images/banner-hero.jpg')" }} 
+              style={{ backgroundImage: "url('/images/hero-banner.jpg')" }} 
           ></div>
           {/* Strat negru transparent peste poză ca să se vadă textul */}
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
