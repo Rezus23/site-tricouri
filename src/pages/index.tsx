@@ -6,7 +6,7 @@ import { FaFacebookF, FaInstagram, FaTiktok, FaStar, FaQuoteRight, FaArrowRight 
 const REVIEWS = [
   {
     id: 1,
-    nume: "Andrei M.",
+    nume: "Andrei U.",
     text: "Calitatea tricoului este incredibilă, exact ca varianta de jucător. Materialul respiră foarte bine, iar detaliile sunt impecabile. Recomand cu încredere!",
     rating: 5,
   },
