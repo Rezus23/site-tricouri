@@ -269,10 +269,10 @@ export default function Home() {
                 {/* Buton CTA (Call to Action) */}
                 <div className="mt-10">
                     <Link 
-                        href="/contact" 
+                        href="/shop?categorie=custom" 
                         className="inline-flex items-center gap-2 bg-white text-black px-10 py-4 rounded-full font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                     >
-                        Trimite-ne un mesaj
+                        Precomandă
                     </Link>
                     <p className="mt-4 text-xs text-gray-500">Răspundem rapid pe Mail sau Instagram!</p>
                 </div>
