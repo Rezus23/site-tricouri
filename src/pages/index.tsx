@@ -6,7 +6,7 @@ import { FaFacebookF, FaInstagram, FaTiktok, FaStar, FaQuoteRight } from "react-
 const REVIEWS = [
   {
     id: 1,
-    nume: "Andrei M.",
+    nume: "Andrei U.",
     text: "Calitatea tricoului este incredibilă, exact ca varianta de jucător. Materialul respiră foarte bine, iar detaliile sunt impecabile. Recomand cu încredere!",
     rating: 5,
   },
@@ -45,7 +45,16 @@ export default function Home() {
           </span>
           <span className="mx-4 text-gray-600">|</span>
         </div>
-        
+        {/* BACKGROUND IMAGE FIX */}
+        <div className="fixed inset-0 z-[-1]">
+          <div 
+              className="absolute inset-0 bg-cover bg-center"
+              // 👇 AICI SCHIMBI NUMELE POZEI
+              style={{ backgroundImage: "url('/images/banner-hero.jpg')" }} 
+          ></div>
+          {/* Strat negru transparent peste poză ca să se vadă textul */}
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+      </div>
         {/* Copie pentru infinit */}
         <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
           <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
