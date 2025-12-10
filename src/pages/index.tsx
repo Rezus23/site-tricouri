@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Head from "next/head";
 import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
-import BlurredBackground from "@/components/BlurredBackground";
 
 export default function Home() {
   return (
@@ -14,89 +13,81 @@ export default function Home() {
 
       {/* ============================================================
           1. BARA PROMOȚIONALĂ INFINITĂ (MARQUEE)
-          Z-Index 40 pentru a intra sub Navbar (care are z-50+)
           ============================================================ */}
-      <div className="bg-black text-white py-2 overflow-hidden relative border-b border-gray-800 flex z-40">
+      <div className="bg-black text-white py-2 overflow-hidden relative border-b border-gray-900 flex z-40">
         
-        {/* BLOC 1 - Rulează spre stânga */}
+        {/* BLOC 1 */}
         <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
           <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
             🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
           </span>
-          <span className="mx-4 text-gray-500">|</span>
+          <span className="mx-4 text-gray-600">|</span>
           <span className="mx-8 font-bold text-sm tracking-wide uppercase">
              🚚 LIVRARE GRATUITĂ LA COMENZI PESTE 300 LEI!
           </span>
-          <span className="mx-4 text-gray-500">|</span>
+          <span className="mx-4 text-gray-600">|</span>
         </div>
 
-        {/* BLOC 2 (COPIE IDENTICĂ) - Asigură continuitatea */}
+        {/* BLOC 2 */}
         <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
           <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
             🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
           </span>
-          <span className="mx-4 text-gray-500">|</span>
+          <span className="mx-4 text-gray-600">|</span>
           <span className="mx-8 font-bold text-sm tracking-wide uppercase">
              🚚 LIVRARE GRATUITĂ LA COMENZI PESTE 300 LEI!
           </span>
-          <span className="mx-4 text-gray-500">|</span>
+          <span className="mx-4 text-gray-600">|</span>
         </div>
 
       </div>
 
       {/* ============================================================
-          2. BACKGROUND FIX (Imaginea de fundal)
+          2. HERO SECTION (FUNDAL NEGRU PUR)
           ============================================================ */}
-      <div className="fixed inset-0 z-[-1]">
-          <div 
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: "url('/images/hero-banner.jpg')" }}
-          ></div>
-          {/* Overlay pentru întunecare */}
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
-      </div>
-
-      {/* ============================================================
-          3. HERO SECTION
-          ============================================================ */}
-      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden w-full">
+      {/* Am adăugat bg-black aici pentru fundal negru complet */}
+      <main className="w-full overflow-x-hidden bg-black">
         
-        {/* Background Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-600/30 rounded-full blur-[120px] pointer-events-none" />
-
-        <div className="container mx-auto px-6 relative z-10 text-center">
+        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden w-full">
           
-          <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-blue-400 text-xs md:text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            NEW SEASON 25/26
-          </span>
+          {/* Glow Albastru (Păstrat pentru efect vizual pe fundal negru) */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-600/20 rounded-full blur-[100px] pointer-events-none" />
 
-          <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl animate-in zoom-in duration-700">
-            WEAR THE <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 animate-gradient bg-300%">
-              PASSION.
+          <div className="container mx-auto px-6 relative z-10 text-center">
+            
+            <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-blue-400 text-xs md:text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              NEW SEASON 25/26
             </span>
-          </h1>
 
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
-            Tricouri de fotbal - Retro, Naționale și cele mai noi kit-uri de joc. 
-            Calitate premium pentru suporteri adevărați.
-          </p>
+            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl animate-in zoom-in duration-700">
+              WEAR THE <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 animate-gradient bg-300%">
+                PASSION.
+              </span>
+            </h1>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link 
-              href="/shop" 
-              className="px-10 py-4 bg-white text-black font-bold text-lg rounded-full hover:bg-blue-50 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-            >
-              Vezi Colecția
-            </Link>
+            <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+              Tricouri de fotbal - Retro, Naționale și cele mai noi kit-uri de joc. 
+              Calitate premium pentru suporteri adevărați.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link 
+                href="/shop" 
+                className="px-10 py-4 bg-white text-black font-bold text-lg rounded-full hover:bg-blue-50 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+              >
+                Vezi Colecția
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+      </main>
 
       {/* ============================================================
-          4. FOOTER
+          3. FOOTER
           ============================================================ */}
-      <footer className="bg-[#0a0a0a] py-12 text-center text-gray-500 text-sm border-t border-gray-900 mt-auto w-full relative z-10">
+      <footer className="bg-black py-12 text-center text-gray-500 text-sm border-t border-gray-900 mt-auto w-full relative z-10">
         
         {/* Social Media */}
         <div className="flex justify-center gap-6 mb-8">
@@ -114,7 +105,7 @@ export default function Home() {
             href="https://www.tiktok.com/@passion4jerseys.ro" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="bg-white/10 p-3 rounded-full text-white hover:bg-black hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] hover:scale-110 transition transform duration-300"
+            className="bg-white/10 p-3 rounded-full text-white hover:bg-white hover:text-black hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] hover:scale-110 transition transform duration-300"
             aria-label="TikTok"
           >
             <FaTiktok className="text-xl" />
@@ -131,26 +122,26 @@ export default function Home() {
           </a>
         </div>
         
-        <p className="mb-6 text-gray-400">© 2025 Passion4Jerseys. Toate drepturile rezervate.</p>
+        <p className="mb-6 text-gray-500">© 2025 Passion4Jerseys. Toate drepturile rezervate.</p>
         
         <div className="flex flex-wrap justify-center gap-6 mb-8">
-          <Link href="/termeni" className="hover:text-lime-400 transition">Termeni și Condiții</Link>
-          <Link href="/confidentialitate" className="hover:text-lime-400 transition">Politica de Confidențialitate</Link>
-          <Link href="/retur" className="hover:text-lime-400 transition">Politica de Retur</Link>
-          <Link href="/contact" className="hover:text-lime-400 transition">Contact</Link>
+          <Link href="/termeni" className="hover:text-white transition">Termeni și Condiții</Link>
+          <Link href="/confidentialitate" className="hover:text-white transition">Politica de Confidențialitate</Link>
+          <Link href="/retur" className="hover:text-white transition">Politica de Retur</Link>
+          <Link href="/contact" className="hover:text-white transition">Contact</Link>
         </div>
 
         {/* Integrare Netopia Iframe */}
         <div className="flex justify-center mb-8">
           <iframe 
-              src="https://mny.ro/npId.html?color=%23050505&version=orizontal&secret=157332" 
+              src="https://mny.ro/npId.html?color=%23000000&version=orizontal&secret=157332" 
               title="NETOPIA Payments"
               style={{ border: 'none', width: '480px', height: '60px', overflow: 'hidden' }} 
           />
         </div>
 
         {/* Logo-uri ANPC */}
-        <div className="flex justify-center gap-4 opacity-80 hover:opacity-100 transition-opacity">
+        <div className="flex justify-center gap-4 opacity-70 hover:opacity-100 transition-opacity">
           <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noreferrer">
               <img src="/images/sal.png" alt="ANPC SAL" className="h-8 md:h-10 w-auto" />
           </a>
@@ -159,7 +150,7 @@ export default function Home() {
           </a>
         </div>
 
-        <div className="mt-6 text-xs text-gray-600">
+        <div className="mt-6 text-xs text-gray-700">
           <p>Imaginile produselor sunt cu titlu de prezentare.</p>
         </div>
       </footer>
