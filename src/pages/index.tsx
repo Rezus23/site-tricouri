@@ -36,7 +36,7 @@ export default function Home() {
       <div className="container mx-auto px-6 relative z-10 text-center">
     
     <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-blue-400 text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      NEW SEASON 24/25
+      NEW SEASON 25/26
     </span>
 
     <h1 className="text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl animate-in zoom-in duration-700">
@@ -58,12 +58,7 @@ export default function Home() {
       >
         Vezi Colecția
       </Link>
-      <Link 
-        href="/contact" 
-        className="px-10 py-4 bg-transparent border border-white/30 text-white font-bold text-lg rounded-full hover:bg-white/10 transition-all backdrop-blur-sm"
-      >
-        Contact
-      </Link>
+      
     </div>
 
     </div>

@@ -3,7 +3,9 @@ import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import Link from "next/link";
 import BlurredBackground from "@/components/BlurredBackground";
+import { FiChevronDown } from "react-icons/fi"; // 👈 IMPORT ICONIȚĂ
 
+// --- TIPURI ---
 type MarimeStoc = {
   nume: string;
   stoc: number;
@@ -16,7 +18,7 @@ type Produs = {
   imagine: string;    
   imagini?: string[]; 
   marimi?: MarimeStoc[];
-  categorie?: string; // Avem nevoie de acest câmp pentru filtrare
+  categorie?: string;
 };
 
 export default function Shop() {
@@ -24,15 +26,19 @@ export default function Shop() {
   const [filteredProducts, setFilteredProducts] = useState<Produs[]>([]);
   const [loading, setLoading] = useState(true);
   
+  // Stare Categorie
   const [activeCategory, setActiveCategory] = useState("all");
+  
+  // 👇 STARE NOUĂ PENTRU DROPDOWN
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Lista categorii (Poți adăuga și buton pentru Custom dacă vrei să fie accesibil separat)
+  // Lista categorii
   const categories = [
-    { id: "all", label: "Toate" },
-    { id: "tricouri", label: "Sezon 25/26" },
+    { id: "all", label: "Toate Produsele" }, // Am redenumit puțin pentru claritate
+    { id: "tricouri", label: "Sezon 24/25" },
     { id: "retro", label: "Retro" },
     { id: "nationale", label: "Echipe Naționale" },
-    { id: "custom", label: "Custom" }, // Decomentează dacă vrei buton dedicat
+    { id: "sorturi", label: "Șorturi" },
   ];
 
   useEffect(() => {
@@ -56,7 +62,7 @@ export default function Shop() {
 
         setAllProducts(data);
         
-        // Initial load: aplicăm filtrarea de excludere 'custom'
+        // Excludem custom din default
         const initialList = data.filter(p => p.categorie !== "custom");
         setFilteredProducts(initialList);
 
@@ -69,67 +75,91 @@ export default function Shop() {
     fetchProduse();
   }, []);
 
-  // 👇 LOGICA DE FILTRARE ACTUALIZATĂ
+  // --- LOGICA DE FILTRARE ---
   useEffect(() => {
     if (activeCategory === "all") {
-        // Când suntem pe "Toate", arătăm tot MAI PUȚIN categoria 'custom'
         const filtered = allProducts.filter(p => p.categorie !== "custom");
         setFilteredProducts(filtered);
     } else {
-        // Când selectăm o categorie specifică (inclusiv 'custom' dacă ai buton), arătăm doar acea categorie
         const filtered = allProducts.filter(p => p.categorie === activeCategory);
         setFilteredProducts(filtered);
     }
   }, [activeCategory, allProducts]);
 
-  const handleCategoryClick = (categoryId: string) => {
-    if (activeCategory === categoryId && categoryId !== "all") {
-        setActiveCategory("all");
-    } else {
-        setActiveCategory(categoryId);
-    }
+  // Selectare Categorie din Dropdown
+  const handleSelectCategory = (categoryId: string) => {
+    setActiveCategory(categoryId);
+    setIsDropdownOpen(false); // Închidem meniul după selecție
   };
+
+  // Găsim eticheta categoriei curente pentru a o afișa pe buton
+  const currentLabel = categories.find(c => c.id === activeCategory)?.label || "Toate Produsele";
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative">
+      <div className="min-h-screen flex items-center justify-center relative bg-black">
         <BlurredBackground />
         <p className="text-xl text-white font-bold drop-shadow-md animate-pulse">
-          Se încarcă produsele...
+          Se încarcă colecția...
         </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative bg-[#0a0a0a]">
       <BlurredBackground />
 
-      <div className="max-w-7xl mx-auto p-6 relative z-10 pt-10">
-        <h1 className="text-5xl font-extrabold text-center mb-12 text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
-          Magazin Tricouri
+      <div className="max-w-[1400px] mx-auto p-6 relative z-10 pt-10">
+        <h1 className="text-5xl md:text-7xl font-black text-center mb-8 text-white tracking-tighter drop-shadow-xl uppercase">
+          Magazin <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">Oficial</span>
         </h1>
 
-        {/* FILTRE */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {categories.map(cat => (
+        {/* --- 🔽 NOUL MENU DROPDOWN --- */}
+        <div className="relative flex justify-center mb-16 z-50">
+            <div className="relative inline-block text-left w-72">
+                
+                {/* Butonul Principal */}
                 <button
-                    key={cat.id}
-                    onClick={() => handleCategoryClick(cat.id)}
-                    className={`px-6 py-2 rounded-full font-bold transition-all duration-300 shadow-lg border 
-                        ${activeCategory === cat.id 
-                            ? "bg-white text-black border-white scale-105" 
-                            : "bg-black/50 text-gray-300 border-white/20 hover:bg-black/80 hover:text-white"
-                        }`}
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="flex items-center justify-between w-full px-6 py-4 bg-white/95 backdrop-blur-md text-gray-900 font-bold text-lg rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:bg-white transition-all duration-300 border border-white/20 uppercase tracking-wide group"
                 >
-                    {cat.label}
+                    {currentLabel}
+                    <FiChevronDown className={`text-xl transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
-            ))}
+
+                {/* Lista Expandabilă */}
+                {isDropdownOpen && (
+                    <div className="absolute mt-2 w-full bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border border-gray-100 origin-top">
+                        <div className="py-2">
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => handleSelectCategory(cat.id)}
+                                    className={`block w-full text-left px-6 py-3 text-sm font-bold uppercase tracking-wider transition-colors
+                                        ${activeCategory === cat.id 
+                                            ? "bg-blue-50 text-blue-600 border-l-4 border-blue-600" 
+                                            : "text-gray-700 hover:bg-gray-50 hover:text-black"
+                                        }`}
+                                >
+                                    {cat.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
 
+        {/* --- LISTA PRODUSE --- */}
         {filteredProducts.length === 0 ? (
-          <div className="text-center mt-20 p-8 bg-white/80 backdrop-blur-md rounded-xl shadow-xl max-w-md mx-auto">
-            <p className="text-xl text-gray-600 font-semibold">Nu există produse momentan.</p>
+          <div className="text-center mt-20 p-10 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 max-w-lg mx-auto">
+            <div className="text-5xl mb-4">🤔</div>
+            <h3 className="text-xl text-white font-bold mb-2">Niciun produs aici.</h3>
+            <p className="text-gray-400 mb-6">Momentan nu avem produse în această categorie.</p>
+            <Link href="/contact" className="inline-block bg-white text-black px-6 py-3 rounded-full font-bold hover:bg-gray-200 transition">
+                Cere un produs
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -141,52 +171,66 @@ export default function Shop() {
               const isSoldOut = produs.marimi && produs.marimi.length > 0 && totalStoc <= 0;
 
               return (
-                <div
-                  key={produs.id}
-                  className={`bg-white/95 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl transition-all duration-300 overflow-hidden flex flex-col group
-                    ${isSoldOut ? "opacity-90" : "hover:shadow-2xl hover:-translate-y-2"} 
-                  `}
-                >
-                  <Link href={`/magazin/${produs.id}`} className="block relative h-72 bg-gray-50 overflow-hidden">
+                <div key={produs.id} className="group relative bg-white rounded-[20px] overflow-hidden transition-all duration-300 hover:shadow-[0_20px_40px_-15px_rgba(255,255,255,0.15)] hover:-translate-y-2">
+                  <Link href={`/magazin/${produs.id}`} className="block relative aspect-[4/5] bg-[#f4f4f5] overflow-hidden">
+                    <div className="absolute top-4 left-4 z-20 pointer-events-none">
+                       <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest text-gray-900 shadow-sm border border-gray-100">
+                         {produs.categorie === 'tricouri' ? '24/25' : (produs.categorie || "Oficial")}
+                       </span>
+                    </div>
+
                     <img
                       src={img1}
                       alt={produs.titlu}
-                      className={`absolute inset-0 w-full h-full object-contain p-6 transition-transform duration-500 ${!isSoldOut && "group-hover:scale-110"} ${isSoldOut && "grayscale brightness-75"}`}
+                      className={`absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 ease-out 
+                        ${!isSoldOut && "group-hover:scale-105"} 
+                        ${isSoldOut && "grayscale opacity-60"}`}
                     />
                     
                     {img2 && !isSoldOut && (
                       <img
                         src={img2}
                         alt="spate"
-                        className="absolute inset-0 w-full h-full object-contain p-6 bg-gray-50 transition-opacity duration-500 opacity-0 group-hover:opacity-100 z-10"
+                        className="absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-500 opacity-0 group-hover:opacity-100"
                       />
                     )}
 
                     {isSoldOut && (
-                        <div className="absolute inset-0 flex items-center justify-center z-20">
-                            <span className="bg-white text-red-600 px-6 py-3 font-black text-2xl uppercase tracking-widest transform -rotate-12 shadow-2xl border-4 border-double border-red-600">
-                                SOLD OUT
+                        <div className="absolute inset-0 flex items-center justify-center z-30 bg-black/10">
+                            <span className="bg-red-600 text-white px-4 py-2 font-black text-lg uppercase tracking-widest transform -rotate-12 shadow-xl border-2 border-white">
+                                Sold Out
                             </span>
+                        </div>
+                    )}
+
+                    {!isSoldOut && (
+                        <div className="absolute bottom-4 left-4 right-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20">
+                            <button className="w-full bg-white text-black font-bold py-3 rounded-xl shadow-xl hover:bg-black hover:text-white transition-colors text-xs uppercase tracking-widest">
+                                Vezi Detalii
+                            </button>
                         </div>
                     )}
                   </Link>
 
-                  <div className="p-6 flex flex-col flex-grow text-center relative z-20 bg-white/95">
-                    <Link href={`/magazin/${produs.id}`}>
-                      <h3 className="font-bold text-xl text-gray-900 hover:text-blue-700 transition-colors mb-2 leading-tight">
-                        {produs.titlu}
-                      </h3>
-                    </Link>
+                  <div className="p-5 bg-white relative z-10">
+                    <div className="flex justify-between items-start gap-4 mb-1">
+                        <Link href={`/magazin/${produs.id}`}>
+                            <h3 className="font-bold text-md text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2 uppercase">
+                              {produs.titlu}
+                            </h3>
+                        </Link>
+                        <p className="font-black text-lg text-gray-900 whitespace-nowrap">
+                          {produs.pret} <span className="text-[10px] text-gray-500 align-top font-normal">RON</span>
+                        </p>
+                    </div>
                     
                     {isSoldOut ? (
-                        <p className="text-xl font-black text-red-600 uppercase tracking-wider mt-auto">
-                            Stoc Epuizat
-                        </p>
+                        <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mt-2">Stoc Epuizat</p>
                     ) : (
-                        <p className="text-2xl font-extrabold text-gray-900 mt-auto tracking-tight flex items-baseline justify-center gap-1">
-                            {produs.pret}
-                            <span className="text-xs font-medium text-gray-500 uppercase">RON</span>
-                        </p>
+                        <div className="flex items-center gap-1 mt-2">
+                             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                             <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">În Stoc</p>
+                        </div>
                     )}
                   </div>
                 </div>
