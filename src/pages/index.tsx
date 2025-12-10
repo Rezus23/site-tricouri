@@ -274,7 +274,7 @@ export default function Home() {
                     >
                         Trimite-ne un mesaj
                     </Link>
-                    <p className="mt-4 text-xs text-gray-500">Răspundem rapid pe WhatsApp sau Instagram!</p>
+                    <p className="mt-4 text-xs text-gray-500">Răspundem rapid pe Mail sau Instagram!</p>
                 </div>
 
             </div>
