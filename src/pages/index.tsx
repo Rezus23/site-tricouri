@@ -16,7 +16,7 @@ export default function Home() {
           🛠️ FIX: Am adăugat 'mt-24' (margin-top) ca să o împingem sub Navbar.
           Ajustează numărul (mt-20, mt-24, mt-28) dacă meniul tău e mai mic/mare.
           ============================================================ */}
-      <div className="mt-24 bg-black text-white py-2 overflow-hidden relative border-b border-gray-900 flex z-40">
+      <div className="mt-20 bg-black text-white py-2 overflow-hidden relative border-b border-gray-900 flex z-40">
         
         {/* BLOC 1 */}
         <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
@@ -24,9 +24,6 @@ export default function Home() {
             🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
           </span>
           <span className="mx-4 text-gray-600">|</span>
-          <span className="mx-8 font-bold text-sm tracking-wide uppercase">
-             🚚 LIVRARE GRATUITĂ LA COMENZI PESTE 300 LEI!
-          </span>
           <span className="mx-4 text-gray-600">|</span>
         </div>
 
@@ -36,9 +33,6 @@ export default function Home() {
             🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
           </span>
           <span className="mx-4 text-gray-600">|</span>
-          <span className="mx-8 font-bold text-sm tracking-wide uppercase">
-             🚚 LIVRARE GRATUITĂ LA COMENZI PESTE 300 LEI!
-          </span>
           <span className="mx-4 text-gray-600">|</span>
         </div>
 
