@@ -13,20 +13,33 @@ export default function Home() {
       </Head>
 
       {/* Container Principal */}
-      <div className="min-h-screen relative flex flex-col pt-20 w-full overflow-x-hidden">
+      <div className="bg-black text-white py-2 overflow-hidden relative border-b border-gray-800 flex z-40">
         
-        {/* --- FUNDALUL BLURAT NEGRU --- */}
-        {/* --- 👇 BARA PROMOȚIONALĂ ANIMATĂ --- */}
-     <div className="animate-marquee whitespace-nowrap flex-shrink-0 px-4">
-          <span className="font-bold text-sm tracking-wide uppercase mx-4">
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded mx-1 font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>! 
+        {/* BLOC 1 - Rulează spre stânga */}
+        <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
+          <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
           </span>
-      </div>
-      <div className="animate-marquee whitespace-nowrap flex-shrink-0 px-4">
-          <span className="font-bold text-sm tracking-wide uppercase mx-4">
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded mx-1 font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>! 
+          <span className="mx-8 font-bold text-sm tracking-wide uppercase text-gray-400">|</span>
+          <span className="mx-8 font-bold text-sm tracking-wide uppercase">
+             🚚 LIVRARE GRATUITĂ LA COMENZI PESTE 300 LEI!
           </span>
+          <span className="mx-8 font-bold text-sm tracking-wide uppercase text-gray-400">|</span>
         </div>
+
+        {/* BLOC 2 (COPIE IDENTICĂ) - Asigură continuitatea */}
+        <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
+          <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> pentru <span className="underline decoration-white decoration-2">15% REDUCERE</span>!
+          </span>
+          <span className="mx-8 font-bold text-sm tracking-wide uppercase text-gray-400">|</span>
+          <span className="mx-8 font-bold text-sm tracking-wide uppercase">
+             🚚 LIVRARE GRATUITĂ LA COMENZI PESTE 300 LEI!
+          </span>
+          <span className="mx-8 font-bold text-sm tracking-wide uppercase text-gray-400">|</span>
+        </div>
+
+
       {/* --- 👆 END BARĂ --- */}
         {/* Folosim componenta existentă, dar punem un overlay negru puternic peste ea */}
         <div className="fixed inset-0 z-[-1]">
