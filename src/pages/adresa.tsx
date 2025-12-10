@@ -23,7 +23,7 @@ export default function AdresaLivrare() {
 
   // 1. CONFIGURARE FINANCIARĂ
   const subtotal = cart.reduce((acc, p) => acc + Number(p.pret), 0);
-  const COST_LIVRARE = 10.00;
+  const COST_LIVRARE = 15.00;
   const COD_PROMO_VALID = "PASSION15"; // 👈 Codul secret
 
   // 2. STĂRI NOI PENTRU PROMO
