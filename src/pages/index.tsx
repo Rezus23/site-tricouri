@@ -12,14 +12,6 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      {/* --- 👇 BARA PROMOȚIONALĂ ANIMATĂ --- */}
-      <div className="bg-yellow-400 text-black py-2 overflow-hidden relative z-50 shadow-sm border-b border-yellow-500">
-        <div className="whitespace-nowrap animate-marquee font-bold text-sm tracking-wide uppercase">
-          🔥 Folosește codul promoțional <span className="bg-black text-white px-2 py-0.5 rounded mx-1">PASSION15</span> în perioada 15.12 - 31.12 pentru <span className="underline decoration-black">15% REDUCERE</span> la orice comandă! ⚽
-        </div>
-      </div>
-      {/* --- 👆 END BARĂ --- */}
-
       {/* Container Principal */}
       <div className="min-h-screen relative flex flex-col pt-20 w-full overflow-x-hidden">
         
@@ -37,6 +29,14 @@ export default function Home() {
 
         {/* --- CONȚINUTUL PAGINII --- */}
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+          
+      {/* --- 👇 BARA PROMOȚIONALĂ ANIMATĂ --- */}
+      <div className="bg-yellow-400 text-black py-2 overflow-hidden relative z-50 shadow-sm border-b border-yellow-500">
+        <div className="whitespace-nowrap animate-marquee font-bold text-sm tracking-wide uppercase">
+          🔥 Folosește codul promoțional <span className="bg-black text-white px-2 py-0.5 rounded mx-1">PASSION15</span> în perioada 15.12 - 31.12 pentru <span className="underline decoration-black">15% REDUCERE</span> la orice comandă! ⚽
+        </div>
+      </div>
+      {/* --- 👆 END BARĂ --- */}
   
   {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/30 rounded-full blur-[120px] pointer-events-none" />
