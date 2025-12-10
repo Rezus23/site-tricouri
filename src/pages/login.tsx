@@ -102,20 +102,7 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           
-          {/* Câmp NUME (Doar la Register) */}
-          {!isLogin && (
-             <div className="animate-in fade-in slide-in-from-top-2">
-                <label className="block text-gray-400 text-xs font-bold uppercase mb-2 ml-1">Nume Complet</label>
-                <input
-                  type="text"
-                  placeholder="ex: Andrei Popescu"
-                  className={inputClassName}
-                  value={nume}
-                  onChange={(e) => setNume(e.target.value)}
-                  required={!isLogin}
-                />
-             </div>
-          )}
+          
 
           <div>
             <label className="block text-gray-400 text-xs font-bold uppercase mb-2 ml-1">Email</label>
@@ -141,20 +128,7 @@ export default function Login() {
             />
           </div>
 
-           {/* Câmp CONFIRMARE PAROLĂ (Doar la Register) */}
-           {!isLogin && (
-             <div className="animate-in fade-in slide-in-from-top-2">
-                <label className="block text-gray-400 text-xs font-bold uppercase mb-2 ml-1">Confirmă Parola</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  className={inputClassName}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required={!isLogin}
-                />
-             </div>
-          )}
+          
 
           <button
             type="submit"
