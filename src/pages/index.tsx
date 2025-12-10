@@ -32,16 +32,7 @@ export default function Home() {
         <meta name="description" content="Cele mai noi echipamente de fotbal." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      {/* BACKGROUND IMAGE FIX */}
-        <div className="fixed inset-0 z-[-1]">
-          <div 
-              className="absolute inset-0 bg-cover bg-center"
-              // 👇 AICI SCHIMBI NUMELE POZEI
-              style={{ backgroundImage: "url('/images/hero-banner.jpg')" }} 
-          ></div>
-          {/* Strat negru transparent peste poză ca să se vadă textul */}
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-      </div>
+    
       {/* 1. BARA PROMOȚIONALĂ */}
       <div className="mt-20 bg-black text-white py-2 overflow-hidden relative border-b border-gray-900 flex z-40">
         <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
@@ -67,7 +58,16 @@ export default function Home() {
           <span className="mx-4 text-gray-600">|</span>
         </div>
       </div>
-
+      {/* BACKGROUND IMAGE FIX */}
+        <div className="fixed inset-0 z-[-1]">
+          <div 
+              className="absolute inset-0 bg-cover bg-center"
+              // 👇 AICI SCHIMBI NUMELE POZEI
+              style={{ backgroundImage: "url('/images/hero-banner.jpg')" }} 
+          ></div>
+          {/* Strat negru transparent peste poză ca să se vadă textul */}
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+      </div>
       <main className="w-full overflow-x-hidden bg-black">
         
         {/* 2. HERO SECTION */}
