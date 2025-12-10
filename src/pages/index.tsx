@@ -12,9 +12,11 @@ export default function Home() {
       </Head>
 
       {/* ============================================================
-          1. BARA PROMOȚIONALĂ INFINITĂ (MARQUEE)
+          1. BARA PROMOȚIONALĂ INFINITĂ
+          🛠️ FIX: Am adăugat 'mt-24' (margin-top) ca să o împingem sub Navbar.
+          Ajustează numărul (mt-20, mt-24, mt-28) dacă meniul tău e mai mic/mare.
           ============================================================ */}
-      <div className="bg-black text-white py-2 overflow-hidden relative border-b border-gray-900 flex z-40">
+      <div className="mt-24 bg-black text-white py-2 overflow-hidden relative border-b border-gray-900 flex z-40">
         
         {/* BLOC 1 */}
         <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
@@ -43,14 +45,12 @@ export default function Home() {
       </div>
 
       {/* ============================================================
-          2. HERO SECTION (FUNDAL NEGRU PUR)
+          2. HERO SECTION
           ============================================================ */}
-      {/* Am adăugat bg-black aici pentru fundal negru complet */}
       <main className="w-full overflow-x-hidden bg-black">
         
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden w-full">
           
-          {/* Glow Albastru (Păstrat pentru efect vizual pe fundal negru) */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-600/20 rounded-full blur-[100px] pointer-events-none" />
 
           <div className="container mx-auto px-6 relative z-10 text-center">
@@ -89,7 +89,6 @@ export default function Home() {
           ============================================================ */}
       <footer className="bg-black py-12 text-center text-gray-500 text-sm border-t border-gray-900 mt-auto w-full relative z-10">
         
-        {/* Social Media */}
         <div className="flex justify-center gap-6 mb-8">
           <a 
             href="https://www.instagram.com/passion4jerseys.ro/" 
@@ -131,7 +130,6 @@ export default function Home() {
           <Link href="/contact" className="hover:text-white transition">Contact</Link>
         </div>
 
-        {/* Integrare Netopia Iframe */}
         <div className="flex justify-center mb-8">
           <iframe 
               src="https://mny.ro/npId.html?color=%23000000&version=orizontal&secret=157332" 
@@ -140,7 +138,6 @@ export default function Home() {
           />
         </div>
 
-        {/* Logo-uri ANPC */}
         <div className="flex justify-center gap-4 opacity-70 hover:opacity-100 transition-opacity">
           <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noreferrer">
               <img src="/images/sal.png" alt="ANPC SAL" className="h-8 md:h-10 w-auto" />
