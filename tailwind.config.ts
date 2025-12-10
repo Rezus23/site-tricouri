@@ -1,25 +1,28 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  
   content: [
-    // Această linie acoperă absolut tot din folderul src
-    "./src/**/*.{js,ts,jsx,tsx}",
-    // Backup pentru folderul pages din rădăcină (dacă există)
-    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-        
     extend: {
+      // 👇 ADAUGĂ ACEASTĂ SECȚIUNE PENTRU ANIMAȚIE
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        }
+      },
       animation: {
-  'gradient': 'gradient 8s linear infinite',
-          },
-    keyframes: {
-    gradient: {
-    '0%, 100%': { 'background-position': '0% 50%' },
-    '50%': { 'background-position': '100% 50%' },
-  }
-}
+        marquee: 'marquee 25s linear infinite',
+      },
+      // 👆 GATA SECȚIUNEA
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      },
     },
   },
   plugins: [],

@@ -35,7 +35,7 @@ export default function Shop() {
   // Lista categorii
   const categories = [
     { id: "all", label: "Toate Produsele" }, // Am redenumit puțin pentru claritate
-    { id: "tricouri", label: "Sezon 24/25" },
+    { id: "tricouri", label: "Sezon 25/26" },
     { id: "retro", label: "Retro" },
     { id: "nationale", label: "Echipe Naționale" },
     { id: "custom", label: "Precomandă" },

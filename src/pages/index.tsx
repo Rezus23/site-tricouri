@@ -12,6 +12,14 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
+      {/* --- 👇 BARA PROMOȚIONALĂ ANIMATĂ --- */}
+      <div className="bg-yellow-400 text-black py-2 overflow-hidden relative z-50 shadow-sm border-b border-yellow-500">
+        <div className="whitespace-nowrap animate-marquee font-bold text-sm tracking-wide uppercase">
+          🔥 Folosește codul promoțional <span className="bg-black text-white px-2 py-0.5 rounded mx-1">PASSION15</span> în perioada 15.12 - 31.12 pentru <span className="underline decoration-black">15% REDUCERE</span> la orice comandă! ⚽
+        </div>
+      </div>
+      {/* --- 👆 END BARĂ --- */}
+
       {/* Container Principal */}
       <div className="min-h-screen relative flex flex-col pt-20 w-full overflow-x-hidden">
         
@@ -63,12 +71,7 @@ export default function Home() {
 
     </div>
 
-      {/* Scroll Down Indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-white/50 cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
-      </div>
+      
       </section>
 
         {/* Footer */}
