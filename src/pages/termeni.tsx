@@ -35,7 +35,7 @@ export default function Termeni() {
               Din cauza setărilor monitorului sau a ecranului, culorile pot diferi ușor față de realitate.
             </p>
             <p>
-              Prețurile afișate includ TVA (dacă ești plătitor, altfel șterge asta) și sunt exprimate în RON.
+              Prețurile afișate includ TVA și sunt exprimate în RON.
             </p>
           </section>
 
