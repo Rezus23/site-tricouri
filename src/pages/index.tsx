@@ -18,8 +18,8 @@ const REVIEWS = [
   },
   {
     id: 3,
-    nume: "Marius D.",
-    text: "Cel mai bun raport calitate-preț de pe piață. Mi-a plăcut că am primit update-uri constante despre comandă. Bravo echipei!",
+    nume: "Mircea I.",
+    text: "Cel mai bun raport calitate-preț de pe piață. Mi-a plăcut că am primit update-uri constante despre comandă. Regele pe tricouri!",
     rating: 5,
   },
 ];
