@@ -38,7 +38,7 @@ export default function Shop() {
     { id: "tricouri", label: "Sezon 24/25" },
     { id: "retro", label: "Retro" },
     { id: "nationale", label: "Echipe Naționale" },
-    { id: "sorturi", label: "Șorturi" },
+    { id: "custom", label: "Precomandă" },
   ];
 
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function Shop() {
 
       <div className="max-w-[1400px] mx-auto p-6 relative z-10 pt-10">
         <h1 className="text-5xl md:text-7xl font-black text-center mb-8 text-white tracking-tighter drop-shadow-xl uppercase">
-          Magazin <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">Oficial</span>
+           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600"> Catalog tricouri</span>
         </h1>
 
         {/* --- 🔽 NOUL MENU DROPDOWN --- */}
