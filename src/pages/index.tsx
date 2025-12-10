@@ -227,6 +227,60 @@ export default function Home() {
             </div>
         </section>
 
+        {/* ============================================================
+            5. 👇 SECȚIUNE NOUĂ: GHID COMANDĂ CUSTOM (RECLAMA)
+            ============================================================ */}
+        <section className="py-20 bg-black border-t border-gray-900 relative overflow-hidden">
+            
+            {/* Glow decorativ în spate */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-900/20 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="container mx-auto px-6 relative z-10 text-center">
+                
+                <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-4">
+                    Vrei ceva <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Unic?</span>
+                </h2>
+                <p className="text-gray-400 mb-10 max-w-2xl mx-auto">
+                    Putem aduce orice tricou, retro sau actual, cu orice personalizare. Iată cum funcționează procesul:
+                </p>
+
+                {/* ZONA PENTRU POZA EXPLICATIVĂ */}
+                <div className="relative max-w-5xl mx-auto rounded-3xl overflow-hidden border border-gray-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] group">
+                    
+                    {/* Placeholder gri dacă nu ai poza încă */}
+                    <div className="bg-gray-900 aspect-[16/9] flex items-center justify-center text-gray-600">
+                        {/* 👇 AICI PUI IMAGINEA TA REALĂ */}
+                        <img 
+                            src="/images/custom-guide.jpg" 
+                            alt="Ghid Comanda Custom" 
+                            className="w-full h-full object-cover"
+                            // Această linie ascunde img dacă nu există fișierul, ca să nu arate broken
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }} 
+                        />
+                        
+                        {/* Text care apare doar dacă nu ai pus poza încă */}
+                        <span className="absolute">Încarcă poza 'custom-guide.jpg' în public/images</span>
+                    </div>
+
+                    {/* Efect lucios pe imagine */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+
+                {/* Buton CTA (Call to Action) */}
+                <div className="mt-10">
+                    <Link 
+                        href="/contact" 
+                        className="inline-flex items-center gap-2 bg-white text-black px-10 py-4 rounded-full font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                    >
+                        Trimite-ne un mesaj
+                    </Link>
+                    <p className="mt-4 text-xs text-gray-500">Răspundem rapid pe WhatsApp sau Instagram!</p>
+                </div>
+
+            </div>
+        </section>
+        {/* 👆 END SECȚIUNE GHID */}
+
       </main>
 
       {/* FOOTER */}

@@ -187,7 +187,7 @@ export default function Shop() {
                   <Link href={`/magazin/${produs.id}`} className="block relative aspect-[4/5] bg-[#f4f4f5] overflow-hidden">
                     <div className="absolute top-4 left-4 z-20 pointer-events-none">
                        <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest text-gray-900 shadow-sm border border-gray-100">
-                         {produs.categorie === 'tricouri' ? '24/25' : (produs.categorie || "Oficial")}
+                         {produs.categorie === 'tricouri' ? '25/26' : (produs.categorie || "Oficial")}
                        </span>
                     </div>
 
