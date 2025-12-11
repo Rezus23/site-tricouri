@@ -61,7 +61,7 @@ export default function Home() {
 
           <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
 
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 15.12-31.1 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 12.12-20.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
 
           </span>
 
@@ -69,7 +69,7 @@ export default function Home() {
 
           <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
 
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 15.12-31.1 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 12.12-20.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
 
           </span>
 
@@ -85,7 +85,7 @@ export default function Home() {
 
           <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
 
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 15.12-31.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 12.12-20.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
 
           </span>
 
@@ -93,7 +93,7 @@ export default function Home() {
 
           <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
 
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 15.12-31.1 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
+            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 12.12-20.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
 
           </span>
 
