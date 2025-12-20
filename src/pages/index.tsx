@@ -53,56 +53,7 @@ export default function Home() {
   return (
     <>
 
-       {/* 1. BARA PROMOȚIONALĂ */}
-
-      <div className="mt-20 bg-black text-white py-2 overflow-hidden relative border-b border-gray-900 flex z-40">
-
-        <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
-
-          <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
-
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 11.12-20.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
-
-          </span>
-
-          <span className="mx-4 text-gray-600">|</span>
-
-          <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
-
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 11.12-20.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
-
-          </span>
-
-          <span className="mx-4 text-gray-600">|</span>
-
-        </div>
-
       
-
-        {/* Copie pentru infinit */}
-
-        <div className="animate-marquee whitespace-nowrap flex flex-shrink-0 items-center">
-
-          <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
-
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 11.12-20.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
-
-          </span>
-
-          <span className="mx-4 text-gray-600">|</span>
-
-          <span className="mx-8 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
-
-            🔥 Folosește codul <span className="bg-white text-black px-2 py-0.5 rounded font-extrabold">PASSION15</span> în perioada 11.12-20.12 pentru <span className="underline decoration-white decoration-2">15% REDUCERE la orice comandă</span>!
-
-          </span>
-
-          <span className="mx-4 text-gray-600">|</span>
-
-        </div>
-
-      </div>
-
       
 
       <main className="w-full overflow-x-hidden bg-black">
