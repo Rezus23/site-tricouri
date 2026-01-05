@@ -227,7 +227,7 @@ export default function Home() {
                     >
                         Precomandă
                     </Link>
-                    <p className="mt-4 text-xs text-gray-500">Răspundem rapid pe WhatsApp sau Instagram!</p>
+                    <p className="mt-4 text-xs text-gray-500">Răspundem rapid pe Email sau Instagram!</p>
                 </div>
 
             </div>
