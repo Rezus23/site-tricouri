@@ -178,7 +178,7 @@ export default function AdresaLivrare() {
               onChange={handleChange}
               rows={3}
               className="p-3 border border-gray-300 rounded-lg bg-white text-black focus:ring-2 focus:ring-blue-500 outline-none shadow-sm resize-none"
-              placeholder="Ex: Interfon 12, Etaj 3, Ap 15. Vă rog sunați când ajungeți."
+              placeholder="pentru 'PRECOMANDA'poti scrie aici succind cerintele tale"
             />
           </div>
 
