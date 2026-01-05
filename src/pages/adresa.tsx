@@ -3,8 +3,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/router";
 import { useState, FormEvent, useEffect } from "react";
 import Link from "next/link";
-import { FiTruck, FiTag, FiCheckCircle, FiAlertCircle } from "react-icons/fi"; // Iconițe noi
+import { FiTruck, FiTag, FiCheckCircle, FiAlertCircle } from "react-icons/fi"; 
 
+// 1. ACTUALIZARE TIP DATE
 type Adresa = {
   nume: string;
   prenume: string;
@@ -14,6 +15,7 @@ type Adresa = {
   oras: string;
   judet: string;
   codPostal: string;
+  detalii: string; // 👈 Câmp nou adăugat
 };
 
 export default function AdresaLivrare() {
@@ -21,16 +23,15 @@ export default function AdresaLivrare() {
   const { user } = useAuth();
   const router = useRouter();
 
-  // 1. CONFIGURARE FINANCIARĂ
   const subtotal = cart.reduce((acc, p) => acc + Number(p.pret), 0);
   const COST_LIVRARE = 0.00;
-  const COD_PROMO_VALID = "PASSION15"; // 👈 Codul secret
+  const COD_PROMO_VALID = "PASSION15"; 
 
-  // 2. STĂRI NOI PENTRU PROMO
   const [promoInput, setPromoInput] = useState("");
   const [discount, setDiscount] = useState(0);
   const [promoStatus, setPromoStatus] = useState<"idle" | "success" | "error">("idle");
 
+  // 2. ACTUALIZARE STARE INIȚIALĂ
   const [formData, setFormData] = useState<Adresa>({
     nume: user?.displayName?.split(' ')[0] || "",
     prenume: user?.displayName?.split(' ')[1] || "",
@@ -40,27 +41,27 @@ export default function AdresaLivrare() {
     oras: "",
     judet: "",
     codPostal: "",
+    detalii: "", // 👈 Inițializare câmp nou
   });
   
   const [loading, setLoading] = useState(false);
   const [livrareSelectata, setLivrareSelectata] = useState(true);
 
-  // 3. CALCUL TOTAL FINAL (Cu discount aplicat)
   const totalFinal = subtotal - discount + (livrareSelectata ? COST_LIVRARE : 0);
 
   useEffect(() => {
     if (cart.length === 0) router.push("/cart");
   }, [cart, router]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 3. ACTUALIZARE HANDLER (Să accepte și Textarea)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // 4. FUNCȚIE VERIFICARE COD
   const handleApplyPromo = () => {
     if (promoInput.trim().toUpperCase() === COD_PROMO_VALID) {
-        const valoareDiscount = subtotal * 0.15; // 15% din produse
+        const valoareDiscount = subtotal * 0.15;
         setDiscount(valoareDiscount);
         setPromoStatus("success");
     } else {
@@ -81,14 +82,14 @@ export default function AdresaLivrare() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: totalFinal, // 👈 TRIMITEM SUMA REDUSĂ
+          amount: totalFinal,
           email: formData.email,
           userId: currentUserId,
           details: `Comandă tricouri (${formData.email}) ${discount > 0 ? '- DISCOUNT APLICAT' : ''}`,
           produse: cart,
-          adresaLivrare: formData,
+          adresaLivrare: formData, // Include automat și detaliile adiționale
           costLivrare: COST_LIVRARE,
-          discount: discount // Opțional, trimitem info despre reducere
+          discount: discount
         }),
       });
 
@@ -165,6 +166,22 @@ export default function AdresaLivrare() {
             {renderInput('codPostal', 'Cod Poștal', false)}
           </div>
 
+          {/* 4. AICI ESTE RUBRICA NOUĂ: DETALII ADIȚIONALE */}
+          <div className="flex flex-col">
+            <label htmlFor="detalii" className="mb-1 text-sm font-bold text-gray-700">
+              Detalii Adiționale <span className="text-gray-400 font-normal ml-1">(opțional)</span>
+            </label>
+            <textarea
+              id="detalii"
+              name="detalii"
+              value={formData.detalii}
+              onChange={handleChange}
+              rows={3}
+              className="p-3 border border-gray-300 rounded-lg bg-white text-black focus:ring-2 focus:ring-blue-500 outline-none shadow-sm resize-none"
+              placeholder="Ex: Interfon 12, Etaj 3, Ap 15. Vă rog sunați când ajungeți."
+            />
+          </div>
+
           {/* METODĂ LIVRARE */}
           <div className="pt-6 border-t border-gray-200 mt-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Metodă de livrare</h3>
@@ -187,7 +204,7 @@ export default function AdresaLivrare() {
             </label>
           </div>
 
-          {/* --- SECȚIUNE COD PROMOȚIONAL (NOU) --- */}
+          {/* SECȚIUNE COD PROMOȚIONAL */}
           <div className="pt-6 border-t border-gray-200 mt-4">
             <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
                 <FiTag className="text-blue-600" /> Cod Promoțional
@@ -199,10 +216,10 @@ export default function AdresaLivrare() {
                     className="flex-1 p-3 border border-gray-300 rounded-lg bg-white text-black uppercase focus:ring-2 focus:ring-blue-500 outline-none"
                     value={promoInput}
                     onChange={(e) => setPromoInput(e.target.value)}
-                    disabled={promoStatus === "success"} // Blocăm dacă e aplicat
+                    disabled={promoStatus === "success"}
                 />
                 <button 
-                    type="button" // IMPORTANT: type="button" ca să nu dea submit la form
+                    type="button" 
                     onClick={handleApplyPromo}
                     disabled={promoStatus === "success"}
                     className="bg-gray-900 text-white px-6 rounded-lg font-bold hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
@@ -211,7 +228,6 @@ export default function AdresaLivrare() {
                 </button>
             </div>
             
-            {/* Mesaje Feedback */}
             {promoStatus === "success" && (
                 <p className="text-green-600 text-sm mt-2 flex items-center gap-1 font-medium animate-in fade-in">
                     <FiCheckCircle /> Cod aplicat cu succes! (-15%)
@@ -231,7 +247,6 @@ export default function AdresaLivrare() {
                 <span>{subtotal.toFixed(2)} RON</span>
             </div>
             
-            {/* Linie Discount (apare doar dacă e > 0) */}
             {discount > 0 && (
                 <div className="flex justify-between items-center mb-2 text-green-600 font-bold">
                     <span>Reducere (15%):</span>
