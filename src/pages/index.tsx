@@ -58,60 +58,56 @@ export default function Home() {
 
       <main className="w-full overflow-x-hidden bg-black">
         
-        {/* 2. HERO SECTION */}
-        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden w-full border-b border-gray-900">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] md:w-[500px] md:h-[500px] bg-blue-600/50 md:bg-blue-600/20 rounded-full blur-[60px] md:blur-[100px] pointer-events-none" />
-
-          <div className="container mx-auto px-6 relative z-10 text-center">
-            <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-blue-400 text-xs md:text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              NEW SEASON 25/26
-            </span>
-
-            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl animate-in zoom-in duration-700">
-              WEAR THE <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 animate-gradient bg-300%">
-                PASSION.
-              </span>
-            </h1>
-
-            <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
-              Tricouri de fotbal - Retro, Naționale și cele mai noi kit-uri de joc. 
-              Calitate premium pentru suporterii adevărați.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/shop" className="px-10 py-4 bg-white text-black font-bold text-lg rounded-full hover:bg-blue-50 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                Vezi Colecția
-              </Link>
-            </div>
-          </div>
-        </section>
-
         {/* ============================================================
-            🆕 SECȚIUNE NOUĂ: BANNER FULL-WIDTH (POZA MARE)
+            🆕 HERO SECTION UNIFICAT CU BANNER-UL
+            Acest div mare conține imaginea de fundal care se întinde
+            atât sub textul principal, cât și în spațiul de sub el.
             ============================================================ */}
-        <section className="w-full relative h-[400px] md:h-[600px] overflow-hidden border-b border-gray-900">
-            {/* 👇 AICI PUI POZA TA MARE (trebuie să fie în public/images/) */}
-            <img 
-                src="/images/pozamessi.jpg" 
-                alt="Banner Principal"
-                className="absolute inset-0 w-full h-full object-cover"
-                onError={(e) => { 
-                    // Fallback dacă nu ai poza încă
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.parentElement!.style.backgroundColor = '#111';
-                    e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Adaugă poza banner-wide.jpg în public/images</div>';
-                }}
-            />
+        <div className="relative w-full overflow-hidden border-b border-gray-900">
             
-            {/* Overlay Gradient (ca să arate premium peste poză) */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80 pointer-events-none" />
-            
-            {/* Opțional: Text pe Banner (dacă vrei) */}
-            {/* <div className="absolute bottom-10 left-10 z-10">
-                <h3 className="text-white text-4xl font-black uppercase italic tracking-tighter">Passion 4 Football</h3>
-            </div> */}
-        </section>
+            {/* 1. IMAGINEA DE FUNDAL GIGANT */}
+            {/* Asigură-te că ai poza 'banner-wide.jpg' în public/images/ */}
+            <div 
+                className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: "url('/images/pozamessi.jpg')" }}
+            ></div>
+
+            {/* 2. OVERLAY ÎNTUNECAT (Pentru lizibilitate text) */}
+            {/* Gradient de sus în jos pentru a face textul foarte clar */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black z-0"></div>
+
+            {/* 3. CONȚINUT HERO (Textul și Butonul) */}
+            <section className="relative z-10 min-h-[85vh] flex items-center justify-center w-full pt-20">
+                <div className="container mx-auto px-6 text-center">
+                    <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-blue-400 text-xs md:text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    NEW SEASON 25/26
+                    </span>
+
+                    <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl animate-in zoom-in duration-700">
+                    WEAR THE <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 animate-gradient bg-300%">
+                        PASSION.
+                    </span>
+                    </h1>
+
+                    <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed font-light drop-shadow-md">
+                    Tricouri de fotbal - Retro, Naționale și cele mai noi kit-uri de joc. 
+                    Calitate premium pentru suporterii adevărați.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <Link href="/shop" className="px-10 py-4 bg-white text-black font-bold text-lg rounded-full hover:bg-blue-50 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                        Vezi Colecția
+                    </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* 4. SPAȚIU SUPLIMENTAR SUB HERO (Ca să se vadă mai mult din poză) */}
+            {/* Poți ajusta h-[200px] sau h-[300px] în funcție de cât de înaltă vrei să fie zona goală */}
+            <div className="relative z-10 h-[150px] md:h-[250px] w-full bg-transparent"></div>
+        </div>
+        {/* ============ END HERO UNIFICAT ============ */}
 
         {/* ============================================================
             3. 👇 SECȚIUNE NOUĂ: CATEGORII (3 FERESTRE)
