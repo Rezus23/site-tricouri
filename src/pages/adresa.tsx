@@ -5,7 +5,7 @@ import { useState, FormEvent, useEffect } from "react";
 import Link from "next/link";
 import { FiTruck, FiTag, FiCheckCircle, FiAlertCircle } from "react-icons/fi"; 
 
-// 1. ACTUALIZARE TIP DATE
+// 1. TIP DATE
 type Adresa = {
   nume: string;
   prenume: string;
@@ -15,7 +15,7 @@ type Adresa = {
   oras: string;
   judet: string;
   codPostal: string;
-  detalii: string; // 👈 Câmp nou adăugat
+  detalii: string; 
 };
 
 export default function AdresaLivrare() {
@@ -31,7 +31,7 @@ export default function AdresaLivrare() {
   const [discount, setDiscount] = useState(0);
   const [promoStatus, setPromoStatus] = useState<"idle" | "success" | "error">("idle");
 
-  // 2. ACTUALIZARE STARE INIȚIALĂ
+  // 2. STARE INIȚIALĂ
   const [formData, setFormData] = useState<Adresa>({
     nume: user?.displayName?.split(' ')[0] || "",
     prenume: user?.displayName?.split(' ')[1] || "",
@@ -41,27 +41,33 @@ export default function AdresaLivrare() {
     oras: "",
     judet: "",
     codPostal: "",
-    detalii: "", // 👈 Inițializare câmp nou
+    detalii: "", 
   });
   
   const [loading, setLoading] = useState(false);
   const [livrareSelectata, setLivrareSelectata] = useState(true);
 
+  // Calcul final (Aici discountul se va scădea din totalul mare)
   const totalFinal = subtotal - discount + (livrareSelectata ? COST_LIVRARE : 0);
 
   useEffect(() => {
     if (cart.length === 0) router.push("/cart");
   }, [cart, router]);
 
-  // 3. ACTUALIZARE HANDLER (Să accepte și Textarea)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // 👇 MODIFICARE AICI: Calculăm reducerea la (Produse + Livrare)
   const handleApplyPromo = () => {
     if (promoInput.trim().toUpperCase() === COD_PROMO_VALID) {
-        const valoareDiscount = subtotal * 0.20;
+        // 1. Calculăm baza: Subtotal + Cost Livrare (dacă e selectată)
+        const totalBrut = subtotal + (livrareSelectata ? COST_LIVRARE : 0);
+        
+        // 2. Aplicăm 20% la această bază
+        const valoareDiscount = totalBrut * 0.20;
+        
         setDiscount(valoareDiscount);
         setPromoStatus("success");
     } else {
@@ -87,7 +93,7 @@ export default function AdresaLivrare() {
           userId: currentUserId,
           details: `Comandă tricouri (${formData.email}) ${discount > 0 ? '- DISCOUNT APLICAT' : ''}`,
           produse: cart,
-          adresaLivrare: formData, // Include automat și detaliile adiționale
+          adresaLivrare: formData, 
           costLivrare: COST_LIVRARE,
           discount: discount
         }),
@@ -166,7 +172,7 @@ export default function AdresaLivrare() {
             {renderInput('codPostal', 'Cod Poștal', false)}
           </div>
 
-          {/* 4. AICI ESTE RUBRICA NOUĂ: DETALII ADIȚIONALE */}
+          {/* RUBRICA DETALII ADIȚIONALE */}
           <div className="flex flex-col">
             <label htmlFor="detalii" className="mb-1 text-sm font-bold text-gray-700">
               Detalii Adiționale <span className="text-gray-400 font-normal ml-1">(opțional)</span>
@@ -178,7 +184,7 @@ export default function AdresaLivrare() {
               onChange={handleChange}
               rows={3}
               className="p-3 border border-gray-300 rounded-lg bg-white text-black focus:ring-2 focus:ring-blue-500 outline-none shadow-sm resize-none"
-              placeholder="pentru 'PRECOMANDA'poti scrie aici succind cerintele"
+              placeholder="pentru 'PRECOMANDA' poti scrie aici succint cerintele"
             />
           </div>
 
@@ -230,7 +236,7 @@ export default function AdresaLivrare() {
             
             {promoStatus === "success" && (
                 <p className="text-green-600 text-sm mt-2 flex items-center gap-1 font-medium animate-in fade-in">
-                    <FiCheckCircle /> Cod aplicat cu succes! (-15%)
+                    <FiCheckCircle /> Cod aplicat cu succes! (20% din Total)
                 </p>
             )}
             {promoStatus === "error" && (
@@ -247,17 +253,17 @@ export default function AdresaLivrare() {
                 <span>{subtotal.toFixed(2)} RON</span>
             </div>
             
+            <div className="flex justify-between items-center mb-4 text-gray-600">
+                <span>Livrare:</span>
+                <span>{livrareSelectata ? `${COST_LIVRARE.toFixed(2)} RON` : '15.00 RON'}</span>
+            </div>
+
             {discount > 0 && (
-                <div className="flex justify-between items-center mb-2 text-green-600 font-bold">
-                    <span>Reducere (15%):</span>
+                <div className="flex justify-between items-center mb-2 text-green-600 font-bold border-t border-gray-200 pt-2">
+                    <span>Reducere (20% din Total):</span>
                     <span>- {discount.toFixed(2)} RON</span>
                 </div>
             )}
-
-            <div className="flex justify-between items-center mb-4 text-gray-600">
-                <span>Livrare:</span>
-                <span>{livrareSelectata ? `${COST_LIVRARE.toFixed(2)} RON` : '0.00 RON'}</span>
-            </div>
             
             <div className="flex justify-between items-center pt-4 border-t border-gray-300">
                 <span className="text-lg font-bold text-gray-800">Total de plată:</span>
