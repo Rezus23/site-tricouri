@@ -88,6 +88,32 @@ export default function Home() {
         </section>
 
         {/* ============================================================
+            🆕 SECȚIUNE NOUĂ: BANNER FULL-WIDTH (POZA MARE)
+            ============================================================ */}
+        <section className="w-full relative h-[400px] md:h-[600px] overflow-hidden border-b border-gray-900">
+            {/* 👇 AICI PUI POZA TA MARE (trebuie să fie în public/images/) */}
+            <img 
+                src="/images/pozamessi.jpg" 
+                alt="Banner Principal"
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={(e) => { 
+                    // Fallback dacă nu ai poza încă
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.parentElement!.style.backgroundColor = '#111';
+                    e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Adaugă poza banner-wide.jpg în public/images</div>';
+                }}
+            />
+            
+            {/* Overlay Gradient (ca să arate premium peste poză) */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80 pointer-events-none" />
+            
+            {/* Opțional: Text pe Banner (dacă vrei) */}
+            {/* <div className="absolute bottom-10 left-10 z-10">
+                <h3 className="text-white text-4xl font-black uppercase italic tracking-tighter">Passion 4 Football</h3>
+            </div> */}
+        </section>
+
+        {/* ============================================================
             3. 👇 SECȚIUNE NOUĂ: CATEGORII (3 FERESTRE)
             ============================================================ */}
         <section className="py-20 bg-black border-b border-gray-900">
