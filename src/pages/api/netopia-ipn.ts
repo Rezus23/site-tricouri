@@ -83,6 +83,12 @@ async function sendAdminNotification(order: any) {
                 <td style="padding: 8px; font-weight: bold;">Oraș/Județ:</td>
                 <td style="padding: 8px;">${adresa.oras}, ${adresa.judet} ${adresa.codPostal ? `(${adresa.codPostal})` : ''}</td>
             </tr>
+            ${adresa.detalii ? `
+            <tr>
+                <td style="padding: 8px; font-weight: bold; background-color: #fff3cd; color: #856404; border-top: 2px solid #ffeeba;">📝 Detalii Adiționale:</td>
+                <td style="padding: 8px; background-color: #fff3cd; color: #856404; font-style: italic; border-top: 2px solid #ffeeba;">${adresa.detalii}</td>
+            </tr>
+            ` : ''}
         </table>
     ` : `<p style="color: red;">Adresa nu este disponibilă.</p>`;
 
