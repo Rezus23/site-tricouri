@@ -100,6 +100,16 @@ export default function Home() {
                         Vezi Colecția
                     </Link>
                     </div>
+                    {/* 👇 TEXT PROMOȚIONAL NOU */}
+                    <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+                        <div className="inline-block bg-black/60 backdrop-blur-md border border-white/10 p-4 rounded-xl max-w-lg mx-auto shadow-2xl">
+                            <p className="text-xs md:text-sm font-bold text-gray-200 uppercase tracking-widest leading-relaxed">
+                                FOLOSEȘTE CODUL <span className="text-yellow-400 text-base mx-1 bg-white/10 px-2 rounded border border-yellow-400/30">DROP20</span> 
+                                PENTRU <span className="text-yellow-400 underline decoration-yellow-400 underline-offset-4">20% REDUCERE</span> <br className="hidden md:block"/> 
+                                LA TOATE PRODUSELE DE PE SITE-UL NOSTRU
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </section>
 

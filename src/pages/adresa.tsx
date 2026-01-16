@@ -25,7 +25,7 @@ export default function AdresaLivrare() {
 
   const subtotal = cart.reduce((acc, p) => acc + Number(p.pret), 0);
   const COST_LIVRARE = 15.00;
-  const COD_PROMO_VALID = "PASSION15"; 
+  const COD_PROMO_VALID = "DROP20"; 
 
   const [promoInput, setPromoInput] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -61,7 +61,7 @@ export default function AdresaLivrare() {
 
   const handleApplyPromo = () => {
     if (promoInput.trim().toUpperCase() === COD_PROMO_VALID) {
-        const valoareDiscount = subtotal * 0.15;
+        const valoareDiscount = subtotal * 0.20;
         setDiscount(valoareDiscount);
         setPromoStatus("success");
     } else {
