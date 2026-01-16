@@ -24,7 +24,7 @@ export default function AdresaLivrare() {
   const router = useRouter();
 
   const subtotal = cart.reduce((acc, p) => acc + Number(p.pret), 0);
-  const COST_LIVRARE = 15.00;
+  const COST_LIVRARE = 0.00;
   const COD_PROMO_VALID = "DROP20"; 
 
   const [promoInput, setPromoInput] = useState("");
