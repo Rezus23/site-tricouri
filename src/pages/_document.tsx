@@ -10,7 +10,22 @@ class MyDocument extends Document {
   render() {
     return (
       <Html lang="ro">
-        <Head />
+        <Head>
+          {/* 👇 AICI SUNT LINIILE PENTRU FAVICON SI LOGO GOOGLE */}
+          
+          {/* 1. Favicon clasic (pentru tab-uri browser) */}
+          <link rel="icon" href="/favicon.ico" sizes="any" />
+          
+          {/* 2. Logo modern (PNG) - Pe acesta îl ia Google de obicei */}
+          <link rel="icon" href="/icon.png" type="image/png" sizes="192x192" />
+          
+          {/* 3. Iconiță pentru Apple/iOS (când salvezi site-ul pe ecran) */}
+          <link rel="apple-touch-icon" href="/icon.png" />
+          
+          {/* 4. Culoarea barei de adrese pe mobil (să fie neagră ca site-ul) */}
+          <meta name="theme-color" content="#000000" />
+        </Head>
+      
         <body>
           <Main />
           <NextScript />
