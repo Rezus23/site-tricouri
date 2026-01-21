@@ -66,7 +66,7 @@ export default function AdresaLivrare() {
         const totalBrut = subtotal + (livrareSelectata ? COST_LIVRARE : 0);
         
         // 2. Aplicăm 20% la această bază
-        const valoareDiscount = totalBrut * 0.20;
+        const valoareDiscount = totalBrut * 0.15;
         
         setDiscount(valoareDiscount);
         setPromoStatus("success");
