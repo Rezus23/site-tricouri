@@ -25,7 +25,7 @@ export default function AdresaLivrare() {
 
   const subtotal = cart.reduce((acc, p) => acc + Number(p.pret), 0);
   const COST_LIVRARE = 15.00;
-  const COD_PROMO_VALID = "DROP20"; 
+  const COD_PROMO_VALID = ""; 
 
   const [promoInput, setPromoInput] = useState("");
   const [discount, setDiscount] = useState(0);
