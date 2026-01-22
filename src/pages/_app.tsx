@@ -16,7 +16,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <AuthProvider>
       <CartProvider>
         {/* Schimbăm și aici: folosim max-w-full în loc de 100vw */}
-        <div className={`${inter.className} relative w-full max-w-full overflow-x-hidden`}>
+        <div className={`${inter.className} relative w-full max-w-full`}>
           
           <Head>
             <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
