@@ -20,7 +20,7 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   overflow-y: scroll !important; /* Forțează scroll vertical */
-  height: auto !important;
+
  
   
   /* 👇 AM SCOS background-color fix. Lăsăm paginile să decidă! */
@@ -30,7 +30,7 @@ body {
 }
 main {
   overflow: visible !important; /* Anulează orice overflow-hidden pus din greșeală pe main */
-  height: auto !important;
+  
 }
 
 #__next {
