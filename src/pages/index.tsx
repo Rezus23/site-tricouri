@@ -28,7 +28,7 @@ const REVIEWS = [
 const CATEGORIES = [
   {
     id: 1,
-    titlu: "SEZON 25/26",
+    titlu: "SEZONUL 25/26",
     descriere: "Cele mai noi kit-uri de joc.",
     img: "/images/cat-new.jpg",
     link: "/shop?categorie=tricouri", // 👈 Am adăugat ?categorie=...
