@@ -260,7 +260,7 @@ export default function AdresaLivrare() {
 
             {discount > 0 && (
                 <div className="flex justify-between items-center mb-2 text-green-600 font-bold border-t border-gray-200 pt-2">
-                    <span>Reducere (20% din Total):</span>
+                    <span>Reducere (15% din Total):</span>
                     <span>- {discount.toFixed(2)} RON</span>
                 </div>
             )}
