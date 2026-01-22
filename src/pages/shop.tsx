@@ -245,7 +245,7 @@ export default function Shop() {
             {activeCategory === 'custom' ? (
                 <>
                     {/* 1. Primele 2 produse */}
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8 mb-16">
                         {filteredProducts.slice(0, 2).map(renderCard)}
                     </div>
 
@@ -260,13 +260,13 @@ export default function Shop() {
                     )}
 
                     {/* 3. Restul produselor */}
-                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-8">
                         {filteredProducts.slice(2).map(renderCard)}
                     </div>
                 </>
             ) : (
                 /* 👇 Cazul normal (Grid unic pentru celelalte categorii) */
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-8">
                     {filteredProducts.map(renderCard)}
                 </div>
             )}
