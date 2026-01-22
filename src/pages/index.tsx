@@ -119,7 +119,7 @@ export default function Home() {
 
 
 
-      <main className="w-full overflow-x-hidden bg-black">
+      <main className="w-full min-h-screen bg-black">
 
        
 
