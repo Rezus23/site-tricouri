@@ -17,10 +17,10 @@ class MyDocument extends Document {
           <link rel="icon" href="/favicon.ico" sizes="any" />
           
           {/* 2. Logo modern (PNG) - Pe acesta îl ia Google de obicei */}
-          <link rel="icon" href="/icon.png" type="image/png" sizes="192x192" />
+          <link rel="icon" href="/logo.png" type="image/png" sizes="192x192" />
           
           {/* 3. Iconiță pentru Apple/iOS (când salvezi site-ul pe ecran) */}
-          <link rel="apple-touch-icon" href="/icon.png" />
+          <link rel="apple-touch-icon" href="/logo.png" />
           
           {/* 4. Culoarea barei de adrese pe mobil (să fie neagră ca site-ul) */}
           <meta name="theme-color" content="#000000" />
