@@ -19,7 +19,7 @@ body {
   width: 100%;
   max-width: 100vw;
 
- 
+ overflow-y: auto !important;
   
   /* 👇 AM SCOS background-color fix. Lăsăm paginile să decidă! */
   color: var(--foreground);            
