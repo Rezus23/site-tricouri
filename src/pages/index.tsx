@@ -56,7 +56,7 @@ export default function Home() {
       
       
 
-      <main className="w-full bg-black">
+      <main className="w-full overflow-x-hidden bg-black">
         
         {/* ============================================================
             🆕 HERO SECTION UNIFICAT CU BANNER-UL
