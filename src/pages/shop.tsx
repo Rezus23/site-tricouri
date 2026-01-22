@@ -245,7 +245,7 @@ export default function Shop() {
             {activeCategory === 'custom' ? (
                 <>
                     {/* 1. Primele 2 produse */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
                         {filteredProducts.slice(0, 2).map(renderCard)}
                     </div>
 
