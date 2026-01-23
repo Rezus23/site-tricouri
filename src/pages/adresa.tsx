@@ -236,7 +236,7 @@ export default function AdresaLivrare() {
             
             {promoStatus === "success" && (
                 <p className="text-green-600 text-sm mt-2 flex items-center gap-1 font-medium animate-in fade-in">
-                    <FiCheckCircle /> Cod aplicat cu succes! (20% din Total)
+                    <FiCheckCircle /> Cod aplicat cu succes! (15% din Total)
                 </p>
             )}
             {promoStatus === "error" && (
