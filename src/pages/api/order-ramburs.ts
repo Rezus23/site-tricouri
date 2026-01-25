@@ -18,7 +18,7 @@ if (!getApps().length) {
 }
 const db = getFirestore();
 
-// 2. Configurare Email (Nodemailer)
+// 2. Configurare Email
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -27,7 +27,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// --- HELPER 1: HTML PENTRU ADMIN (Formatul tău "Alertă Roșie") ---
+// --- HELPER 1: HTML PENTRU ADMIN (Formatul tău cu chenar) ---
 const generateAdminHtml = (orderId: string, amount: number, produse: any[], adresa: any) => {
     const produseHTML = produse.map((p: any) => 
         `<li style="margin-bottom: 5px;">${p.titlu} (${p.marimeSelectata || p.marime}) - <strong>${p.pret} RON</strong></li>`
@@ -35,99 +35,124 @@ const generateAdminHtml = (orderId: string, amount: number, produse: any[], adre
 
     const detaliiLivrareHTML = adresa ? `
         <table style="width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #fff8f8; border: 1px solid #ffcccc;">
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Nume Client:</td>
-                <td style="padding: 8px; border-bottom: 1px solid #eee;">${adresa.nume} ${adresa.prenume}</td>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Telefon:</td>
-                <td style="padding: 8px; border-bottom: 1px solid #eee;"><a href="tel:${adresa.telefon}">${adresa.telefon}</a></td>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Email:</td>
-                <td style="padding: 8px; border-bottom: 1px solid #eee;">${adresa.email}</td>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Adresă:</td>
-                <td style="padding: 8px; border-bottom: 1px solid #eee;">${adresa.adresa}</td>
-            </tr>
-            <tr>
-                <td style="padding: 8px; font-weight: bold;">Oraș/Județ:</td>
-                <td style="padding: 8px;">${adresa.oras}, ${adresa.judet} ${adresa.codPostal ? `(${adresa.codPostal})` : ''}</td>
-            </tr>
-            ${adresa.detalii ? `
-            <tr>
-                <td style="padding: 8px; font-weight: bold; background-color: #fff3cd; color: #856404; border-top: 2px solid #ffeeba;">📝 Detalii Adiționale:</td>
-                <td style="padding: 8px; background-color: #fff3cd; color: #856404; font-style: italic; border-top: 2px solid #ffeeba;">${adresa.detalii}</td>
-            </tr>
-            ` : ''}
+            <tr><td style="padding: 8px; font-weight: bold;">Nume Client:</td><td style="padding: 8px;">${adresa.nume} ${adresa.prenume}</td></tr>
+            <tr><td style="padding: 8px; font-weight: bold;">Telefon:</td><td style="padding: 8px;"><a href="tel:${adresa.telefon}">${adresa.telefon}</a></td></tr>
+            <tr><td style="padding: 8px; font-weight: bold;">Email:</td><td style="padding: 8px;">${adresa.email}</td></tr>
+            <tr><td style="padding: 8px; font-weight: bold;">Adresă:</td><td style="padding: 8px;">${adresa.adresa}</td></tr>
+            <tr><td style="padding: 8px; font-weight: bold;">Oraș/Județ:</td><td style="padding: 8px;">${adresa.oras}, ${adresa.judet} ${adresa.codPostal ? `(${adresa.codPostal})` : ''}</td></tr>
+            ${adresa.detalii ? `<tr><td style="padding: 8px; font-weight: bold; background: #fff3cd;">📝 Detalii:</td><td style="padding: 8px; background: #fff3cd;">${adresa.detalii}</td></tr>` : ''}
         </table>
-    ` : `<p style="color: red;">Adresa nu este disponibilă.</p>`;
+    ` : `<p style="color: red;">Adresa indisponibilă.</p>`;
 
     return `
         <div style="font-family: Arial, sans-serif; padding: 20px; border: 3px solid #0000ff; max-width: 600px; margin: auto;">
             <h2 style="color: #0000ff; margin-top: 0;">📦 COMANDĂ NOUĂ (RAMBURS) #${orderId}</h2>
-            
-            <p style="font-size: 18px;"><strong>Total de Încasat (La Curier):</strong> <span style="color: green;">${amount} RON</span></p>
-            
-            <h3 style="background-color: #333; color: white; padding: 5px 10px; margin-bottom: 0;">📦 Produse de trimis:</h3>
-            <ul style="border: 1px solid #ddd; border-top: none; padding: 15px 15px 15px 35px; margin-top: 0;">
-                ${produseHTML}
-            </ul>
-
-            <h3 style="background-color: #333; color: white; padding: 5px 10px; margin-bottom: 0; margin-top: 20px;">📍 Detalii Livrare (AWB):</h3>
+            <p style="font-size: 18px;"><strong>Total de Încasat:</strong> <span style="color: green;">${amount} RON</span></p>
+            <h3 style="background-color: #333; color: white; padding: 5px 10px;">📦 Produse:</h3>
+            <ul>${produseHTML}</ul>
+            <h3 style="background-color: #333; color: white; padding: 5px 10px; margin-top: 20px;">📍 Detalii Livrare:</h3>
             ${detaliiLivrareHTML}
-
-            <p style="margin-top: 30px; font-size: 12px; color: #666;">Verifică Firebase pentru datele brute.</p>
         </div>
     `;
 };
 
-// --- HELPER 2: HTML PENTRU CLIENT (Formatul Profesional Clean) ---
+// --- HELPER 2: HTML PENTRU CLIENT (REPLICĂ EXACTĂ POZA ATAȘATĂ) ---
 const generateClientHtml = (orderId: string, produse: any[], adresa: any, financial: any) => {
-    const { subtotal, costLivrare, discount, total } = financial;
+    const { total } = financial;
+
+    // Generăm rândurile tabelului de produse
     const produseHtml = produse.map((p: any) => `
-        <tr style="border-bottom: 1px solid #eee;">
-            <td style="padding: 10px;"><img src="${p.img}" alt="produs" style="width: 50px; border-radius: 5px;"></td>
-            <td style="padding: 10px;">
-                <p style="margin:0; font-weight:bold;">${p.titlu}</p>
-                <p style="margin:0; font-size:12px; color:#777;">Mărime: ${p.marimeSelectata || p.marime}</p>
+        <tr>
+            <td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #555;">
+                ${p.titlu} (${p.marimeSelectata || p.marime})
             </td>
-            <td style="padding: 10px; text-align:right;">${p.pret} RON</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #eee; text-align: right; font-weight: bold; color: #333;">
+                ${Number(p.pret).toFixed(2)} RON
+            </td>
         </tr>
     `).join('');
 
+    // Link logo (folosește un URL public valid către logo-ul tău dacă ai, altfel am pus un placeholder curat)
+    // Recomand să urci logo-ul tău undeva (ex: imgur sau în public folder și să pui link-ul complet)
+    const logoUrl = "https://passion4jerseys.ro/icon.png"; 
+
     return `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background: #fff; border: 1px solid #eee;">
-        <div style="background: #000; padding: 20px; text-align: center;">
-            <h1 style="color: #fff; margin:0;">PASSION4JERSEYS</h1>
-            <p style="color: #ccc; margin:0;">Confirmare Comandă Ramburs</p>
-        </div>
-        <div style="padding: 20px;">
-            <p>Salut <strong>${adresa.nume}</strong>,</p>
-            <p>Comanda ta <strong>#${orderId}</strong> a fost înregistrată. Vei plăti suma de <strong>${total} RON</strong> la curier.</p>
-            
-            <table style="width:100%; border-collapse:collapse; margin-top:20px;">
-                <thead>
-                    <tr style="background:#f9f9f9;"><th colspan="2" style="text-align:left; padding:10px;">Produs</th><th style="text-align:right; padding:10px;">Preț</th></tr>
-                </thead>
-                <tbody>${produseHtml}</tbody>
-            </table>
-
-            <div style="text-align:right; margin-top:20px; padding-top:10px; border-top:2px solid #000;">
-                <p style="margin:5px 0;">Subtotal: ${subtotal.toFixed(2)} RON</p>
-                <p style="margin:5px 0;">Livrare: ${costLivrare.toFixed(2)} RON</p>
-                ${discount > 0 ? `<p style="margin:5px 0; color:green;">Discount: -${discount.toFixed(2)} RON</p>` : ''}
-                <h3 style="margin:10px 0;">TOTAL: ${total.toFixed(2)} RON</h3>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .logo { width: 80px; height: auto; }
+            h2 { color: #000; font-size: 20px; margin-bottom: 10px; }
+            .intro-text { color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+            .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 30px; background-color: #ffffff; }
+            .section-title { font-weight: bold; font-size: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: #000; }
+            .info-row { margin-bottom: 5px; font-size: 14px; color: #444; }
+            .info-label { font-weight: bold; color: #222; }
+            .products-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            .th-header { background-color: #f3f4f6; color: #4b5563; font-size: 13px; font-weight: bold; padding: 8px; text-align: left; }
+            .th-header-right { text-align: right; }
+            .total-section { margin-top: 15px; text-align: right; font-size: 18px; font-weight: bold; color: #000; }
+            .footer { text-align: center; color: #9ca3af; font-size: 13px; margin-top: 40px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                 <img src="${logoUrl}" alt="Passion4Jerseys" class="logo" style="display:block; margin: 0 auto 20px;">
             </div>
 
-            <div style="background:#f9f9f9; padding:15px; margin-top:20px; border-radius:5px;">
-                <p style="margin:0; font-weight:bold;">Adresa de livrare:</p>
-                <p style="margin:5px 0; color:#555;">${adresa.adresa}, ${adresa.oras}, ${adresa.judet}</p>
-                <p style="margin:0; color:#555;">Tel: ${adresa.telefon}</p>
+            <h2>Salut, ${adresa.nume} ${adresa.prenume}!</h2>
+            <p class="intro-text">
+                Comanda ta <strong>#${orderId}</strong> a fost confirmată cu succes.
+            </p>
+
+            <div class="card">
+                <div class="section-title">
+                    📍 Detalii Livrare
+                </div>
+                <div style="border-top: 1px solid #f0f0f0; margin-top: 10px; padding-top: 10px;">
+                    <div class="info-row"><span class="info-label">Destinatar:</span> ${adresa.nume} ${adresa.prenume}</div>
+                    <div class="info-row"><span class="info-label">Adresă:</span> ${adresa.adresa}</div>
+                    <div class="info-row"><span class="info-label">Oraș/Județ:</span> ${adresa.oras}, ${adresa.judet} ${adresa.codPostal ? `(${adresa.codPostal})` : ''}</div>
+                    <div class="info-row"><span class="info-label">Telefon:</span> ${adresa.telefon}</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <div class="section-title">
+                    📦 Produse comandate:
+                </div>
+                
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th class="th-header">Produs</th>
+                            <th class="th-header th-header-right">Preț</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${produseHtml}
+                    </tbody>
+                </table>
+                
+                <div style="border-top: 1px solid #eee; margin-top: 10px; padding-top: 10px;"></div>
+                
+                <div class="total-section">
+                    Total: ${total.toFixed(2)} RON
+                </div>
+            </div>
+
+            <div class="footer">
+                Vă mulțumim și vă mai așteptăm pe site-ul nostru!
             </div>
         </div>
-    </div>`;
+    </body>
+    </html>
+    `;
 };
 
 // --- HANDLER PRINCIPAL ---
@@ -137,11 +162,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { orderId, amount, email, produse, adresaLivrare, userId, discount = 0, costLivrare = 15 } = req.body;
     
-    // Calculăm subtotal pentru email
+    // Calculăm datele financiare
     const subtotal = produse.reduce((acc: number, p: any) => acc + Number(p.pret), 0);
     const financialData = { subtotal, costLivrare, discount, total: amount };
 
-    // 1. Salvăm în Firebase
+    // 1. Salvare Firebase
     await db.collection("orders").doc(orderId).set({
         orderId,
         amount,
@@ -149,14 +174,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         userId: userId || "guest",
         produse,
         adresaLivrare,
-        status: "confirmed", // Confirmat direct pentru Ramburs
+        status: "confirmed",
         metodaPlata: "ramburs",
         discount,
         paymentDate: admin.firestore.FieldValue.serverTimestamp(),
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    // 2. Scădem Stocul
+    // 2. Scădere Stoc
     for (const item of produse) {
         if (!item.id) continue;
         const marime = item.marimeSelectata || item.marime; 
@@ -180,17 +205,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
     }
 
-    // 3. Trimitem Email CLIENT (Design Clean)
+    // 3. Email Client (Design Nou)
     const htmlClient = generateClientHtml(orderId, produse, adresaLivrare, financialData);
     await transporter.sendMail({
         from: `"Passion4Jerseys" <${process.env.EMAIL_USER}>`,
         to: email,
-        subject: `Confirmare Comandă #${orderId} - Ramburs`,
+        subject: `Confirmare Comandă #${orderId}`,
         html: htmlClient
     });
 
-    // 4. Trimitem Email ADMIN (Formatul tău cu tabel și chenar)
-    // Am schimbat doar culoarea chenarului în albastru (0000ff) ca să distingi rapid Ramburs vs Card (care e roșu)
+    // 4. Email Admin (Design Vechi)
     const htmlAdmin = generateAdminHtml(orderId, amount, produse, adresaLivrare);
     await transporter.sendMail({
         from: `"Site Orders" <${process.env.EMAIL_USER}>`,
