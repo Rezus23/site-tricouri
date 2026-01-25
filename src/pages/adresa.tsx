@@ -3,7 +3,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/router";
 import { useState, FormEvent, useEffect } from "react";
 import Link from "next/link";
-import { FiTruck, FiTag, FiCheckCircle, FiAlertCircle } from "react-icons/fi"; 
+// 👇 Am adăugat iconițele pentru Card și Colet
+import { FiTruck, FiTag, FiCheckCircle, FiAlertCircle, FiCreditCard, FiPackage } from "react-icons/fi"; 
 
 // 1. TIP DATE
 type Adresa = {
@@ -19,7 +20,7 @@ type Adresa = {
 };
 
 export default function AdresaLivrare() {
-  const { cart } = useCart();
+  const { cart, clearCart } = useCart(); // 👈 Avem nevoie de clearCart
   const { user } = useAuth();
   const router = useRouter();
 
@@ -30,6 +31,9 @@ export default function AdresaLivrare() {
   const [promoInput, setPromoInput] = useState("");
   const [discount, setDiscount] = useState(0);
   const [promoStatus, setPromoStatus] = useState<"idle" | "success" | "error">("idle");
+
+  // 👇 STARE NOUĂ PENTRU METODA DE PLATĂ
+  const [metodaPlata, setMetodaPlata] = useState<"card" | "ramburs">("card");
 
   // 2. STARE INIȚIALĂ
   const [formData, setFormData] = useState<Adresa>({
@@ -47,7 +51,7 @@ export default function AdresaLivrare() {
   const [loading, setLoading] = useState(false);
   const [livrareSelectata, setLivrareSelectata] = useState(true);
 
-  // Calcul final (Aici discountul se va scădea din totalul mare)
+  // Calcul final
   const totalFinal = subtotal - discount + (livrareSelectata ? COST_LIVRARE : 0);
 
   useEffect(() => {
@@ -59,13 +63,11 @@ export default function AdresaLivrare() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // 👇 MODIFICARE AICI: Calculăm reducerea la (Produse + Livrare)
   const handleApplyPromo = () => {
     if (promoInput.trim().toUpperCase() === COD_PROMO_VALID) {
-        // 1. Calculăm baza: Subtotal + Cost Livrare (dacă e selectată)
+        // 1. Calculăm baza: Subtotal + Cost Livrare
         const totalBrut = subtotal + (livrareSelectata ? COST_LIVRARE : 0);
-        
-        // 2. Aplicăm 20% la această bază
+        // 2. Aplicăm 15%
         const valoareDiscount = totalBrut * 0.15;
         
         setDiscount(valoareDiscount);
@@ -76,40 +78,67 @@ export default function AdresaLivrare() {
     }
   };
 
-  const handlePayWithNetopia = async (e: FormEvent) => {
+  // 👇 FUNCȚIA PRINCIPALĂ DE FINALIZARE (RAMBURS SAU CARD)
+  const handleFinalizeOrder = async (e: FormEvent) => {
     e.preventDefault();
     if (cart.length === 0) return;
     setLoading(true);
 
+    const currentUserId = user?.uid; 
+    const orderId = `CMD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
     try {
-      const currentUserId = user?.uid; 
+      // --- CAZUL 1: RAMBURS ---
+      if (metodaPlata === "ramburs") {
+          const res = await fetch("/api/order-ramburs", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                  orderId,
+                  amount: totalFinal,
+                  email: formData.email,
+                  produse: cart,
+                  adresaLivrare: formData,
+                  userId: currentUserId
+              })
+          });
 
-      const res = await fetch("/api/netopia-create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: totalFinal,
-          email: formData.email,
-          userId: currentUserId,
-          details: `Comandă tricouri (${formData.email}) ${discount > 0 ? '- DISCOUNT APLICAT' : ''}`,
-          produse: cart,
-          adresaLivrare: formData, 
-          costLivrare: COST_LIVRARE,
-          discount: discount
-        }),
-      });
+          if (res.ok) {
+              clearCart(); // Golim coșul
+              router.push("/success"); // Redirecționăm la pagina de succes
+          } else {
+              alert("A apărut o eroare la plasarea comenzii ramburs.");
+          }
+      } 
+      // --- CAZUL 2: CARD (NETOPIA) ---
+      else {
+          const res = await fetch("/api/netopia-create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              amount: totalFinal,
+              email: formData.email,
+              userId: currentUserId,
+              details: `Comandă (${formData.email}) ${discount > 0 ? '- DISCOUNT' : ''}`,
+              produse: cart,
+              adresaLivrare: formData, 
+              costLivrare: COST_LIVRARE,
+              discount: discount
+            }),
+          });
 
-      const text = await res.text();
+          const text = await res.text();
 
-      if (!res.ok) {
-        console.error("Eroare API:", res.status, text);
-        alert("Eroare la server. Încearcă din nou.");
-        return;
+          if (!res.ok) {
+            console.error("Eroare API:", res.status, text);
+            alert("Eroare la server. Încearcă din nou.");
+            return;
+          }
+
+          document.open();
+          document.write(text);
+          document.close();
       }
-
-      document.open();
-      document.write(text);
-      document.close();
 
     } catch (err) {
       console.error("Eroare fetch:", err);
@@ -154,7 +183,7 @@ export default function AdresaLivrare() {
           Detalii Livrare
         </h1>
 
-        <form onSubmit={handlePayWithNetopia} className="space-y-6">
+        <form onSubmit={handleFinalizeOrder} className="space-y-6">
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {renderInput('nume', 'Nume')}
@@ -208,6 +237,42 @@ export default function AdresaLivrare() {
                 </div>
                 <span className="font-bold text-gray-900">{COST_LIVRARE} RON</span>
             </label>
+          </div>
+
+          {/* 👇 SECȚIUNE NOUĂ: METODĂ DE PLATĂ */}
+          <div className="pt-6 border-t border-gray-200 mt-6">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">Metodă de Plată</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                {/* Opțiune CARD */}
+                <div 
+                    onClick={() => setMetodaPlata("card")}
+                    className={`cursor-pointer p-4 border rounded-xl flex items-center gap-3 transition-all ${metodaPlata === 'card' ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600' : 'border-gray-200 hover:border-gray-300'}`}
+                >
+                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${metodaPlata === 'card' ? 'border-blue-600' : 'border-gray-400'}`}>
+                        {metodaPlata === 'card' && <div className="w-2.5 h-2.5 bg-blue-600 rounded-full" />}
+                    </div>
+                    <div>
+                        <p className="font-bold text-gray-900 flex items-center gap-2"><FiCreditCard /> Card Online</p>
+                        <p className="text-xs text-gray-500">Securizat prin Netopia</p>
+                    </div>
+                </div>
+
+                {/* Opțiune RAMBURS */}
+                <div 
+                    onClick={() => setMetodaPlata("ramburs")}
+                    className={`cursor-pointer p-4 border rounded-xl flex items-center gap-3 transition-all ${metodaPlata === 'ramburs' ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600' : 'border-gray-200 hover:border-gray-300'}`}
+                >
+                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${metodaPlata === 'ramburs' ? 'border-blue-600' : 'border-gray-400'}`}>
+                        {metodaPlata === 'ramburs' && <div className="w-2.5 h-2.5 bg-blue-600 rounded-full" />}
+                    </div>
+                    <div>
+                        <p className="font-bold text-gray-900 flex items-center gap-2"><FiPackage /> Ramburs</p>
+                        <p className="text-xs text-gray-500">Plata la curier</p>
+                    </div>
+                </div>
+
+            </div>
           </div>
 
           {/* SECȚIUNE COD PROMOȚIONAL */}
@@ -269,15 +334,22 @@ export default function AdresaLivrare() {
                 <span className="text-lg font-bold text-gray-800">Total de plată:</span>
                 <span className="text-3xl font-extrabold text-blue-600">{totalFinal.toFixed(2)} RON</span>
             </div>
-            <p className="text-xs text-gray-400 mt-3 text-right">Plată securizată prin Netopia</p>
+            {/* Text dinamic sub total */}
+            <p className="text-xs text-gray-400 mt-3 text-right">
+                {metodaPlata === 'card' ? 'Plată securizată prin Netopia' : 'Plătești numerar la primirea coletului'}
+            </p>
           </div>
 
+          {/* BUTON DINAMIC */}
           <button
             type="submit"
             disabled={loading || cart.length === 0}
             className="w-full bg-black text-white px-6 py-4 rounded-xl hover:bg-gray-800 transition font-bold text-lg shadow-lg active:scale-95 disabled:bg-gray-400 flex justify-center items-center gap-2"
           >
-            {loading ? 'Se inițiază plata...' : `Plătește ${totalFinal.toFixed(2)} RON`}
+            {loading 
+                ? 'Se procesează...' 
+                : (metodaPlata === 'card' ? `Plătește ${totalFinal.toFixed(2)} RON` : 'CONFIRMĂ COMANDA')
+            }
           </button>
         </form>
       </div>
