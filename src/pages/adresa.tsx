@@ -105,7 +105,7 @@ export default function AdresaLivrare() {
 
           if (res.ok) {
               golesteCos(); // Golim coșul
-              router.push("/success"); // Redirecționăm la pagina de succes
+              router.push("/succes"); // Redirecționăm la pagina de succes
           } else {
               alert("A apărut o eroare la plasarea comenzii ramburs.");
           }
