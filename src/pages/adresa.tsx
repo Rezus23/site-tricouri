@@ -24,8 +24,8 @@ export default function AdresaLivrare() {
   const router = useRouter();
 
   const subtotal = cart.reduce((acc, p) => acc + Number(p.pret), 0);
-  const COST_LIVRARE = 0.00;
-  const COD_PROMO_VALID = "DROP20"; // Poți schimba codul aici dacă vrei
+  const COST_LIVRARE = 15.00;
+  const COD_PROMO_VALID = "IAN15"; // Poți schimba codul aici dacă vrei
 
   const [promoInput, setPromoInput] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -71,7 +71,7 @@ export default function AdresaLivrare() {
     if (promoInput.trim().toUpperCase() === COD_PROMO_VALID) {
         const totalBrut = subtotal + (livrareSelectata ? COST_LIVRARE : 0);
         // Aplicăm 20% reducere
-        const valoareDiscount = totalBrut * 0.20;
+        const valoareDiscount = totalBrut * 0.15;
         
         setDiscount(valoareDiscount);
         setPromoStatus("success");
@@ -310,7 +310,7 @@ export default function AdresaLivrare() {
             
             {promoStatus === "success" && (
                 <p className="text-green-600 text-sm mt-2 flex items-center gap-1 font-medium animate-in fade-in">
-                    <FiCheckCircle /> Cod aplicat cu succes! (20% din Total)
+                    <FiCheckCircle /> Cod aplicat cu succes! (15% din Total)
                 </p>
             )}
             {promoStatus === "error" && (
@@ -334,7 +334,7 @@ export default function AdresaLivrare() {
 
             {discount > 0 && (
                 <div className="flex justify-between items-center mb-2 text-green-600 font-bold border-t border-gray-200 pt-2">
-                    <span>Reducere (20% din Total):</span>
+                    <span>Reducere (15% din Total):</span>
                     <span>- {discount.toFixed(2)} RON</span>
                 </div>
             )}
