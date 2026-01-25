@@ -112,7 +112,7 @@ export default function AdresaLivrare() {
               // 👇 LOGICA DE REDIRECȚIONARE CORECTĂ
               setOrderCompleted(true); // 1. Spunem paginii că am terminat (nu da redirect la Cart)
               golesteCos();             // 2. Golim coșul
-              router.push("/success"); // 3. Mergem la pagina de succes
+              router.push("/successramburs"); // 3. Mergem la pagina de succes
           } else {
               alert("A apărut o eroare la plasarea comenzii ramburs.");
           }
