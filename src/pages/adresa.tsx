@@ -20,7 +20,7 @@ type Adresa = {
 };
 
 export default function AdresaLivrare() {
-  const { cart, clearCart } = useCart(); // 👈 Avem nevoie de clearCart
+  const { cart, golesteCos } = useCart(); // 👈 Avem nevoie de clearCart
   const { user } = useAuth();
   const router = useRouter();
 
@@ -104,7 +104,7 @@ export default function AdresaLivrare() {
           });
 
           if (res.ok) {
-              clearCart(); // Golim coșul
+              golesteCos(); // Golim coșul
               router.push("/success"); // Redirecționăm la pagina de succes
           } else {
               alert("A apărut o eroare la plasarea comenzii ramburs.");
