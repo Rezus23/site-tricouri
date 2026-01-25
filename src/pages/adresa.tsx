@@ -3,7 +3,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/router";
 import { useState, FormEvent, useEffect } from "react";
 import Link from "next/link";
-// 👇 Am adăugat iconițele pentru Card și Colet
 import { FiTruck, FiTag, FiCheckCircle, FiAlertCircle, FiCreditCard, FiPackage } from "react-icons/fi"; 
 
 // 1. TIP DATE
@@ -20,22 +19,23 @@ type Adresa = {
 };
 
 export default function AdresaLivrare() {
-  const { cart, golesteCos } = useCart(); // 👈 Avem nevoie de clearCart
+  const { cart, golesteCos } = useCart(); 
   const { user } = useAuth();
   const router = useRouter();
 
   const subtotal = cart.reduce((acc, p) => acc + Number(p.pret), 0);
   const COST_LIVRARE = 15.00;
-  const COD_PROMO_VALID = "IAN15"; 
+  const COD_PROMO_VALID = "DROP20"; // Poți schimba codul aici dacă vrei
 
   const [promoInput, setPromoInput] = useState("");
   const [discount, setDiscount] = useState(0);
   const [promoStatus, setPromoStatus] = useState<"idle" | "success" | "error">("idle");
 
-  // 👇 STARE NOUĂ PENTRU METODA DE PLATĂ
   const [metodaPlata, setMetodaPlata] = useState<"card" | "ramburs">("card");
 
-  // 2. STARE INIȚIALĂ
+  // 👇 STARE NOUĂ: Previne redirectul către Cart după ce golim coșul
+  const [orderCompleted, setOrderCompleted] = useState(false);
+
   const [formData, setFormData] = useState<Adresa>({
     nume: user?.displayName?.split(' ')[0] || "",
     prenume: user?.displayName?.split(' ')[1] || "",
@@ -54,9 +54,13 @@ export default function AdresaLivrare() {
   // Calcul final
   const totalFinal = subtotal - discount + (livrareSelectata ? COST_LIVRARE : 0);
 
+  // 👇 PROTECȚIE COȘ GOL (Actualizată)
   useEffect(() => {
-    if (cart.length === 0) router.push("/cart");
-  }, [cart, router]);
+    // Dacă comanda NU e finalizată și coșul e gol, trimite la /cart
+    if (!orderCompleted && cart.length === 0) {
+        router.push("/cart");
+    }
+  }, [cart, router, orderCompleted]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -65,10 +69,9 @@ export default function AdresaLivrare() {
 
   const handleApplyPromo = () => {
     if (promoInput.trim().toUpperCase() === COD_PROMO_VALID) {
-        // 1. Calculăm baza: Subtotal + Cost Livrare
         const totalBrut = subtotal + (livrareSelectata ? COST_LIVRARE : 0);
-        // 2. Aplicăm 15%
-        const valoareDiscount = totalBrut * 0.15;
+        // Aplicăm 20% reducere
+        const valoareDiscount = totalBrut * 0.20;
         
         setDiscount(valoareDiscount);
         setPromoStatus("success");
@@ -78,7 +81,7 @@ export default function AdresaLivrare() {
     }
   };
 
-  // 👇 FUNCȚIA PRINCIPALĂ DE FINALIZARE (RAMBURS SAU CARD)
+  // 👇 FUNCȚIA DE FINALIZARE COMANDĂ
   const handleFinalizeOrder = async (e: FormEvent) => {
     e.preventDefault();
     if (cart.length === 0) return;
@@ -99,13 +102,17 @@ export default function AdresaLivrare() {
                   email: formData.email,
                   produse: cart,
                   adresaLivrare: formData,
-                  userId: currentUserId
+                  userId: currentUserId,
+                  discount: discount,       
+                  costLivrare: livrareSelectata ? COST_LIVRARE : 0
               })
           });
 
           if (res.ok) {
-              golesteCos(); // Golim coșul
-              router.push("/successramburs"); // Redirecționăm la pagina de succes
+              // 👇 LOGICA DE REDIRECȚIONARE CORECTĂ
+              setOrderCompleted(true); // 1. Spunem paginii că am terminat (nu da redirect la Cart)
+              golesteCos();             // 2. Golim coșul
+              router.push("/success"); // 3. Mergem la pagina de succes
           } else {
               alert("A apărut o eroare la plasarea comenzii ramburs.");
           }
@@ -131,10 +138,11 @@ export default function AdresaLivrare() {
 
           if (!res.ok) {
             console.error("Eroare API:", res.status, text);
-            alert("Eroare la server. Încearcă din nou.");
+            alert("Eroare la server Netopia. Încearcă din nou.");
             return;
           }
 
+          // Netopia returnează un formular HTML ascuns pe care îl executăm automat
           document.open();
           document.write(text);
           document.close();
@@ -148,7 +156,8 @@ export default function AdresaLivrare() {
     }
   };
 
-  if (cart.length === 0) return null; 
+  // Dacă coșul e gol și nu am terminat comanda, nu randăm nimic (așteptăm redirectul)
+  if (!orderCompleted && cart.length === 0) return null; 
 
   const renderInput = (name: keyof Adresa, label: string, required: boolean = true) => (
     <div className="flex flex-col">
@@ -201,7 +210,7 @@ export default function AdresaLivrare() {
             {renderInput('codPostal', 'Cod Poștal', false)}
           </div>
 
-          {/* RUBRICA DETALII ADIȚIONALE */}
+          {/* DETALII ADIȚIONALE */}
           <div className="flex flex-col">
             <label htmlFor="detalii" className="mb-1 text-sm font-bold text-gray-700">
               Detalii Adiționale <span className="text-gray-400 font-normal ml-1">(opțional)</span>
@@ -213,7 +222,7 @@ export default function AdresaLivrare() {
               onChange={handleChange}
               rows={3}
               className="p-3 border border-gray-300 rounded-lg bg-white text-black focus:ring-2 focus:ring-blue-500 outline-none shadow-sm resize-none"
-              placeholder="pentru 'PRECOMANDA' poti scrie aici succint cerintele"
+              placeholder="Ex: interfon, interval orar preferat, cerințe comandă custom..."
             />
           </div>
 
@@ -239,7 +248,7 @@ export default function AdresaLivrare() {
             </label>
           </div>
 
-          {/* 👇 SECȚIUNE NOUĂ: METODĂ DE PLATĂ */}
+          {/* METODĂ DE PLATĂ */}
           <div className="pt-6 border-t border-gray-200 mt-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Metodă de Plată</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -275,7 +284,7 @@ export default function AdresaLivrare() {
             </div>
           </div>
 
-          {/* SECȚIUNE COD PROMOȚIONAL */}
+          {/* COD PROMO */}
           <div className="pt-6 border-t border-gray-200 mt-4">
             <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
                 <FiTag className="text-blue-600" /> Cod Promoțional
@@ -301,7 +310,7 @@ export default function AdresaLivrare() {
             
             {promoStatus === "success" && (
                 <p className="text-green-600 text-sm mt-2 flex items-center gap-1 font-medium animate-in fade-in">
-                    <FiCheckCircle /> Cod aplicat cu succes! (15% din Total)
+                    <FiCheckCircle /> Cod aplicat cu succes! (20% din Total)
                 </p>
             )}
             {promoStatus === "error" && (
@@ -325,7 +334,7 @@ export default function AdresaLivrare() {
 
             {discount > 0 && (
                 <div className="flex justify-between items-center mb-2 text-green-600 font-bold border-t border-gray-200 pt-2">
-                    <span>Reducere (15% din Total):</span>
+                    <span>Reducere (20% din Total):</span>
                     <span>- {discount.toFixed(2)} RON</span>
                 </div>
             )}
@@ -334,16 +343,14 @@ export default function AdresaLivrare() {
                 <span className="text-lg font-bold text-gray-800">Total de plată:</span>
                 <span className="text-3xl font-extrabold text-blue-600">{totalFinal.toFixed(2)} RON</span>
             </div>
-            {/* Text dinamic sub total */}
             <p className="text-xs text-gray-400 mt-3 text-right">
                 {metodaPlata === 'card' ? 'Plată securizată prin Netopia' : 'Plătești numerar la primirea coletului'}
             </p>
           </div>
 
-          {/* BUTON DINAMIC */}
           <button
             type="submit"
-            disabled={loading || cart.length === 0}
+            disabled={loading || (cart.length === 0 && !orderCompleted)}
             className="w-full bg-black text-white px-6 py-4 rounded-xl hover:bg-gray-800 transition font-bold text-lg shadow-lg active:scale-95 disabled:bg-gray-400 flex justify-center items-center gap-2"
           >
             {loading 
