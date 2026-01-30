@@ -14,8 +14,8 @@ class MyDocument extends Document {
           {/* 👇 AICI SUNT LINIILE PENTRU FAVICON SI LOGO GOOGLE */}
           
           {/* 1. Favicon clasic (pentru tab-uri browser) */}
-         <link rel="icon" href="/favicon-nou.png" type="image/png" />
-        <link rel="shortcut icon" href="/favicon-nou.png" type="image/png" />
+         <link rel="icon" href="/favicon-nou.png" type="image/jpeg" />
+        <link rel="shortcut icon" href="/favicon-nou.png" type="image/jpeg" />
   
  
           
