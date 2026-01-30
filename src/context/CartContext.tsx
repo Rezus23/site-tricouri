@@ -29,6 +29,8 @@ type LinieCos = {
   imagine?: string;
 
   marime?: string;
+  personalizare?: string; 
+
 
 };
 
@@ -129,6 +131,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       imagine: produs.imagine,
 
       marime: produs.marimeSelectata,
+      personalizare: produs.personalizare,
 
       cartId: Date.now() + Math.random(),
 
