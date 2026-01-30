@@ -32,7 +32,8 @@ type Produs = {
   imagini: string[]; 
   marimi?: MarimeStoc[]; 
   descriere?: string;
-  categorie?: string; // 👈 Câmpul categorie
+  categorie?: string;
+   // 👈 Câmpul categorie
 };
 
 export default function AdminDashboard() {

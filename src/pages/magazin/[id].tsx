@@ -4,7 +4,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
-import { FiX, FiZoomIn,  FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiX, FiZoomIn, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import BlurredBackground from "@/components/BlurredBackground";
 import SizeChart from "@/components/SizeChart";
 import { LuRuler } from "react-icons/lu";
@@ -16,6 +16,7 @@ type MarimeStoc = {
   lungime?: number;
 };
 
+// 👇 1. Actualizăm tipul produsului
 type Produs = {
   id: string;
   titlu: string;
@@ -25,7 +26,7 @@ type Produs = {
   descriere?: string;
   marimi?: MarimeStoc[];
   personalizare?: string;
-  categorie: string;
+  categorie: string; // sau 'category' daca asa e in firebase
 };
 
 export default function PaginaProdus() {
@@ -72,7 +73,9 @@ export default function PaginaProdus() {
               id: docSnap.id, 
               ...data, 
               imagini: imaginiList,
-              marimi: marimiFinale 
+              marimi: marimiFinale,
+              // Asigurăm compatibilitate dacă în firebase e 'category' sau 'categorie'
+              categorie: data.categorie || data.category || "" 
           } as Produs);
         } else {
           console.log("Produsul nu există!");
@@ -96,7 +99,6 @@ export default function PaginaProdus() {
     }
   };
 
-  // Update index la scroll manual
   const handleScroll = () => {
       if (sliderRef.current) {
           const index = Math.round(sliderRef.current.scrollLeft / sliderRef.current.clientWidth);
@@ -105,8 +107,13 @@ export default function PaginaProdus() {
   };
 
 
+  // 👇 2. Funcția de adăugare optimizată pentru debug
   const handleAddToCart = () => {
     if (!produs) return;
+    
+    // Verificare vizuală în consolă
+    console.log("---- ADAUG ÎN COȘ ----");
+    console.log("Text Personalizare:", customText);
 
     if (produs.marimi && produs.marimi.length > 0 && !selectedSize) {
         alert("⚠️ Te rog selectează o mărime înainte de a adăuga în coș!");
@@ -132,19 +139,23 @@ export default function PaginaProdus() {
         ? `${produs.titlu} (${selectedSize})` 
         : produs.titlu;
 
-    // Folosim imaginea curentă din slider
     const imgCurenta = produs.imagini && produs.imagini.length > 0 
         ? produs.imagini[currentImageIndex] 
         : produs.imagine;
 
+    // Adăugăm în coș
     adaugaInCos({
         id: produs.id, 
         titlu: titluFinal,
         pret: produs.pret,
         imagine: imgCurenta,
         marimeSelectata: selectedSize,
-        personalizare: customText
+        // 👇 AICI E CHEIA: Trimitem textul sau un string gol, dar NU undefined
+        personalizare: customText || "" 
     });
+    
+    // Feedback vizual rapid
+    // alert("Produs adăugat! Text: " + customText);
   };
 
   if (loading) return (
@@ -159,6 +170,12 @@ export default function PaginaProdus() {
   const toateImaginile = produs.imagini && produs.imagini.length > 0 
     ? produs.imagini 
     : [produs.imagine];
+
+  // 👇 Verificăm dacă e produs custom (includem și varianta cu literă mare sau precomandă)
+  const isCustomProduct = 
+      produs.categorie === 'custom' || 
+      produs.categorie === 'Custom' || 
+      produs.categorie === 'precomanda';
 
   return (
     <div className="min-h-screen relative">
@@ -177,10 +194,8 @@ export default function PaginaProdus() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-12 bg-transparent md:bg-white/90 md:backdrop-blur-md md:p-8 md:rounded-3xl md:shadow-2xl">
             
-            {/* --- ZONA IMAGINI (CARUSEL UNIVERSAL) --- */}
+            {/* --- ZONA IMAGINI --- */}
             <div className="relative group">
-                
-                {/* SLIDER CONTAINER */}
                 <div 
                     ref={sliderRef}
                     onScroll={handleScroll}
@@ -201,40 +216,17 @@ export default function PaginaProdus() {
                     ))}
                 </div>
 
-                {/* Butoane Navigare (Doar dacă sunt mai multe poze) */}
                 {toateImaginile.length > 1 && (
                     <>
-                        {/* Săgeată Stânga */}
-                        <button 
-                            onClick={() => scrollSlider('left')}
-                            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg text-black opacity-0 group-hover:opacity-100 transition-opacity hidden md:block"
-                        >
-                            <FiChevronLeft size={24} />
-                        </button>
-                        
-                        {/* Săgeată Dreapta */}
-                        <button 
-                            onClick={() => scrollSlider('right')}
-                            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg text-black opacity-0 group-hover:opacity-100 transition-opacity hidden md:block"
-                        >
-                            <FiChevronRight size={24} />
-                        </button>
-
-                        {/* Buline Indicator (Jos) */}
+                        <button onClick={() => scrollSlider('left')} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg text-black opacity-0 group-hover:opacity-100 transition-opacity hidden md:block"><FiChevronLeft size={24} /></button>
+                        <button onClick={() => scrollSlider('right')} className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg text-black opacity-0 group-hover:opacity-100 transition-opacity hidden md:block"><FiChevronRight size={24} /></button>
                         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
                             {toateImaginile.map((_, idx) => (
-                                <div 
-                                    key={idx}
-                                    className={`h-2 w-2 rounded-full transition-all ${
-                                        currentImageIndex === idx ? "bg-black w-4" : "bg-gray-300"
-                                    }`}
-                                />
+                                <div key={idx} className={`h-2 w-2 rounded-full transition-all ${currentImageIndex === idx ? "bg-black w-4" : "bg-gray-300"}`} />
                             ))}
                         </div>
                     </>
                 )}
-                
-                {/* Numărător Mobil */}
                 <div className="md:hidden absolute bottom-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded-full pointer-events-none">
                      {currentImageIndex + 1} / {toateImaginile.length}
                 </div>
@@ -250,10 +242,7 @@ export default function PaginaProdus() {
                     <div className="mb-8">
                         <div className="flex justify-between items-center mb-3">
                             <span className="font-bold text-gray-700">Alege Mărimea:</span>
-                            <button 
-                                onClick={() => setIsSizeChartOpen(true)}
-                                className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 hover:underline transition font-medium"
-                            >
+                            <button onClick={() => setIsSizeChartOpen(true)} className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 hover:underline transition font-medium">
                                 <LuRuler /> Ghid mărimi
                             </button>
                         </div>
@@ -282,7 +271,6 @@ export default function PaginaProdus() {
                         </div>
                         {!selectedSize && <p className="text-red-500 text-sm mt-2 font-medium">* Selectarea mărimii este obligatorie</p>}
                         
-                        {/* Mesaj Stoc Limitat */}
                         {selectedSize && produs.marimi.find(m => m.nume === selectedSize)?.stoc! < 3 && produs.marimi.find(m => m.nume === selectedSize)?.stoc! > 0 && (
                             <p className="text-orange-600 text-sm mt-3 font-bold animate-pulse flex items-center gap-2">
                                 🔥 Grăbește-te! Doar {produs.marimi.find(m => m.nume === selectedSize)?.stoc} bucăți rămase!
@@ -290,31 +278,32 @@ export default function PaginaProdus() {
                         )}
                     </div>
                 )}
-                {/* 👇 ZONA DE PERSONALIZARE (Doar pentru categoria 'custom') */}
-             {produs.categorie === 'custom' && (
-                <div className="mb-6 animate-in fade-in slide-in-from-bottom-2">
-                    <label className="block text-sm font-bold mb-2 text-gray-400">
-                        PERSONALIZARE TRICOU (Nume + Număr)
-                      </label>
-                    <input
-                        type="text"
-                        placeholder="Ex: MESSI 10"
-                        value={customText}
-                        onChange={(e) => setCustomText(e.target.value)}
-                        className="w-full p-4 bg-transparent border border-gray-600 rounded-xl text-white outline-none focus:border-white focus:ring-1 focus:ring-white transition uppercase"
-                    />
-                    <p className="text-xs text-gray-500 mt-2">
-                        *Lasă gol dacă dorești tricoul simplu, fără număr/nume.
-                    </p>
-                </div>
-             )}
 
+                {/* 👇 ZONA DE PERSONALIZARE CORECTATĂ */}
+                {/* Am schimbat culorile ca să fie vizibil pe fundal alb */}
+                {isCustomProduct && (
+                   <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                       <label className="block text-sm font-bold mb-2 text-gray-800">
+                           PERSONALIZARE TRICOU (Nume + Număr)
+                         </label>
+                       <input
+                           type="text"
+                           placeholder="Ex: MESSI 10"
+                           value={customText}
+                           onChange={(e) => setCustomText(e.target.value)}
+                           // 👇 AM SCHIMBAT AICI: text-black in loc de text-white
+                           className="w-full p-4 bg-white border border-gray-300 rounded-xl text-gray-900 outline-none focus:border-black focus:ring-1 focus:ring-black transition uppercase placeholder-gray-400"
+                       />
+                       <p className="text-xs text-gray-500 mt-2">
+                           *Lasă gol dacă dorești tricoul simplu, fără număr/nume.
+                       </p>
+                   </div>
+                )}
 
                 <div className="mb-10">
                     <h3 className="font-bold text-lg mb-3 border-b pb-2 text-gray-800">Descriere Produs</h3>
                     <div 
                         className="text-gray-600 leading-relaxed whitespace-pre-line product-description"
-    // Această comandă spune React-ului: "Dacă găsești cod HTML în text, afișează-l, nu îl scrie ca text."
                         dangerouslySetInnerHTML={{ __html: produs.descriere || "Nu există o descriere detaliată pentru acest produs." }}
                     />
                 </div>
@@ -347,8 +336,6 @@ export default function PaginaProdus() {
                 >
                     <FiX />
                 </button>
-                
-                {/* Imaginea din Zoom este cea curentă din slider */}
                 <img 
                     src={toateImaginile[currentImageIndex]} 
                     alt="Zoom" 
@@ -359,9 +346,9 @@ export default function PaginaProdus() {
         )}
 
         <SizeChart 
-    isOpen={isSizeChartOpen} 
-    onClose={() => setIsSizeChartOpen(false)} 
-    marimi={produs.marimi} // 👈 Trimitem lista de mărimi a produsului
+           isOpen={isSizeChartOpen} 
+           onClose={() => setIsSizeChartOpen(false)} 
+           marimi={produs.marimi} 
         />
       </div>
     </div>
