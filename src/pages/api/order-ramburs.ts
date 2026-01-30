@@ -27,11 +27,16 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// --- HELPER 1: HTML PENTRU ADMIN (Formatul tău cu chenar) ---
+// --- HELPER 1: HTML PENTRU ADMIN (Cu Personalizare) ---
 const generateAdminHtml = (orderId: string, amount: number, produse: any[], adresa: any) => {
-    const produseHTML = produse.map((p: any) => 
-        `<li style="margin-bottom: 5px;">${p.titlu} (${p.marimeSelectata || p.marime}) - <strong>${p.pret} RON</strong></li>`
-    ).join('');
+    
+    // 👇 AICI AM MODIFICAT: Adăugat afișarea personalizării
+    const produseHTML = produse.map((p: any) => `
+        <li style="margin-bottom: 10px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;">
+            ${p.titlu} (${p.marimeSelectata || p.marime}) - <strong>${p.pret} RON</strong>
+            ${p.personalizare ? `<br/><span style="color: #d63384; font-weight: bold; background: #fff0f6; padding: 2px 5px; border-radius: 4px;">✏️ Personalizare: ${p.personalizare}</span>` : ''}
+        </li>
+    `).join('');
 
     const detaliiLivrareHTML = adresa ? `
         <table style="width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #fff8f8; border: 1px solid #ffcccc;">
@@ -49,32 +54,33 @@ const generateAdminHtml = (orderId: string, amount: number, produse: any[], adre
             <h2 style="color: #0000ff; margin-top: 0;">📦 COMANDĂ NOUĂ (RAMBURS) #${orderId}</h2>
             <p style="font-size: 18px;"><strong>Total de Încasat:</strong> <span style="color: green;">${amount} RON</span></p>
             <h3 style="background-color: #333; color: white; padding: 5px 10px;">📦 Produse:</h3>
-            <ul>${produseHTML}</ul>
+            <ul style="list-style: none; padding-left: 0;">
+                ${produseHTML}
+            </ul>
             <h3 style="background-color: #333; color: white; padding: 5px 10px; margin-top: 20px;">📍 Detalii Livrare:</h3>
             ${detaliiLivrareHTML}
         </div>
     `;
 };
 
-// --- HELPER 2: HTML PENTRU CLIENT (REPLICĂ EXACTĂ POZA ATAȘATĂ) ---
+// --- HELPER 2: HTML PENTRU CLIENT (Cu Personalizare) ---
 const generateClientHtml = (orderId: string, produse: any[], adresa: any, financial: any) => {
     const { total } = financial;
+    const logoUrl = "https://passion4jerseys.ro/favicon-nou.png"; 
 
-    // Generăm rândurile tabelului de produse
+    // 👇 AICI AM MODIFICAT: Adăugat afișarea personalizării și pentru client
     const produseHtml = produse.map((p: any) => `
         <tr>
             <td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #555;">
-                ${p.titlu} (${p.marimeSelectata || p.marime})
+                <span style="font-weight: bold; color: #000;">${p.titlu}</span> 
+                <span style="color: #777;">(${p.marimeSelectata || p.marime})</span>
+                ${p.personalizare ? `<br/><span style="font-size: 13px; color: #d63384; font-style: italic;">✏️ Imprimare: ${p.personalizare}</span>` : ''}
             </td>
             <td style="padding: 10px 0; border-bottom: 1px solid #eee; text-align: right; font-weight: bold; color: #333;">
                 ${Number(p.pret).toFixed(2)} RON
             </td>
         </tr>
     `).join('');
-
-    // Link logo (folosește un URL public valid către logo-ul tău dacă ai, altfel am pus un placeholder curat)
-    // Recomand să urci logo-ul tău undeva (ex: imgur sau în public folder și să pui link-ul complet)
-    const logoUrl = "public/images/logo.jpg";
 
     return `
     <!DOCTYPE html>
@@ -104,16 +110,12 @@ const generateClientHtml = (orderId: string, produse: any[], adresa: any, financ
             <div class="header">
                  <img src="${logoUrl}" alt="Passion4Jerseys" class="logo" style="display:block; margin: 0 auto 20px;">
             </div>
-
             <h2>Salut, ${adresa.nume} ${adresa.prenume}!</h2>
             <p class="intro-text">
                 Comanda ta <strong>#${orderId}</strong> a fost confirmată cu succes.
             </p>
-
             <div class="card">
-                <div class="section-title">
-                    📍 Detalii Livrare
-                </div>
+                <div class="section-title">📍 Detalii Livrare</div>
                 <div style="border-top: 1px solid #f0f0f0; margin-top: 10px; padding-top: 10px;">
                     <div class="info-row"><span class="info-label">Destinatar:</span> ${adresa.nume} ${adresa.prenume}</div>
                     <div class="info-row"><span class="info-label">Adresă:</span> ${adresa.adresa}</div>
@@ -121,34 +123,18 @@ const generateClientHtml = (orderId: string, produse: any[], adresa: any, financ
                     <div class="info-row"><span class="info-label">Telefon:</span> ${adresa.telefon}</div>
                 </div>
             </div>
-
             <div style="margin-bottom: 20px;">
-                <div class="section-title">
-                    📦 Produse comandate:
-                </div>
-                
+                <div class="section-title">📦 Produse comandate:</div>
                 <table class="products-table">
                     <thead>
-                        <tr>
-                            <th class="th-header">Produs</th>
-                            <th class="th-header th-header-right">Preț</th>
-                        </tr>
+                        <tr><th class="th-header">Produs</th><th class="th-header th-header-right">Preț</th></tr>
                     </thead>
-                    <tbody>
-                        ${produseHtml}
-                    </tbody>
+                    <tbody>${produseHtml}</tbody>
                 </table>
-                
                 <div style="border-top: 1px solid #eee; margin-top: 10px; padding-top: 10px;"></div>
-                
-                <div class="total-section">
-                    Total: ${total.toFixed(2)} RON
-                </div>
+                <div class="total-section">Total: ${total.toFixed(2)} RON</div>
             </div>
-
-            <div class="footer">
-                Vă mulțumim și vă mai așteptăm pe site-ul nostru!
-            </div>
+            <div class="footer">Vă mulțumim și vă mai așteptăm pe site-ul nostru!</div>
         </div>
     </body>
     </html>
@@ -205,7 +191,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
     }
 
-    // 3. Email Client (Design Nou)
+    // 3. Email Client
     const htmlClient = generateClientHtml(orderId, produse, adresaLivrare, financialData);
     await transporter.sendMail({
         from: `"Passion4Jerseys" <${process.env.EMAIL_USER}>`,
@@ -214,7 +200,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         html: htmlClient
     });
 
-    // 4. Email Admin (Design Vechi)
+    // 4. Email Admin
     const htmlAdmin = generateAdminHtml(orderId, amount, produse, adresaLivrare);
     await transporter.sendMail({
         from: `"Site Orders" <${process.env.EMAIL_USER}>`,
