@@ -23,7 +23,9 @@ type Produs = {
   imagine: string;      
   imagini?: string[];   
   descriere?: string;
-  marimi?: MarimeStoc[]; 
+  marimi?: MarimeStoc[];
+  personalizare?: string;
+  categorie: string;
 };
 
 export default function PaginaProdus() {
@@ -35,6 +37,7 @@ export default function PaginaProdus() {
   
   // Stări
   const [selectedSize, setSelectedSize] = useState("");
+  const [customText, setCustomText] = useState("");
   const [isZoomed, setIsZoomed] = useState(false);
   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
   
@@ -139,7 +142,8 @@ export default function PaginaProdus() {
         titlu: titluFinal,
         pret: produs.pret,
         imagine: imgCurenta,
-        marimeSelectata: selectedSize
+        marimeSelectata: selectedSize,
+        personalizare: customText
     });
   };
 
@@ -286,6 +290,25 @@ export default function PaginaProdus() {
                         )}
                     </div>
                 )}
+                {/* 👇 ZONA DE PERSONALIZARE (Doar pentru categoria 'custom') */}
+             {produs.categorie === 'custom' && (
+                <div className="mb-6 animate-in fade-in slide-in-from-bottom-2">
+                    <label className="block text-sm font-bold mb-2 text-gray-400">
+                        PERSONALIZARE TRICOU (Nume + Număr)
+                      </label>
+                    <input
+                        type="text"
+                        placeholder="Ex: MESSI 10"
+                        value={customText}
+                        onChange={(e) => setCustomText(e.target.value)}
+                        className="w-full p-4 bg-transparent border border-gray-600 rounded-xl text-white outline-none focus:border-white focus:ring-1 focus:ring-white transition uppercase"
+                    />
+                    <p className="text-xs text-gray-500 mt-2">
+                        *Lasă gol dacă dorești tricoul simplu, fără număr/nume.
+                    </p>
+                </div>
+             )}
+
 
                 <div className="mb-10">
                     <h3 className="font-bold text-lg mb-3 border-b pb-2 text-gray-800">Descriere Produs</h3>

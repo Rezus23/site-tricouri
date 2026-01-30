@@ -48,6 +48,8 @@ type Produs = {
 
   marimeSelectata?: string;
 
+  personalizare?: string;
+
 };
 
 
