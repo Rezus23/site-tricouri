@@ -18,7 +18,7 @@ if (!getApps().length) {
 }
 const db = getFirestore();
 
-// 2. Configurare Email
+// 2. Configurare Email Transporter
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -27,10 +27,8 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// --- HELPER 1: HTML PENTRU ADMIN (MODIFICAT SĂ ARATE PERSONALIZAREA) ---
+// --- HELPER 1: HTML PENTRU ADMIN (Rămâne cel cu chenar roz pentru tine) ---
 const generateAdminHtml = (orderId: string, amount: number, produse: any[], adresa: any) => {
-    
-    // 👇 AICI ESTE MODIFICAREA MAGICĂ
     const produseHTML = produse.map((p: any) => `
         <li style="margin-bottom: 15px; border-bottom: 1px dashed #ddd; padding-bottom: 10px;">
             <div style="font-size: 14px;">
@@ -71,67 +69,86 @@ const generateAdminHtml = (orderId: string, amount: number, produse: any[], adre
         <div style="font-family: Arial, sans-serif; padding: 20px; border: 3px solid #0000ff; max-width: 600px; margin: auto;">
             <h2 style="color: #0000ff; margin-top: 0;">📦 COMANDĂ NOUĂ (RAMBURS) #${orderId}</h2>
             <p style="font-size: 18px;"><strong>Total de Încasat:</strong> <span style="color: green;">${amount} RON</span></p>
-            
             <h3 style="background-color: #333; color: white; padding: 5px 10px;">📦 Produse de pregătit:</h3>
-            <ul style="list-style-type: none; padding-left: 0;">
+            <ul style="list-style: none; padding-left: 0;">
                 ${produseHTML}
             </ul>
-
-            <h3 style="background-color: #333; color: white; padding: 5px 10px; margin-top: 20px;">📍 Detalii Livrare (AWB):</h3>
+            <h3 style="background-color: #333; color: white; padding: 5px 10px; margin-top: 20px;">📍 Detalii Livrare:</h3>
             ${detaliiLivrareHTML}
         </div>
     `;
 };
 
-// --- HELPER 2: HTML PENTRU CLIENT (Păstrăm designul clean) ---
+// --- HELPER 2: HTML PENTRU CLIENT (NOUL DESIGN CERUT DE TINE) ---
 const generateClientHtml = (orderId: string, produse: any[], adresa: any, financial: any) => {
     const { total } = financial;
-    const logoUrl = "https://passion4jerseys.ro/favicon-nou.png"; 
+    
+    // Numele pentru salut
+    const salutNume = adresa ? `${adresa.prenume} ${adresa.nume}` : "Client";
 
-    const produseHtml = produse.map((p: any) => `
+    // Construim blocul de produse folosind designul tău, DAR adăugând Mărimea și Personalizarea
+    const produseLinii = produse.map((p: any) => `
         <tr>
-            <td style="padding: 10px 0; border-bottom: 1px solid #eee; color: #555;">
-                <span style="color: #000; font-weight: bold;">${p.titlu}</span> (${p.marimeSelectata || p.marime})
-                ${p.personalizare ? `<br/><span style="color: #d63384; font-size: 13px;">Text Custom: ${p.personalizare}</span>` : ''}
+            <td style="padding: 12px 10px; border-bottom: 1px solid #f3f4f6; color: #4b5563;">
+                <span style="color: #111827; font-weight: 500;">${p.titlu}</span>
+                <br/>
+                <span style="font-size: 12px; color: #6b7280;">Mărime: ${p.marimeSelectata || p.marime}</span>
+                ${p.personalizare ? `<br/><span style="font-size: 12px; color: #db2777; font-weight: bold;">✏️ Personalizare: ${p.personalizare}</span>` : ''}
             </td>
-            <td style="padding: 10px 0; border-bottom: 1px solid #eee; text-align: right; font-weight: bold; color: #333;">
+            <td style="padding: 12px 10px; border-bottom: 1px solid #f3f4f6; color: #111827; font-weight: bold; text-align: right;">
                 ${Number(p.pret).toFixed(2)} RON
             </td>
         </tr>
-    `).join('');
+    `).join("");
 
     return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-    </head>
-    <body style="font-family: Arial, sans-serif; background-color: #ffffff; padding: 20px;">
-        <div style="max-width: 600px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 30px;">
-                 <img src="${logoUrl}" alt="Passion4Jerseys" style="width: 80px; display:block; margin: 0 auto 20px;">
-            </div>
-            <h2 style="color: #000;">Salut, ${adresa.nume}!</h2>
-            <p style="color: #666;">Comanda ta <strong>#${orderId}</strong> a fost confirmată.</p>
-            
-            <div style="border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-bottom: 30px;">
-                <div style="font-weight: bold; margin-bottom: 10px;">📍 Livrare la:</div>
-                <div style="color: #444;">${adresa.adresa}, ${adresa.oras}, ${adresa.judet}</div>
-            </div>
-
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background-color: #f9f9f9;"><th style="text-align: left; padding: 8px;">Produs</th><th style="text-align: right; padding: 8px;">Preț</th></tr>
-                </thead>
-                <tbody>${produseHtml}</tbody>
-            </table>
-            
-            <div style="text-align: right; margin-top: 15px; font-size: 18px; font-weight: bold;">
-                Total: ${total.toFixed(2)} RON
-            </div>
+      <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background-color: #ffffff;">
+        
+        <div style="background-color: #ffffff; padding: 20px; text-align: center; border-bottom: 1px solid #e5e7eb;">
+           <img src="https://i.imgur.com/Pq1P8IU.jpeg" alt="Passion4Jerseys Logo" style="max-height: 80px; width: auto;" />
         </div>
-    </body>
-    </html>
+
+        <div style="padding: 30px;">
+           <h2 style="color: #111827; margin-top: 0; font-size: 20px;">Salut, ${salutNume}!</h2>
+           <p style="color: #4b5563; font-size: 16px; line-height: 1.5;">
+             Comanda ta <strong>#${orderId}</strong> a fost confirmată cu succes.
+           </p>
+
+           <div style="background-color: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #e5e7eb;">
+            <h3 style="color: #111827; margin-top: 0; font-size: 16px; border-bottom: 1px solid #d1d5db; padding-bottom: 8px; margin-bottom: 10px;">📍 Detalii Livrare</h3>
+            <p style="margin: 4px 0; color: #374151;"><strong>Destinatar:</strong> ${adresa.nume} ${adresa.prenume}</p>
+            <p style="margin: 4px 0; color: #374151;"><strong>Adresă:</strong> ${adresa.adresa}</p>
+            <p style="margin: 4px 0; color: #374151;"><strong>Oraș/Județ:</strong> ${adresa.oras}, ${adresa.judet} ${adresa.codPostal ? `(${adresa.codPostal})` : ''}</p>
+            <p style="margin: 4px 0; color: #374151;"><strong>Telefon:</strong> ${adresa.telefon}</p>
+           </div>
+
+           <h3 style="color: #111827; font-size: 16px; margin-top: 25px; margin-bottom: 10px;">📦 Produse comandate:</h3>
+           <table style="width: 100%; border-collapse: collapse;">
+             <thead>
+               <tr style="background-color: #f3f4f6; text-align: left;">
+                 <th style="padding: 10px; border-bottom: 2px solid #e5e7eb; color: #374151; font-size: 14px;">Produs</th>
+                 <th style="padding: 10px; border-bottom: 2px solid #e5e7eb; color: #374151; font-size: 14px; text-align: right;">Preț</th>
+               </tr>
+             </thead>
+             <tbody>
+               ${produseLinii}
+             </tbody>
+           </table>
+
+           <div style="text-align: right; margin-top: 20px; padding-top: 10px; border-top: 2px solid #f3f4f6;">
+             <p style="font-size: 18px; color: #111827; margin: 0;">Total: <strong>${Number(total).toFixed(2)} RON</strong></p>
+           </div>
+
+           <div style="margin-top: 40px; text-align: center; color: #4b5563; font-size: 15px;">
+             <p style="margin-bottom: 5px;">Vă mulțumim și vă mai așteptăm pe site-ul nostru!</p>
+             <p style="margin-top: 0; color: #1d4ed8; font-weight: bold;">Echipa Passion4Jerseys</p>
+           </div>
+        </div>
+
+        <div style="background-color: #f9fafb; padding: 15px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #e5e7eb;">
+          <a href="https://passion4jerseys.ro" style="color: #2563eb; text-decoration: none;">Vizitează magazinul online</a>
+        </div>
+       </div>
     `;
 };
 
@@ -146,13 +163,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const subtotal = produse.reduce((acc: number, p: any) => acc + Number(p.pret), 0);
     const financialData = { subtotal, costLivrare, discount, total: amount };
 
-    // 1. Salvare Firebase (Aici deja merge bine)
+    // 1. Salvare Firebase
     await db.collection("orders").doc(orderId).set({
         orderId,
         amount,
         email,
         userId: userId || "guest",
-        produse,
+        produse, // Aici se salvează și personalizarea dacă vine din frontend
         adresaLivrare,
         status: "confirmed",
         metodaPlata: "ramburs",
@@ -161,7 +178,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    // 2. Scădere Stoc (Neschimbat)
+    // 2. Scădere Stoc
     for (const item of produse) {
         if (!item.id) continue;
         const marime = item.marimeSelectata || item.marime; 
@@ -185,7 +202,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
     }
 
-    // 3. Email Client
+    // 3. Email Client (FOLOSIM NOUL DESIGN)
     const htmlClient = generateClientHtml(orderId, produse, adresaLivrare, financialData);
     await transporter.sendMail({
         from: `"Passion4Jerseys" <${process.env.EMAIL_USER}>`,
@@ -194,7 +211,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         html: htmlClient
     });
 
-    // 4. Email Admin (Folosind funcția nouă cu personalizare)
+    // 4. Email Admin (Chenar Roz pentru personalizare)
     const htmlAdmin = generateAdminHtml(orderId, amount, produse, adresaLivrare);
     await transporter.sendMail({
         from: `"Site Orders" <${process.env.EMAIL_USER}>`,
