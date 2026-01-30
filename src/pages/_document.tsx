@@ -14,13 +14,10 @@ class MyDocument extends Document {
           {/* 👇 AICI SUNT LINIILE PENTRU FAVICON SI LOGO GOOGLE */}
           
           {/* 1. Favicon clasic (pentru tab-uri browser) */}
-          <link rel="icon" href="/favicon.ico" sizes="any" />
-          
-          {/* 2. Logo modern (PNG) - Pe acesta îl ia Google de obicei */}
-          <link rel="icon" href="/favicon.ico" type="image/ico" />
-          
-          {/* 3. Iconiță pentru Apple/iOS (când salvezi site-ul pe ecran) */}
-          <link rel="apple-touch-icon" href="/favicon.ico" />
+         <link rel="icon" href="/favicon-nou.png" type="image/png" />
+        <link rel="shortcut icon" href="/favicon-nou.png" type="image/png" />
+  
+ 
           
           {/* 4. Culoarea barei de adrese pe mobil (să fie neagră ca site-ul) */}
           <meta name="theme-color" content="#000000" />
