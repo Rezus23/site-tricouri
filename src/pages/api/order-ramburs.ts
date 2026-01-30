@@ -74,7 +74,7 @@ const generateClientHtml = (orderId: string, produse: any[], adresa: any, financ
 
     // Link logo (folosește un URL public valid către logo-ul tău dacă ai, altfel am pus un placeholder curat)
     // Recomand să urci logo-ul tău undeva (ex: imgur sau în public folder și să pui link-ul complet)
-    const logoUrl = "images/logo.jpg";
+    const logoUrl = "public/images/logo.jpg";
 
     return `
     <!DOCTYPE html>
