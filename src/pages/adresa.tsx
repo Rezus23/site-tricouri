@@ -222,7 +222,7 @@ export default function AdresaLivrare() {
               onChange={handleChange}
               rows={3}
               className="p-3 border border-gray-300 rounded-lg bg-white text-black focus:ring-2 focus:ring-blue-500 outline-none shadow-sm resize-none"
-              placeholder="Ex: interfon, interval orar preferat, cerințe comandă custom..."
+              placeholder="Aici se trec cerintele în legătură cu patch-urile!"
             />
           </div>
 
