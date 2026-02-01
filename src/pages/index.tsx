@@ -219,7 +219,6 @@ export default function Home() {
 
                                 AI TRANSPORTUL <span className="text-blue-400 underline decoration-blue-400 underline-offset-4">GRATUIT</span> <br className="hidden md:block"/>
 
-                                LA TOATE PRODUSELE DE PE SITE-UL NOSTRU
 
                             </p>
 
