@@ -30,6 +30,7 @@ type LinieCos = {
 
   marime?: string;
   personalizare?: string; 
+  cantitate: number;
 
 
 };
@@ -51,6 +52,7 @@ type Produs = {
   marimeSelectata?: string;
 
   personalizare?: string;
+  cantitate?:number;
 
 };
 
@@ -132,6 +134,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       marime: produs.marimeSelectata,
       personalizare: produs.personalizare,
+      cantitate: produs.cantitate || 1,
 
       cartId: Date.now() + Math.random(),
 

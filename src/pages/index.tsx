@@ -215,9 +215,9 @@ export default function Home() {
 
                             <p className="text-xs md:text-sm font-bold text-gray-200 uppercase tracking-widest leading-relaxed">
 
-                                FOLOSEȘTE CODUL <span className="text-blue-400 text-base mx-1 bg-white/10 px-2 rounded border border-blue-400/30">IAN15</span>
+                                PENTRU COMENZI DE PESTE <span className="text-blue-400 text-base mx-1 bg-white/10 px-2 rounded border border-blue-400/30">2 PRODUSE </span>
 
-                                PENTRU <span className="text-blue-400 underline decoration-blue-400 underline-offset-4">15% REDUCERE</span> <br className="hidden md:block"/>
+                                AI TRANSPORTUL <span className="text-blue-400 underline decoration-blue-400 underline-offset-4">GRATUIT</span> <br className="hidden md:block"/>
 
                                 LA TOATE PRODUSELE DE PE SITE-UL NOSTRU
 

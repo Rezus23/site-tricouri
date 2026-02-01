@@ -16,6 +16,7 @@ type Adresa = {
   judet: string;
   codPostal: string;
   detalii: string; 
+  personalizare:string;
 };
 
 export default function AdresaLivrare() {
@@ -24,8 +25,12 @@ export default function AdresaLivrare() {
   const router = useRouter();
 
   const subtotal = cart.reduce((acc, p) => acc + Number(p.pret), 0);
-  const COST_LIVRARE = 15.00;
-  const COD_PROMO_VALID = "IAN15"; // Poți schimba codul aici dacă vrei
+  
+  // 👇 MODIFICARE 1: Calculăm numărul de produse și costul livrării dinamic
+  const numarTotalProduse = cart.reduce((acc, item) => acc + (item.cantitate || 1), 0);
+  const COST_LIVRARE = numarTotalProduse >= 2 ? 0 : 15.00;
+  
+  const COD_PROMO_VALID = ""; 
 
   const [promoInput, setPromoInput] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -33,7 +38,6 @@ export default function AdresaLivrare() {
 
   const [metodaPlata, setMetodaPlata] = useState<"card" | "ramburs">("card");
 
-  // 👇 STARE NOUĂ: Previne redirectul către Cart după ce golim coșul
   const [orderCompleted, setOrderCompleted] = useState(false);
 
   const [formData, setFormData] = useState<Adresa>({
@@ -46,17 +50,16 @@ export default function AdresaLivrare() {
     judet: "",
     codPostal: "",
     detalii: "", 
+    personalizare: ""
   });
   
   const [loading, setLoading] = useState(false);
   const [livrareSelectata, setLivrareSelectata] = useState(true);
 
-  // Calcul final
+  // Calcul final (folosește costul dinamic)
   const totalFinal = subtotal - discount + (livrareSelectata ? COST_LIVRARE : 0);
 
-  // 👇 PROTECȚIE COȘ GOL (Actualizată)
   useEffect(() => {
-    // Dacă comanda NU e finalizată și coșul e gol, trimite la /cart
     if (!orderCompleted && cart.length === 0) {
         router.push("/cart");
     }
@@ -69,8 +72,8 @@ export default function AdresaLivrare() {
 
   const handleApplyPromo = () => {
     if (promoInput.trim().toUpperCase() === COD_PROMO_VALID) {
+        // 👇 Folosim costul dinamic aici
         const totalBrut = subtotal + (livrareSelectata ? COST_LIVRARE : 0);
-        // Aplicăm 20% reducere
         const valoareDiscount = totalBrut * 0.15;
         
         setDiscount(valoareDiscount);
@@ -81,7 +84,6 @@ export default function AdresaLivrare() {
     }
   };
 
-  // 👇 FUNCȚIA DE FINALIZARE COMANDĂ
   const handleFinalizeOrder = async (e: FormEvent) => {
     e.preventDefault();
     if (cart.length === 0) return;
@@ -104,15 +106,14 @@ export default function AdresaLivrare() {
                   adresaLivrare: formData,
                   userId: currentUserId,
                   discount: discount,       
-                  costLivrare: livrareSelectata ? COST_LIVRARE : 0
+                  costLivrare: livrareSelectata ? COST_LIVRARE : 0 // Trimitem costul dinamic
               })
           });
 
           if (res.ok) {
-              // 👇 LOGICA DE REDIRECȚIONARE CORECTĂ
-              setOrderCompleted(true); // 1. Spunem paginii că am terminat (nu da redirect la Cart)
-              golesteCos();             // 2. Golim coșul
-              router.push("/successramburs"); // 3. Mergem la pagina de succes
+              setOrderCompleted(true); 
+              golesteCos();            
+              router.push("/successramburs"); 
           } else {
               alert("A apărut o eroare la plasarea comenzii ramburs.");
           }
@@ -129,7 +130,7 @@ export default function AdresaLivrare() {
               details: `Comandă (${formData.email}) ${discount > 0 ? '- DISCOUNT' : ''}`,
               produse: cart,
               adresaLivrare: formData, 
-              costLivrare: COST_LIVRARE,
+              costLivrare: COST_LIVRARE, // Trimitem costul dinamic
               discount: discount
             }),
           });
@@ -142,7 +143,6 @@ export default function AdresaLivrare() {
             return;
           }
 
-          // Netopia returnează un formular HTML ascuns pe care îl executăm automat
           document.open();
           document.write(text);
           document.close();
@@ -156,7 +156,6 @@ export default function AdresaLivrare() {
     }
   };
 
-  // Dacă coșul e gol și nu am terminat comanda, nu randăm nimic (așteptăm redirectul)
   if (!orderCompleted && cart.length === 0) return null; 
 
   const renderInput = (name: keyof Adresa, label: string, required: boolean = true) => (
@@ -210,7 +209,6 @@ export default function AdresaLivrare() {
             {renderInput('codPostal', 'Cod Poștal', false)}
           </div>
 
-          {/* DETALII ADIȚIONALE */}
           <div className="flex flex-col">
             <label htmlFor="detalii" className="mb-1 text-sm font-bold text-gray-700">
               Detalii Adiționale <span className="text-gray-400 font-normal ml-1">(opțional)</span>
@@ -244,7 +242,10 @@ export default function AdresaLivrare() {
                         <span className="text-sm text-gray-500">Termen: 2-5 zile lucrătoare</span>
                     </div>
                 </div>
-                <span className="font-bold text-gray-900">{COST_LIVRARE} RON</span>
+                {/* 👇 MODIFICARE 2: Afișare preț dinamic în selector */}
+                <span className={`font-bold ${COST_LIVRARE === 0 ? 'text-green-600' : 'text-gray-900'}`}>
+                    {COST_LIVRARE === 0 ? "GRATUIT" : `${COST_LIVRARE.toFixed(2)} RON`}
+                </span>
             </label>
           </div>
 
@@ -253,7 +254,6 @@ export default function AdresaLivrare() {
             <h3 className="text-lg font-bold text-gray-800 mb-4">Metodă de Plată</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 
-                {/* Opțiune CARD */}
                 <div 
                     onClick={() => setMetodaPlata("card")}
                     className={`cursor-pointer p-4 border rounded-xl flex items-center gap-3 transition-all ${metodaPlata === 'card' ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600' : 'border-gray-200 hover:border-gray-300'}`}
@@ -267,7 +267,6 @@ export default function AdresaLivrare() {
                     </div>
                 </div>
 
-                {/* Opțiune RAMBURS */}
                 <div 
                     onClick={() => setMetodaPlata("ramburs")}
                     className={`cursor-pointer p-4 border rounded-xl flex items-center gap-3 transition-all ${metodaPlata === 'ramburs' ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600' : 'border-gray-200 hover:border-gray-300'}`}
@@ -327,9 +326,15 @@ export default function AdresaLivrare() {
                 <span>{subtotal.toFixed(2)} RON</span>
             </div>
             
+            {/* 👇 MODIFICARE 3: Afișare "GRATUIT" în rezumat */}
             <div className="flex justify-between items-center mb-4 text-gray-600">
                 <span>Livrare:</span>
-                <span>{livrareSelectata ? `${COST_LIVRARE.toFixed(2)} RON` : '15.00 RON'}</span>
+                <span className={COST_LIVRARE === 0 ? "text-green-600 font-bold" : ""}>
+                    {livrareSelectata 
+                        ? (COST_LIVRARE === 0 ? "GRATUIT (2+ produse)" : `${COST_LIVRARE.toFixed(2)} RON`) 
+                        : '15.00 RON'
+                    }
+                </span>
             </div>
 
             {discount > 0 && (
