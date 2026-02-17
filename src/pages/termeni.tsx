@@ -21,7 +21,7 @@ export default function Termeni() {
             <h2 className="text-xl font-bold mb-3 text-gray-900">• Cine suntem?</h2>
             <p>
               Confidențialitatea datelor dumneavoastră este foarte importantă pentru noi. 
-              Site-ul <strong>www.passion4jerseys.ro</strong> este administrat de <strong>de o echipa dedicata</strong> pasionata de tricouri, la fel ca tine.
+              Site-ul <strong>www.passion4jerseys.ro</strong> este administrat de <strong> o echipa dedicata</strong> pasionata de tricouri, la fel ca tine.
             </p>
             <p>
               În sensul legislației cu privire la protecția datelor, suntem operatori atunci când prelucrăm datele dvs. cu caracter personal.
