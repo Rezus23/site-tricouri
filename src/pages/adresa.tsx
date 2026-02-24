@@ -30,7 +30,7 @@ export default function AdresaLivrare() {
   const numarTotalProduse = cart.reduce((acc, item) => acc + (item.cantitate || 1), 0);
   const COST_LIVRARE = numarTotalProduse >= 2 ? 0 : 15.00;
   
-  const COD_PROMO_VALID = ""; 
+  const COD_PROMO_VALID = "//////"; 
 
   const [promoInput, setPromoInput] = useState("");
   const [discount, setDiscount] = useState(0);
