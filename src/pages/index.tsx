@@ -165,7 +165,7 @@ export default function Home() {
 
                 <div className="container mx-auto px-6 text-center">
 
-                    <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-blue-400 text-xs md:text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-white-400 text-xs md:text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
                     GET READY FOR THE SUMMER!
 
