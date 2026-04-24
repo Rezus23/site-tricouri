@@ -145,7 +145,7 @@ export default function Home() {
 
                 className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
 
-                style={{ backgroundImage: "url('/images/pozamessi.jpg')" }}
+                style={{ backgroundImage: "url('/images/nouapozafundal.jpg')" }}
 
             ></div>
 
@@ -167,7 +167,7 @@ export default function Home() {
 
                     <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-blue-400 text-xs md:text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-                    NEW SEASON 25/26
+                    GET READY FOR THE SUMMER!
 
                     </span>
 
@@ -175,11 +175,11 @@ export default function Home() {
 
                     <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl animate-in zoom-in duration-700">
 
-                    WEAR THE <br />
+                    FEEL THE <br />
 
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 animate-gradient bg-300%">
 
-                        PASSION.
+                        WORLD CUP.
 
                     </span>
 
