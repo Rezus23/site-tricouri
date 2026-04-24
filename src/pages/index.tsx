@@ -173,7 +173,7 @@ export default function Home() {
 
 
 
-                    <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-white to-blue-400 animate-gradient bg-300%">
+                    <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl animate-in zoom-in duration-700">
 
                     FEEL THE <br />
 
