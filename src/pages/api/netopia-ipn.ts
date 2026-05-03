@@ -54,8 +54,30 @@ async function sendAdminNotification(order: any) {
     });
 
     const produseHTML = order.produse?.map((p: any) => 
-        `<li style="margin-bottom: 5px;">${p.titlu} - <strong>${p.pret} RON</strong></li>`
-    ).join('');
+       `
+        <li style="margin-bottom: 15px; border-bottom: 1px dashed #ddd; padding-bottom: 10px;">
+            <div style="font-size: 14px;">
+                <strong>${p.titlu}</strong> 
+                <span style="color: #666;">(Mărime: ${p.marimeSelectata || p.marime})</span>
+            </div>
+            <div style="font-weight: bold; color: #333;">${p.pret} RON</div>
+
+            ${p.personalizare ? `
+                <div style="
+                    margin-top: 5px; 
+                    background-color: #fff0f6; 
+                    color: #c41d7f; 
+                    border: 1px solid #ffadd2; 
+                    padding: 5px 10px; 
+                    border-radius: 4px; 
+                    font-weight: bold;
+                    display: inline-block;
+                ">
+                    ✏️ PERSONALIZARE: ${p.personalizare}
+                </div>
+            ` : ''}
+        </li>
+    `).join('');
 
     // Extragem adresa
     const adresa = order.adresaLivrare;
