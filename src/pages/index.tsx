@@ -177,7 +177,7 @@ export default function Home() {
 
                     FEEL THE <br />
 
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-white to-blue-400 animate-gradient bg-300%">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-white to-blue-400 animate-gradient bg-300%">
 
                         WORLD CUP.
 
