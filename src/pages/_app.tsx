@@ -1,4 +1,4 @@
-import "@/styles/globals.css";
+import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import Layout from "@/components/Layout";
 import { CartProvider } from "@/context/CartContext";
@@ -19,7 +19,8 @@ export default function App({ Component, pageProps }: AppProps) {
         <div className={`${inter.className} relative w-full max-w-full`}>
           
           <Head>
-            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+            <link rel="icon" type="image/png" href="/favicon.png" />
+            <link rel="shortcut icon" href="/favicon.png" />
           </Head>
 
           <style jsx global>{`
