@@ -177,7 +177,7 @@ export default function Home() {
 
                     FEEL THE <br />
 
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 animate-gradient bg-300%">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-golden-400 via-white to-blue-400 animate-gradient bg-300%">
 
                         WORLD CUP.
 
@@ -199,7 +199,7 @@ export default function Home() {
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
 
-                    <Link href="/shop" className="px-10 py-4 bg-white text-black font-bold text-lg rounded-full hover:bg-blue-50 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                    <Link href="/shop" className="px-10 py-4 bg-white text-black font-bold text-lg rounded-full hover:bg-golden-50 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
 
                         Vezi Colecția
 
@@ -215,9 +215,9 @@ export default function Home() {
 
                             <p className="text-xs md:text-sm font-bold text-gray-200 uppercase tracking-widest leading-relaxed">
 
-                                PENTRU COMENZI DE PESTE <span className="text-blue-400 text-base mx-1 bg-white/10 px-2 rounded border border-blue-400/30">2 PRODUSE </span>
+                                PENTRU COMENZI DE PESTE <span className="text-golden-400 text-base mx-1 bg-white/10 px-2 rounded border border-blue-400/30">2 PRODUSE </span>
 
-                                AI TRANSPORTUL <span className="text-blue-400 underline decoration-blue-400 underline-offset-4">GRATUIT</span> <br className="hidden md:block"/>
+                                AI TRANSPORTUL <span className="text-golden-400 underline decoration-blue-400 underline-offset-4">GRATUIT</span> <br className="hidden md:block"/>
 
 
                             </p>
