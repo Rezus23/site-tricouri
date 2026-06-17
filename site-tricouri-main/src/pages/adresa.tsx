@@ -30,7 +30,7 @@ export default function AdresaLivrare() {
   const numarTotalProduse = cart.reduce((acc, item) => acc + (item.cantitate || 1), 0);
   const COST_LIVRARE = numarTotalProduse >= 2 ? 0 : 15.00;
   
-  const COD_PROMO_VALID = "//////"; 
+  const COD_PROMO_VALID = "WC2026"; 
 
   const [promoInput, setPromoInput] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -74,7 +74,7 @@ export default function AdresaLivrare() {
     if (promoInput.trim().toUpperCase() === COD_PROMO_VALID) {
         // 👇 Folosim costul dinamic aici
         const totalBrut = subtotal + (livrareSelectata ? COST_LIVRARE : 0);
-        const valoareDiscount = totalBrut * 0.15;
+        const valoareDiscount = totalBrut * 0.10;
         
         setDiscount(valoareDiscount);
         setPromoStatus("success");
@@ -339,7 +339,7 @@ export default function AdresaLivrare() {
 
             {discount > 0 && (
                 <div className="flex justify-between items-center mb-2 text-green-600 font-bold border-t border-gray-200 pt-2">
-                    <span>Reducere (15% din Total):</span>
+                    <span>Reducere (10% din Total):</span>
                     <span>- {discount.toFixed(2)} RON</span>
                 </div>
             )}
