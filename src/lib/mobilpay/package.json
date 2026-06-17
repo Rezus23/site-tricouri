@@ -1,0 +1,6 @@
+{
+  "name": "mobilpay-local-sdk",
+  "version": "1.0.0",
+  "description": "Local Netopia mobilPay SDK",
+  "main": "encrypt.js"
+}
