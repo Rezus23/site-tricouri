@@ -16,6 +16,7 @@ type Produs = {
   id: string;
   titlu: string;
   pret: number;
+  pretVechi?: number;
   imagine: string;    
   imagini?: string[]; 
   marimi?: MarimeStoc[];
@@ -113,14 +114,31 @@ export default function Shop() {
     const totalStoc = produs.marimi?.reduce((acc, m) => acc + m.stoc, 0) ?? 0;
     const isSoldOut = produs.marimi && produs.marimi.length > 0 && totalStoc <= 0;
 
+    // Calculăm reducerea procentuală dacă există un pretVechi mai mare decât prețul actual
+    const areReducere = Boolean(produs.pretVechi && produs.pretVechi > produs.pret);
+    const procentReducere = areReducere && produs.pretVechi
+      ? Math.round(((produs.pretVechi - produs.pret) / produs.pretVechi) * 100)
+      : 0;
+
     return (
         <div key={produs.id} className="group relative bg-white rounded-[20px] overflow-hidden transition-all duration-300 hover:shadow-[0_20px_40px_-15px_rgba(255,255,255,0.15)] hover:-translate-y-2">
             <Link href={`/magazin/${produs.id}`} className="block relative aspect-[4/5] bg-[#f4f4f5] overflow-hidden">
+            
+            {/* Badge categorie */}
             <div className="absolute top-4 left-4 z-20 pointer-events-none">
                 <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest text-gray-900 shadow-sm border border-gray-100">
                     {produs.categorie === 'tricouri' ? '25/26' : (produs.categorie || "Oficial")}
                 </span>
             </div>
+
+            {/* 👇 BADGE PROCENT REDUCERE (Colț dreapta sus) 👇 */}
+            {areReducere && !isSoldOut && (
+                <div className="absolute top-4 right-4 z-20 pointer-events-none">
+                    <span className="bg-red-600 text-white px-2.5 py-1 rounded-md text-[11px] font-black tracking-wider shadow-md uppercase">
+                        -{procentReducere}%
+                    </span>
+                </div>
+            )}
 
             <img
                 src={img1}
@@ -153,22 +171,36 @@ export default function Shop() {
 
             <div className="p-5 bg-white relative z-10">
             <div className="flex justify-between items-start gap-4 mb-1">
-                <Link href={`/magazin/${produs.id}`}>
+                <Link href={`/magazin/${produs.id}`} className="flex-1">
                     <h3 className="font-bold text-md text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2 uppercase">
                         {produs.titlu}
                     </h3>
                 </Link>
-                <p className="font-black text-lg text-gray-900 whitespace-nowrap">
-                    {produs.pret} <span className="text-[10px] text-gray-500 align-top font-normal">RON</span>
-                </p>
+
+                {/* 👇 ZONA DE PREȚ ACTUALIZATĂ CU DISCOUNT 👇 */}
+                <div className="text-right flex flex-col items-end whitespace-nowrap">
+                    {areReducere && (
+                        <div className="flex items-center gap-1.5">
+                            <span className="text-xs text-gray-400 line-through font-semibold">
+                                {produs.pretVechi} RON
+                            </span>
+                            <span className="text-[10px] font-black text-red-600 bg-red-50 px-1.5 py-0.5 rounded">
+                                -{procentReducere}%
+                            </span>
+                        </div>
+                    )}
+                    <p className={`font-black text-lg ${areReducere ? 'text-red-600' : 'text-gray-900'}`}>
+                        {produs.pret} <span className="text-[10px] text-gray-500 align-top font-normal">RON</span>
+                    </p>
+                </div>
             </div>
             
             {isSoldOut ? (
                 <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mt-2">Stoc Epuizat</p>
             ) : (
                 <div className="flex items-center gap-1 mt-2">
-                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">În Stoc</p>
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">În Stoc</p>
                 </div>
             )}
             </div>
