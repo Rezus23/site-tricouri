@@ -18,7 +18,7 @@ const REVIEWS = [
 
     text: "Calitatea tricoului este incredibilă, exact ca varianta de jucător. Materialul respiră foarte bine, iar detaliile sunt impecabile. Recomand cu încredere!",
 
-    rating: 4,
+    rating: 5,
 
   },
 
