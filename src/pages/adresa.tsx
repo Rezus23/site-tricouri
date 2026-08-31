@@ -28,7 +28,7 @@ export default function AdresaLivrare() {
   
   // 👇 MODIFICARE 1: Calculăm numărul de produse și costul livrării dinamic
   const numarTotalProduse = cart.reduce((acc, item) => acc + (item.cantitate || 1), 0);
-  const COST_LIVRARE = numarTotalProduse >= 2 ? 0 : 0.01;
+  const COST_LIVRARE = numarTotalProduse >= 5 ? 0 : 15.00;
   
   const COD_PROMO_VALID = "STOC10"; 
 
@@ -339,7 +339,7 @@ export default function AdresaLivrare() {
 
             {discount > 0 && (
                 <div className="flex justify-between items-center mb-2 text-green-600 font-bold border-t border-gray-200 pt-2">
-                    <span>Reducere (15% din Total):</span>
+                    <span>Reducere (10% din Total):</span>
                     <span>- {discount.toFixed(2)} RON</span>
                 </div>
             )}
