@@ -145,7 +145,7 @@ export default function Home() {
 
                 className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
 
-                style={{ backgroundImage: "url('/images/nouapozafundal.jpg')" }}
+                style={{ backgroundImage: "url('/images/hero-banner.jpg')" }}
 
             ></div>
 
@@ -167,7 +167,7 @@ export default function Home() {
 
                     <span className="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-white-400 text-xs md:text-sm font-bold tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-                    GET READY FOR THE SUMMER!
+                    LAST CHANCE!
 
                     </span>
 
@@ -175,11 +175,11 @@ export default function Home() {
 
                     <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-white mb-6 leading-tight tracking-tighter drop-shadow-2xl animate-in zoom-in duration-700">
 
-                    FEEL THE <br />
+                    END OF SUMMER <br />
 
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-white to-blue-400 animate-gradient bg-300%">
 
-                        WORLD CUP.
+                        SALES.
 
                     </span>
 
@@ -215,9 +215,7 @@ export default function Home() {
 
                             <p className="text-xs md:text-sm font-bold text-gray-200 uppercase tracking-widest leading-relaxed">
 
-                                PENTRU COMENZI DE PESTE <span className="text-yellow-400 text-base mx-1 bg-white/10 px-2 rounded border border-blue-400/30">2 PRODUSE </span>
-
-                                AI TRANSPORTUL <span className="text-yellow-400 underline decoration-blue-400 underline-offset-4">GRATUIT</span> <br className="hidden md:block"/>
+                                 <span className="text-yellow-400 underline decoration-blue-400 underline-offset-4">Profită acum de cel mai mic preț la soldarea de sezon</span> <br className="hidden md:block"/>
 
 
                             </p>
