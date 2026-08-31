@@ -107,7 +107,7 @@ export default function Home() {
     <>
 
       <Head>
-        <title>Passion4Jerseys-Cel mai bun raport pret/calitate!</title>
+        <title>Passion4Jerseys-Sustinem Sportul Rege!</title>
         <meta name="description" content="Descoperă colecția Passion4Jerseys: Tricouri de fotbal Retro, Naționale și cele mai noi kit-uri de joc (25/26). Calitate premium." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Favicon-ul este deja în _document.tsx, deci nu e obligatoriu aici, dar ajută */}
