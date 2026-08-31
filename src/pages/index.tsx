@@ -58,7 +58,7 @@ const CATEGORIES = [
 
     id: 1,
 
-    titlu: "SEZONUL 25/26",
+    titlu: "CLUBURILE TALE PREFERATE",
 
     descriere: "Cele mai noi kit-uri de joc.",
 
